@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:masters_ui_fr/Auth/login_page.dart';
+import 'package:hasior_flutter/Auth/login_page.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
@@ -19,21 +19,21 @@ class _RegisterState extends State<RegisterView> {
         ),
         home: Scaffold(
             body: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  _operationName(),
-                  _space(),
-                  _nameField(),
-                  _emailField(),
-                  _passwordField(),
-                  _logInField(),
-                  _forgotPasswordButton(),
-                  _textLoginButton()
-                ],
-              ),
-            )));
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              _operationName(),
+              _space(),
+              _nameField(),
+              _emailField(),
+              _passwordField(),
+              _logInField(),
+              _forgotPasswordButton(),
+              _textLoginButton()
+            ],
+          ),
+        )));
   }
 
   Container _operationName() {

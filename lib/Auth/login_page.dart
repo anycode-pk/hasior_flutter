@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:masters_ui_fr/Auth/register_page.dart';
+import 'package:hasior_flutter/Auth/register_page.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -19,23 +19,23 @@ class _LoginState extends State<LoginView> {
         ),
         home: Scaffold(
             body: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  _operationName(),
-                  _space(),
-                  _emailField(),
-                  _passwordField(),
-                  _logInField(),
-                  _forgotPasswordButton(),
-                  _textRegisterButton()
-                ],
-              ),
-            )));
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              _operationName(),
+              _space(),
+              _emailField(),
+              _passwordField(),
+              _logInField(),
+              _forgotPasswordButton(),
+              _textRegisterButton()
+            ],
+          ),
+        )));
   }
 
-    Container _operationName() {
+  Container _operationName() {
     return Container(
       child: const Text(
         "Login",
@@ -106,16 +106,19 @@ class _LoginState extends State<LoginView> {
 
   RichText _textRegisterButton() {
     return RichText(
-      text: TextSpan(
-        text: "Do not have Account ? ",
-        children: <TextSpan>[
-          TextSpan(
-            text: "Sign up !",
-            style: TextStyle(color: Colors.blue[300]),
-            recognizer: TapGestureRecognizer()..onTap = () {
-                  Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => RegisterView()));
-            },),
-        ],));
+        text: TextSpan(
+      text: "Do not have Account ? ",
+      children: <TextSpan>[
+        TextSpan(
+          text: "Sign up !",
+          style: TextStyle(color: Colors.blue[300]),
+          recognizer: TapGestureRecognizer()
+            ..onTap = () {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => RegisterView()));
+            },
+        ),
+      ],
+    ));
   }
 }
