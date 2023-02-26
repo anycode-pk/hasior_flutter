@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class NavigationDrawer extends StatelessWidget {
-  const NavigationDrawer({Key? key}) : super(key: key);
+class MenuNavigationDrawer extends StatelessWidget {
+  const MenuNavigationDrawer({Key? key}) : super(key: key);
   static const grayColor = Color.fromRGBO(145, 149, 153, 1);
 
   @override
