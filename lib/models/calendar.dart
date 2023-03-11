@@ -18,6 +18,7 @@ class Calendar {
     required this.localization,
     required this.ticketsLink,
     required this.eventTime,
+    required this.thumbnailId,
   });
 
   String name;
@@ -26,6 +27,7 @@ class Calendar {
   String localization;
   String ticketsLink;
   String eventTime;
+  int thumbnailId;
 
   factory Calendar.fromJson(Map<String, dynamic> json) => Calendar(
         name: json["name"],
@@ -34,6 +36,7 @@ class Calendar {
         localization: json["localization"],
         ticketsLink: json["ticketsLink"],
         eventTime: json["eventTime"],
+        thumbnailId: json["thumbnailId"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -43,5 +46,6 @@ class Calendar {
         "localization": localization,
         "ticketsLink": ticketsLink,
         "eventTime": eventTime,
+        "thumbnailId": thumbnailId,
       };
 }

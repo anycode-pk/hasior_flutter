@@ -17,13 +17,28 @@ const MaterialColor primaryBlack = MaterialColor(
 );
 const int _blackPrimaryValue = 0xFF010202;
 
+const MaterialColor primarycolor =
+    MaterialColor(_primarycolorPrimaryValue, <int, Color>{
+  50: Color(0xFFE9EEFC),
+  100: Color(0xFFC7D5F8),
+  200: Color(0xFFA2BAF4),
+  300: Color(0xFF7D9EEF),
+  400: Color(0xFF6189EB),
+  500: Color(_primarycolorPrimaryValue),
+  600: Color(0xFF3E6CE5),
+  700: Color(0xFF3661E2),
+  800: Color(0xFF2E57DE),
+  900: Color(0xFF1F44D8),
+});
+const int _primarycolorPrimaryValue = 0xFF4574E8;
+
 const accentColor = Color(0xFF4574E8);
 const drawerColor = Color.fromRGBO(24, 32, 38, 1);
 
 final ThemeData theme = ThemeData(
-  primarySwatch: primaryBlack,
+  primarySwatch: primarycolor,
   brightness: Brightness.dark,
-  primaryColor: const Color(0xff000000),
+  primaryColor: accentColor,
   scaffoldBackgroundColor: const Color(0xff15181E),
   disabledColor: const Color.fromARGB(120, 255, 255, 255),
   appBarTheme: const AppBarTheme(
@@ -32,6 +47,5 @@ final ThemeData theme = ThemeData(
   buttonTheme: const ButtonThemeData(
     buttonColor: accentColor,
   ),
-  bottomAppBarColor: accentColor,
   dividerColor: Colors.white,
 );

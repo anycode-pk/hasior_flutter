@@ -1,11 +1,16 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:hasior_flutter/models/calendar.dart';
 import 'package:hasior_flutter/models/events.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 class ApiService {
+  final String url = "https://localhost:7226/api/";
+  final Client client = http.Client();
+
   Future<List<Calendar>?> getCalendar() async {
-    var client = http.Client();
-    var uri = Uri.parse("https://localhost:7226/api/Event/GetAllEvents");
+    var uri = Uri.parse("${url}Event/GetAllEvents");
     var response = await client.get(uri);
     if (response.statusCode == 200) {
       var json = response.body;
@@ -14,13 +19,19 @@ class ApiService {
   }
 
   Future<List<Events>?> getCalendarEvents() async {
-    var client = http.Client();
-    var uri =
-        Uri.parse("https://localhost:7226/api/Event/GetAllUpcomingEvents");
+    var uri = Uri.parse("${url}Event/GetAllUpcomingEvents");
     var response = await client.get(uri);
     if (response.statusCode == 200) {
       var json = response.body;
       return eventsFromJson(json);
+    }
+  }
+
+  Future<Image?> getFileByEventId(int id) async {
+    var uri = Uri.parse("${url}HasiorFile/GetFileByEventId?eventId=$id");
+    var response = await client.get(uri);
+    if (response.statusCode == 200) {
+      return Image.memory(response.bodyBytes);
     }
   }
 }
