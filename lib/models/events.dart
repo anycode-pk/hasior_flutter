@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:hasior_flutter/models/calendar.dart';
-
 List<Events> eventsFromJson(String str) =>
     List<Events>.from(json.decode(str).map((x) => Events.fromJson(x)));
 
@@ -9,22 +7,41 @@ String eventsToJson(List<Events> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class Events {
-  String time;
-  List<Calendar> events;
-
   Events({
-    required this.time,
-    required this.events,
+    required this.name,
+    required this.price,
+    required this.description,
+    required this.localization,
+    required this.ticketsLink,
+    required this.eventTime,
+    required this.thumbnailId,
   });
 
+  String name;
+  double price;
+  String description;
+  String localization;
+  String ticketsLink;
+  String eventTime;
+  int thumbnailId;
+
   factory Events.fromJson(Map<String, dynamic> json) => Events(
-        time: json["time"],
-        events: List<Calendar>.from(
-            json["events"].map((x) => Calendar.fromJson(x))),
+        name: json["name"],
+        price: json["price"],
+        description: json["description"],
+        localization: json["localization"],
+        ticketsLink: json["ticketsLink"],
+        eventTime: json["eventTime"],
+        thumbnailId: json["thumbnailId"],
       );
 
   Map<String, dynamic> toJson() => {
-        "time": time,
-        "events": List<dynamic>.from(events.map((x) => x.toJson())),
+        "name": name,
+        "price": price,
+        "description": description,
+        "localization": localization,
+        "ticketsLink": ticketsLink,
+        "eventTime": eventTime,
+        "thumbnailId": thumbnailId,
       };
 }

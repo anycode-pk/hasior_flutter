@@ -3,10 +3,10 @@ import 'package:hasior_flutter/services/api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'models/calendar.dart';
+import '../models/events.dart';
 
 class EventDetail extends StatefulWidget {
-  final Calendar event;
+  final Events event;
 
   const EventDetail({super.key, required this.event});
 

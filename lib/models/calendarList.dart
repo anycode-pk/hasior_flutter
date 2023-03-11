@@ -1,4 +1,4 @@
-import 'package:hasior_flutter/models/calendar.dart';
+import 'package:hasior_flutter/models/events.dart';
 
 class CalendarList {
   CalendarList({
@@ -7,5 +7,5 @@ class CalendarList {
   });
 
   String? time;
-  Calendar? events;
+  Events? events;
 }
