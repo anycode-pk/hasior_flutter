@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hasior_flutter/screens/homePage.dart';
+import 'package:hasior_flutter/screens/home_screen.dart';
 import 'package:hasior_flutter/theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Studencka aPKa',
       theme: theme,
-      home: const MyHomePage(title: 'Kalendarz wydarzeń'),
+      home: const Home(title: 'Kalendarz wydarzeń'),
     );
   }
 }

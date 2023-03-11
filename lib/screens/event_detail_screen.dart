@@ -5,16 +5,16 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/events.dart';
 
-class EventDetail extends StatefulWidget {
+class EventDetails extends StatefulWidget {
   final Events event;
 
-  const EventDetail({super.key, required this.event});
+  const EventDetails({super.key, required this.event});
 
   @override
-  State<EventDetail> createState() => _EventDetailState();
+  State<EventDetails> createState() => _EventDetailsState();
 }
 
-class _EventDetailState extends State<EventDetail> {
+class _EventDetailsState extends State<EventDetails> {
   static const grayColor = Color.fromRGBO(105, 105, 105, 1);
   var currencyFormat = NumberFormat.currency(locale: "pl_PL", symbol: "zł");
   var isLoaded = false;

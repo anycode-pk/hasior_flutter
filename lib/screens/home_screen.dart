@@ -6,18 +6,18 @@ import '../models/calendar.dart';
 import '../widgets/navigator_drawer.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
-import 'event_detail.dart';
+import 'event_detail_screen.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class Home extends StatefulWidget {
+  const Home({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<Home> createState() => _HomeState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomeState extends State<Home> {
   static const grayColor = Color.fromRGBO(105, 105, 105, 1);
   //List<Calendar>? data;
   List<Calendar>? dataEvents;
@@ -168,7 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget buildCard(Events event) => InkWell(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return EventDetail(
+          return EventDetails(
             event: event,
           );
         }));
