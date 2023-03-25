@@ -16,6 +16,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -107,33 +108,57 @@ class _LoginState extends State<Login> {
                             SizedBox(
                               width: double.infinity,
                               height: 50,
-                              child: ElevatedButton(
+                              child: ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
                                     foregroundColor: Colors.black),
-                                onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    try {
-                                      user = await ApiService().loginUser(
-                                          emailController.text,
-                                          passwordController.text);
-                                      if (user != null && context.mounted) {
-                                        Navigator.of(context)
-                                            .popUntil((route) => route.isFirst);
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => const Home(),
-                                          ),
-                                        );
-                                      }
-                                    } on FormatException catch (e) {
-                                      GlobalSnackbar.errorSnackbar(context,
-                                          "Błąd podczas logowania: ${e.message}");
-                                    }
-                                  }
-                                },
-                                child: const Text("Kontynuuj"),
+                                icon: _isLoading
+                                    ? Container(
+                                        width: 24,
+                                        height: 24,
+                                        padding: const EdgeInsets.all(2.0),
+                                        child: const CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 3,
+                                        ),
+                                      )
+                                    : Container(),
+                                onPressed: _isLoading
+                                    ? null
+                                    : () async {
+                                        if (_formKey.currentState!.validate()) {
+                                          try {
+                                            setState(() {
+                                              _isLoading = true;
+                                            });
+                                            user = await ApiService().loginUser(
+                                                emailController.text,
+                                                passwordController.text);
+                                            if (user != null &&
+                                                context.mounted) {
+                                              Navigator.of(context).popUntil(
+                                                  (route) => route.isFirst);
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const Home(),
+                                                ),
+                                              );
+                                            }
+                                          } on FormatException catch (e) {
+                                            GlobalSnackbar.errorSnackbar(
+                                                context,
+                                                "Błąd podczas logowania: ${e.message}");
+                                            setState(() {
+                                              _isLoading = false;
+                                            });
+                                          }
+                                        }
+                                      },
+                                label: _isLoading
+                                    ? const Text("")
+                                    : const Text("Kontynuuj"),
                               ),
                             ),
                             const SizedBox(height: 10),

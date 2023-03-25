@@ -13,6 +13,7 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -144,30 +145,53 @@ class _RegisterState extends State<Register> {
                             SizedBox(
                               width: double.infinity,
                               height: 50,
-                              child: ElevatedButton(
+                              child: ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
                                     foregroundColor: Colors.black),
-                                onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    try {
-                                      var response = await ApiService()
-                                          .registerUser(
-                                              userNameController.text,
-                                              emailController.text,
-                                              passwordController.text);
-                                      if (response && context.mounted) {
-                                        Navigator.pop(context);
-                                        GlobalSnackbar.infoSnackbar(context,
-                                            "Pomyślnie zarejestrowano");
-                                      }
-                                    } on FormatException catch (e) {
-                                      GlobalSnackbar.errorSnackbar(context,
-                                          "Błąd podczas rejestracji: ${e.message}");
-                                    }
-                                  }
-                                },
-                                child: const Text("Kontynuuj"),
+                                icon: _isLoading
+                                    ? Container(
+                                        width: 24,
+                                        height: 24,
+                                        padding: const EdgeInsets.all(2.0),
+                                        child: const CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 3,
+                                        ),
+                                      )
+                                    : Container(),
+                                onPressed: _isLoading
+                                    ? null
+                                    : () async {
+                                        if (_formKey.currentState!.validate()) {
+                                          try {
+                                            setState(() {
+                                              _isLoading = true;
+                                            });
+                                            var response = await ApiService()
+                                                .registerUser(
+                                                    userNameController.text,
+                                                    emailController.text,
+                                                    passwordController.text);
+                                            if (response && context.mounted) {
+                                              Navigator.pop(context);
+                                              GlobalSnackbar.infoSnackbar(
+                                                  context,
+                                                  "Pomyślnie zarejestrowano");
+                                            }
+                                          } on FormatException catch (e) {
+                                            GlobalSnackbar.errorSnackbar(
+                                                context,
+                                                "Błąd podczas rejestracji: ${e.message}");
+                                            setState(() {
+                                              _isLoading = false;
+                                            });
+                                          }
+                                        }
+                                      },
+                                label: _isLoading
+                                    ? const Text("")
+                                    : const Text("Kontynuuj"),
                               ),
                             ),
                           ],

@@ -14,7 +14,6 @@ class MenuNavigationDrawer extends StatefulWidget {
 
 class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
   static const grayColor = Color.fromRGBO(145, 149, 153, 1);
-  var isLoaded = false;
 
   @override
   Widget build(BuildContext context) => Drawer(
