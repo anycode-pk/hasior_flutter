@@ -17,14 +17,13 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  TextStyle textStyle = const TextStyle(fontSize: 16);
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  User? user;
 
   @override
   Widget build(BuildContext context) {
-    TextStyle textStyle = const TextStyle(fontSize: 16);
-    TextEditingController emailController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
-    User? user;
-
     return Scaffold(
         backgroundColor: accentColor,
         appBar: AppBar(

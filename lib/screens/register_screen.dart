@@ -14,15 +14,14 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  TextStyle textStyle = const TextStyle(fontSize: 16);
+  TextEditingController userNameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController passwordRepeatController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    TextStyle textStyle = const TextStyle(fontSize: 16);
-    TextEditingController userNameController = TextEditingController();
-    TextEditingController emailController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
-    TextEditingController passwordRepeatController = TextEditingController();
-
     return Scaffold(
         backgroundColor: accentColor,
         appBar: AppBar(
