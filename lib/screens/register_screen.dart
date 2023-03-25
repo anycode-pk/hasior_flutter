@@ -167,7 +167,7 @@ class _RegisterState extends State<Register> {
                                     }
                                   }
                                 },
-                                child: const Text("Zaloguj się"),
+                                child: const Text("Kontynuuj"),
                               ),
                             ),
                           ],

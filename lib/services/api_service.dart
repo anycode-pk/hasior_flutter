@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hasior_flutter/models/events.dart';
 import 'package:hasior_flutter/models/calendar.dart';
@@ -57,46 +58,54 @@ class ApiService {
   }
 
   Future<User?> loginUser(String email, String password) async {
-    var uri = Uri.parse("${url}User/Login");
-    var response = await client.post(uri,
-        headers: {
-          "content-type": "application/json",
-          "accept": "text/plain",
-        },
-        body: jsonEncode({
-          "email": email,
-          "password": password,
-        }));
-    if (response.statusCode == 200) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      var loginArr = loginFromJson(response.body);
-      var userData = await getUserData(loginArr.token);
-      if (userData != null) {
-        userData.token = loginArr.token;
-        String user = jsonEncode(userData);
-        prefs.setString("user", user);
-        return userData;
+    try {
+      var uri = Uri.parse("${url}User/Login");
+      var response = await client.post(uri,
+          headers: {
+            "content-type": "application/json",
+            "accept": "text/plain",
+          },
+          body: jsonEncode({
+            "email": email,
+            "password": password,
+          }));
+      if (response.statusCode == 200) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        var loginArr = loginFromJson(response.body);
+        var userData = await getUserData(loginArr.token);
+        if (userData != null) {
+          userData.token = loginArr.token;
+          String user = jsonEncode(userData);
+          prefs.setString("user", user);
+          return userData;
+        }
       }
+      throw FormatException(response.body);
+    } on SocketException catch (e) {
+      throw FormatException(e.message);
     }
-    throw FormatException(response.body);
   }
 
   Future<bool> registerUser(
       String userName, String email, String password) async {
-    var uri = Uri.parse("${url}User/Create");
-    var response = await client.post(uri,
-        headers: {
-          "content-type": "application/json",
-        },
-        body: jsonEncode({
-          "userName": userName,
-          "email": email,
-          "password": password,
-        }));
-    if (response.statusCode == 200) {
-      return true;
+    try {
+      var uri = Uri.parse("${url}User/Create");
+      var response = await client.post(uri,
+          headers: {
+            "content-type": "application/json",
+          },
+          body: jsonEncode({
+            "userName": userName,
+            "email": email,
+            "password": password,
+          }));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      throw FormatException(response.body);
+    } on SocketException catch (e) {
+      throw FormatException(e.message);
     }
-    throw FormatException(response.body);
   }
 
   Future<User?> getUserData(String token) async {
