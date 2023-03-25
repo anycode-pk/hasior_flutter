@@ -18,7 +18,7 @@ class CalendarWidget extends StatefulWidget {
   final bool isLoaded;
   final List<CalendarList> calendarList;
   final List<Calendar>? dataEvents;
-  final Future<void> Function() getData;
+  final Future<void> Function([String? name]) getData;
   final bool delete;
   final User? user;
 
@@ -59,8 +59,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           slivers: [
             SliverAppBar(
               title: TextField(
-                onChanged: (value) {
-                  //_filter(value);
+                textInputAction: TextInputAction.search,
+                onSubmitted: (value) {
+                  widget.getData(value);
                 },
                 style: const TextStyle(color: Colors.white),
                 decoration: const InputDecoration(

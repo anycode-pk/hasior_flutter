@@ -38,9 +38,9 @@ class _HomeState extends State<Home> {
     user = await ApiService().userFromSharedPreferences();
   }
 
-  Future _getEvents() async {
+  Future _getEvents([String? name]) async {
     try {
-      dataEvents = await ApiService().getCalendarEvents();
+      dataEvents = await ApiService().getCalendarEvents(name);
       if (dataEvents != null) {
         calendarList = [];
         dataEvents?.forEach((element) {
@@ -58,11 +58,11 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future _getFavouriteEvents() async {
+  Future _getFavouriteEvents([String? name]) async {
     try {
       var checkUser = await ApiService().userFromSharedPreferences();
       if (checkUser != null) {
-        favouriteEvents = await ApiService().getFavouriteEvents();
+        favouriteEvents = await ApiService().getFavouriteEvents(name);
         if (favouriteEvents != null) {
           calendarListFavourite = [];
           favouriteEvents?.forEach((element) {

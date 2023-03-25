@@ -22,8 +22,9 @@ class ApiService {
     throw FormatException(response.body);
   }
 
-  Future<List<Calendar>?> getCalendarEvents() async {
-    var uri = Uri.parse("${url}Event/GetAllUpcomingEvents");
+  Future<List<Calendar>?> getCalendarEvents([String? name]) async {
+    var uri = Uri.parse(
+        "${url}Event/GetAllUpcomingEvents${name != null ? "?EventName=$name" : ""}");
     var response = await client.get(uri);
     if (response.statusCode == 200) {
       var json = response.body;
@@ -32,7 +33,7 @@ class ApiService {
     throw FormatException(response.body);
   }
 
-  Future<List<Calendar>?> getFavouriteEvents() async {
+  Future<List<Calendar>?> getFavouriteEvents([String? name]) async {
     var uri = Uri.parse("${url}FavouriteEvent");
     User? user = await userFromSharedPreferences();
     var response = await client.get(uri, headers: {
