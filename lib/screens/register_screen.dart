@@ -62,7 +62,7 @@ class _RegisterState extends State<Register> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 15),
                             Text("Wpisz swój adres e-mail", style: textStyle),
                             const SizedBox(height: 10),
                             TextFormField(
@@ -87,7 +87,7 @@ class _RegisterState extends State<Register> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 15),
                             Text("Wpisz hasło", style: textStyle),
                             const SizedBox(height: 10),
                             TextFormField(
@@ -110,7 +110,7 @@ class _RegisterState extends State<Register> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 15),
                             Text("Powtórz hasło", style: textStyle),
                             const SizedBox(height: 10),
                             TextFormField(

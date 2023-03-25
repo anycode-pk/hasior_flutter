@@ -76,7 +76,7 @@ class _LoginState extends State<Login> {
                                 // ),
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 15),
                             Text("Wpisz hasło", style: textStyle),
                             const SizedBox(height: 10),
                             TextFormField(
@@ -166,8 +166,9 @@ class _LoginState extends State<Login> {
                                 height: 50,
                                 child: TextButton(
                                   style: TextButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                  ),
+                                      foregroundColor: Colors.white,
+                                      side: const BorderSide(
+                                          color: Colors.white)),
                                   onPressed: () {
                                     Navigator.push(
                                       context,
