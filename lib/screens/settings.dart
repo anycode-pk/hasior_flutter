@@ -133,9 +133,8 @@ class _SettingsState extends State<Settings> {
                                 padding: const EdgeInsets.all(20),
                                 textStyle: const TextStyle(fontSize: 15)),
                             onPressed: () {
-                              Navigator.of(context)
-                                  .popUntil((route) => route.isFirst);
-                              Navigator.push(
+                              Navigator.pop(context);
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => const Home(),

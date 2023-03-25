@@ -135,9 +135,8 @@ class _LoginState extends State<Login> {
                                                 passwordController.text);
                                             if (user != null &&
                                                 context.mounted) {
-                                              Navigator.of(context).popUntil(
-                                                  (route) => route.isFirst);
-                                              Navigator.push(
+                                              Navigator.pop(context);
+                                              Navigator.pushReplacement(
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
