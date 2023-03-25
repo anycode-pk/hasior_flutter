@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hasior_flutter/class/globalSnackbar.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -27,10 +28,15 @@ class _EventDetailsState extends State<EventDetails> {
   }
 
   void _getData() async {
-    eventImage = await ApiService().getFileByEventId(widget.event.thumbnailId);
-    setState(() {
-      isLoaded = true;
-    });
+    try {
+      eventImage =
+          await ApiService().getFileByEventId(widget.event.thumbnailId);
+      setState(() {
+        isLoaded = true;
+      });
+    } catch (e) {
+      GlobalSnackbar.errorSnackbar(context, "Błąd podczas ładowania");
+    }
   }
 
   _launchURL(String url) async {

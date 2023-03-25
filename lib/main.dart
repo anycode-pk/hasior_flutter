@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Studencka aPKa',
       theme: theme,
-      home: const Home(title: 'Kalendarz wydarzeń'),
+      home: const Home(),
     );
   }
 }

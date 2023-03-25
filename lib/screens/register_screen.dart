@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:hasior_flutter/models/user.dart';
-import 'package:hasior_flutter/screens/home_screen.dart';
-import 'package:hasior_flutter/screens/register_screen.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 
 import '../class/globalSnackbar.dart';
 import '../theme.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class Register extends StatefulWidget {
+  const Register({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<Register> createState() => _RegisterState();
 }
 
-class _LoginState extends State<Login> {
+class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = const TextStyle(fontSize: 16);
+    TextEditingController userNameController = TextEditingController();
     TextEditingController emailController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
-    User? user;
+    TextEditingController passwordRepeatController = TextEditingController();
 
     return Scaffold(
         backgroundColor: accentColor,
@@ -44,6 +42,27 @@ class _LoginState extends State<Login> {
                         const Text("Studencka aPKa"),
                         Column(
                           children: [
+                            Text("Wpisz swoją nazwę użytkownika",
+                                style: textStyle),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              cursorColor: Colors.white,
+                              controller: userNameController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Podaj nazwę użytkownika";
+                                }
+                                return null;
+                              },
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: "Nazwa użytkownika",
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
                             Text("Wpisz swój adres e-mail", style: textStyle),
                             const SizedBox(height: 10),
                             TextFormField(
@@ -53,12 +72,11 @@ class _LoginState extends State<Login> {
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return "Podaj e-mail";
+                                } else if (!RegExp(
+                                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                    .hasMatch(value)) {
+                                  return "Podaj poprawny e-mail";
                                 }
-                                // else if (!RegExp(
-                                //         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                //     .hasMatch(value)) {
-                                //   return "Podaj poprawny e-mail";
-                                // }
                                 return null;
                               },
                               decoration: const InputDecoration(
@@ -67,13 +85,6 @@ class _LoginState extends State<Login> {
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.white),
                                 ),
-                                // errorStyle: TextStyle(
-                                //     color: Color.fromARGB(255, 228, 42, 92)),
-                                // errorBorder: OutlineInputBorder(
-                                //   borderSide: BorderSide(
-                                //       color: Color.fromARGB(255, 228, 42, 92),
-                                //       width: 0.0),
-                                // ),
                               ),
                             ),
                             const SizedBox(height: 10),
@@ -88,6 +99,32 @@ class _LoginState extends State<Login> {
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return "Podaj hasło";
+                                }
+                                return null;
+                              },
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: "Hasło",
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text("Powtórz hasło", style: textStyle),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              cursorColor: Colors.white,
+                              obscureText: true,
+                              enableSuggestions: false,
+                              autocorrect: false,
+                              controller: passwordRepeatController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Podaj hasło";
+                                } else if (passwordController.text !=
+                                    passwordRepeatController.text) {
+                                  return "Podane hasła są różne";
                                 }
                                 return null;
                               },
@@ -114,46 +151,25 @@ class _LoginState extends State<Login> {
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
                                     try {
-                                      user = await ApiService().loginUser(
-                                          emailController.text,
-                                          passwordController.text);
-                                      if (user != null && context.mounted) {
-                                        Navigator.of(context)
-                                            .popUntil((route) => route.isFirst);
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => const Home(),
-                                          ),
-                                        );
+                                      var response = await ApiService()
+                                          .registerUser(
+                                              userNameController.text,
+                                              emailController.text,
+                                              passwordController.text);
+                                      if (response && context.mounted) {
+                                        Navigator.pop(context);
+                                        GlobalSnackbar.infoSnackbar(context,
+                                            "Pomyślnie zarejestrowano");
                                       }
                                     } on FormatException catch (e) {
                                       GlobalSnackbar.errorSnackbar(context,
-                                          "Błąd podczas logowania: ${e.message}");
+                                          "Błąd podczas rejestracji: ${e.message}");
                                     }
                                   }
                                 },
-                                child: const Text("Kontynuuj"),
+                                child: const Text("Zaloguj się"),
                               ),
                             ),
-                            const SizedBox(height: 10),
-                            SizedBox(
-                                width: double.infinity,
-                                height: 50,
-                                child: TextButton(
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                  ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const Register(),
-                                      ),
-                                    );
-                                  },
-                                  child: const Text("Zarejestruj się"),
-                                )),
                           ],
                         ),
                       ]),

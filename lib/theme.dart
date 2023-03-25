@@ -36,16 +36,17 @@ const accentColor = Color(0xFF4574E8);
 const drawerColor = Color.fromRGBO(24, 32, 38, 1);
 
 final ThemeData theme = ThemeData(
-  primarySwatch: primarycolor,
-  brightness: Brightness.dark,
-  primaryColor: accentColor,
-  scaffoldBackgroundColor: const Color(0xff15181E),
-  disabledColor: const Color.fromARGB(120, 255, 255, 255),
-  appBarTheme: const AppBarTheme(
-      backgroundColor: primaryBlack,
-      iconTheme: IconThemeData(color: accentColor)),
-  buttonTheme: const ButtonThemeData(
-    buttonColor: accentColor,
-  ),
-  dividerColor: Colors.white,
-);
+    primarySwatch: primarycolor,
+    brightness: Brightness.dark,
+    primaryColor: accentColor,
+    scaffoldBackgroundColor: const Color(0xff15181E),
+    disabledColor: const Color.fromARGB(120, 255, 255, 255),
+    appBarTheme: const AppBarTheme(
+        backgroundColor: primaryBlack,
+        iconTheme: IconThemeData(color: accentColor)),
+    buttonTheme: const ButtonThemeData(
+      buttonColor: accentColor,
+    ),
+    dividerColor: Colors.white,
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: primaryBlack, selectedItemColor: primarycolor));
