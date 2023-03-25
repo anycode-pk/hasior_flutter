@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hasior_flutter/screens/login_screen.dart';
+import 'package:hasior_flutter/screens/settings.dart';
 import '../models/user.dart';
 import '../screens/home_screen.dart';
 import '../services/api_service.dart';
@@ -31,7 +32,7 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
               ),
               buildMenuItems(context),
               const Spacer(),
-              widget.user != null ? buildMenuItemsBottom(context) : Container(),
+              buildMenuItemsBottom(context),
             ],
           ),
         ),
@@ -71,22 +72,28 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
         padding: const EdgeInsets.symmetric(horizontal: 14),
         child: Column(
           children: [
-            const ListTile(
-              leading: Icon(Icons.settings),
-              title: Text("Ustawienia"),
-              onTap: null,
-            ),
             ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text("Wyloguj"),
+              leading: const Icon(Icons.settings),
+              title: const Text("Ustawienia"),
               onTap: () {
-                ApiService().logout();
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => const Home()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return const Settings();
+                }));
               },
             ),
+            widget.user != null
+                ? ListTile(
+                    leading: const Icon(Icons.logout),
+                    title: const Text("Wyloguj"),
+                    onTap: () {
+                      ApiService().logout();
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => const Home()));
+                    },
+                  )
+                : Container(),
           ],
         ),
       );
