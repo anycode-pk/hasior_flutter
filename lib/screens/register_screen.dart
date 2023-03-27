@@ -39,9 +39,13 @@ class _RegisterState extends State<Register> {
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        const Text("Studencka aPKa"),
+                        FractionallySizedBox(
+                          widthFactor: 0.3,
+                          child: Image.asset("assets/logo.png"),
+                        ),
                         Column(
                           children: [
+                            const SizedBox(height: 10),
                             Text("Wpisz swoją nazwę użytkownika",
                                 style: textStyle),
                             const SizedBox(height: 10),
@@ -140,7 +144,7 @@ class _RegisterState extends State<Register> {
                         ),
                         Column(
                           children: [
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 15),
                             SizedBox(
                               width: double.infinity,
                               height: 50,

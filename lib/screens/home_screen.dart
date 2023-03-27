@@ -157,6 +157,10 @@ class _HomeState extends State<Home> {
           ? BottomNavigationBar(
               currentIndex: currentIndex,
               onTap: (index) => setState(() {
+                if (currentIndex != index) {
+                  _getEvents();
+                  _getFavouriteEvents();
+                }
                 currentIndex = index;
               }),
               items: const [

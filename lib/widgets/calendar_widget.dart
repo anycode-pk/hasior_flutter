@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hasior_flutter/services/api_service.dart';
 import 'package:intl/intl.dart';
 import '../models/calendar.dart';
 import '../models/calendarList.dart';
 import '../models/events.dart';
 import '../models/user.dart';
 import '../screens/event_detail_screen.dart';
+import 'package:hasior_flutter/class/globalSnackbar.dart';
 
 class CalendarWidget extends StatefulWidget {
   const CalendarWidget(
@@ -192,7 +194,16 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                     ),
                     backgroundColor: Colors.green,
                   );
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  try {
+                    bool result =
+                        await ApiService().addFavouriteEvent(event.id);
+                    if (result && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                  } on FormatException catch (e) {
+                    GlobalSnackbar.errorSnackbar(
+                        context, "Błąd podczas dodwania do ulubionych");
+                  }
                   // setState(() {
                   //   widget.calendarList[index] = widget.calendarList[index];
                   // });

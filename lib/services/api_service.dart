@@ -58,6 +58,20 @@ class ApiService {
     throw FormatException(response.body);
   }
 
+  Future<bool> addFavouriteEvent(int id) async {
+    var uri =
+        Uri.parse("${await getApiAddress() ?? ""}FavouriteEvent?eventId=$id");
+    User? user = await userFromSharedPreferences();
+    var response = await client.post(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
+    if (response.statusCode == 200) {
+      return true;
+    }
+    throw FormatException(response.body);
+  }
+
   Future<User?> loginUser(String email, String password) async {
     try {
       var uri = Uri.parse("${await getApiAddress() ?? ""}User/Login");

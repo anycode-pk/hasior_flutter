@@ -105,6 +105,10 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
           CircleAvatar(
             radius: 52,
             backgroundColor: Colors.blue.shade700,
+            child: FractionallySizedBox(
+              widthFactor: 0.8,
+              child: Image.asset("assets/logo.png"),
+            ),
           ),
           const SizedBox(height: 12),
           Text(

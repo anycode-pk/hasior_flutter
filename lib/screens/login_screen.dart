@@ -41,9 +41,13 @@ class _LoginState extends State<Login> {
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        const Text("Studencka aPKa"),
+                        FractionallySizedBox(
+                          widthFactor: 0.3,
+                          child: Image.asset("assets/logo.png"),
+                        ),
                         Column(
                           children: [
+                            const SizedBox(height: 10),
                             Text("Wpisz swój adres e-mail", style: textStyle),
                             const SizedBox(height: 10),
                             TextFormField(
@@ -103,7 +107,7 @@ class _LoginState extends State<Login> {
                         ),
                         Column(
                           children: [
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 15),
                             SizedBox(
                               width: double.infinity,
                               height: 50,

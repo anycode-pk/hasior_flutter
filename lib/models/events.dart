@@ -8,6 +8,7 @@ String eventsToJson(List<Events> data) =>
 
 class Events {
   Events({
+    required this.id,
     required this.name,
     required this.price,
     required this.description,
@@ -17,6 +18,7 @@ class Events {
     required this.thumbnailId,
   });
 
+  int id;
   String name;
   double price;
   String description;
@@ -26,6 +28,7 @@ class Events {
   int thumbnailId;
 
   factory Events.fromJson(Map<String, dynamic> json) => Events(
+        id: json["id"],
         name: json["name"],
         price: json["price"],
         description: json["description"],
@@ -36,6 +39,7 @@ class Events {
       );
 
   Map<String, dynamic> toJson() => {
+        "id": id,
         "name": name,
         "price": price,
         "description": description,
