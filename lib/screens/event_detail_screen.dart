@@ -29,8 +29,7 @@ class _EventDetailsState extends State<EventDetails> {
 
   void _getData() async {
     try {
-      eventImage =
-          await ApiService().getFileByEventId(widget.event.thumbnailId);
+      eventImage = await ApiService().getFileByEventId(widget.event.id);
       setState(() {
         isLoaded = true;
       });
@@ -213,11 +212,16 @@ class _EventDetailsState extends State<EventDetails> {
                               )),
                           Container(
                             decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image:
-                                    eventImage?.image ?? const AssetImage(''),
-                                fit: BoxFit.cover,
-                              ),
+                              image: eventImage != null
+                                  ? DecorationImage(
+                                      image: eventImage?.image ??
+                                          const AssetImage(''),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : const DecorationImage(
+                                      image: AssetImage("assets/logo.png"),
+                                      fit: BoxFit.fitHeight,
+                                    ),
                               boxShadow: const [
                                 BoxShadow(
                                   color: Color.fromRGBO(0, 0, 0, 0.25),
