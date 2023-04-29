@@ -79,9 +79,13 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
+                  if (index == widget.calendarList.length) {
+                    return const SizedBox(
+                        height: kBottomNavigationBarHeight + 20);
+                  }
                   return buildList(index, widget.calendarList[index]);
                 },
-                childCount: widget.calendarList.length,
+                childCount: widget.calendarList.length + 1,
               ),
             )
           ],
@@ -130,7 +134,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         direction: widget.user != null
             ? widget.delete
                 ? DismissDirection.endToStart
-                : DismissDirection.startToEnd
+                : widget.calendarList[index].events?.favorite == false
+                    ? DismissDirection.startToEnd
+                    : DismissDirection.none
             : DismissDirection.none,
         key: UniqueKey(),
         background: Container(
@@ -162,6 +168,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold, color: Colors.white),
                     ),
+                    behavior: SnackBarBehavior.floating,
                     backgroundColor: Colors.red,
                   );
                   // ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -197,6 +204,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                     bool result =
                         await ApiService().deleteFavouriteEvent(event.id);
                     if (result && context.mounted) {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     }
                   } on FormatException catch (e) {
@@ -215,12 +223,14 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold, color: Colors.white),
                     ),
+                    behavior: SnackBarBehavior.floating,
                     backgroundColor: Colors.green,
                   );
                   try {
                     bool result =
                         await ApiService().addFavouriteEvent(event.id);
                     if (result && context.mounted) {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       setState(() {
                         widget.calendarList[index].events?.favorite = true;
@@ -235,6 +245,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   // });
                   return false;
                 }
+                return null;
               }
             : null,
         child: InkWell(
@@ -288,17 +299,29 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                 Container(
                                   transform:
                                       Matrix4.translationValues(-4.0, 0.0, 0.0),
-                                  child: const Icon(
-                                    Icons.location_pin,
-                                    color: grayColor,
-                                  ),
+                                  child: event.localization != null
+                                      ? const Icon(
+                                          Icons.location_pin,
+                                          color: grayColor,
+                                        )
+                                      : const Icon(
+                                          Icons.location_off,
+                                          color: grayColor,
+                                        ),
                                 ),
                                 Expanded(
-                                  child: Text(event.localization ?? "",
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                          color: grayColor,
-                                          fontWeight: FontWeight.bold)),
+                                  child: event.localization != null
+                                      ? Text(event.localization ?? "",
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                              color: grayColor,
+                                              fontWeight: FontWeight.bold))
+                                      : const Text("Brak podanej lokalizacji",
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              color: grayColor,
+                                              fontWeight: FontWeight.bold,
+                                              fontStyle: FontStyle.italic)),
                                 )
                               ],
                             ),

@@ -10,6 +10,7 @@ class GlobalSnackbar {
           style:
               const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
+        behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.red,
       ),
     );
@@ -23,6 +24,7 @@ class GlobalSnackbar {
           style:
               const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
+        behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.blue,
       ),
     );

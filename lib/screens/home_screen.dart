@@ -157,23 +157,43 @@ class _HomeState extends State<Home> {
           user: user,
         ),
       ),
+      extendBody: true,
       body: screens[currentIndex],
       bottomNavigationBar: user != null
-          ? BottomNavigationBar(
-              currentIndex: currentIndex,
-              onTap: (index) => setState(() {
-                if (currentIndex != index) {
-                  _getEvents();
-                  _getFavouriteEvents();
-                }
-                currentIndex = index;
-              }),
-              items: const [
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.calendar_month), label: "Wszystkie"),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.favorite), label: "Ulubione"),
-              ],
+          ? Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.transparent, primaryBlack.withOpacity(0.4)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: const [0.0, 1.0],
+                  tileMode: TileMode.clamp,
+                ),
+              ),
+              child: Container(
+                  margin:
+                      const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    color: primaryBlack,
+                  ),
+                  child: BottomNavigationBar(
+                    backgroundColor: Colors.transparent,
+                    currentIndex: currentIndex,
+                    onTap: (index) => setState(() {
+                      if (currentIndex != index) {
+                        _getEvents();
+                        _getFavouriteEvents();
+                      }
+                      currentIndex = index;
+                    }),
+                    items: const [
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.calendar_month), label: "Wszystkie"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.favorite), label: "Ulubione"),
+                    ],
+                  )),
             )
           : null,
     );
