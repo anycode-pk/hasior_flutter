@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 import 'package:intl/intl.dart';
+import '../classes/language_constants.dart';
 import '../models/calendar.dart';
 import '../models/calendarList.dart';
 import '../models/events.dart';
 import '../models/user.dart';
 import '../screens/event_detail_screen.dart';
-import 'package:hasior_flutter/class/globalSnackbar.dart';
+import 'package:hasior_flutter/classes/globalSnackbar.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CalendarWidget extends StatefulWidget {
   const CalendarWidget(
@@ -65,13 +68,13 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   widget.getData(value);
                 },
                 style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                    prefixIcon: Icon(
+                decoration: InputDecoration(
+                    prefixIcon: const Icon(
                       Icons.search,
                       color: Colors.white,
                     ),
-                    hintText: "Wyszukaj...",
-                    hintStyle: TextStyle(color: Colors.white)),
+                    hintText: "${translation(context).search.capitalize()}...",
+                    hintStyle: const TextStyle(color: Colors.white)),
               ),
               floating: true,
               automaticallyImplyLeading: false,
@@ -122,7 +125,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 7),
         width: double.infinity,
         child: Text(
-            DateFormat.yMMMMEEEEd("pl_PL")
+            DateFormat.yMMMMEEEEd(AppLocalizations.of(context)!.localeName)
                 .format(DateTime.parse(time))
                 .toUpperCase(),
             style: const TextStyle(fontSize: 20)),
@@ -162,10 +165,10 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         onDismissed: widget.delete
             ? (direction) async {
                 if (direction == DismissDirection.endToStart) {
-                  const snackBar = SnackBar(
+                  SnackBar snackBar = SnackBar(
                     content: Text(
-                      "Usunięto z ulubionych",
-                      style: TextStyle(
+                      translation(context).removed_from_favorites.capitalize(),
+                      style: const TextStyle(
                           fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                     behavior: SnackBarBehavior.floating,
@@ -209,7 +212,10 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                     }
                   } on FormatException catch (e) {
                     GlobalSnackbar.errorSnackbar(
-                        context, "Błąd podczas usuwania z ulubionych");
+                        context,
+                        translation(context)
+                            .error_while_removing_from_favorites
+                            .capitalize());
                   }
                 }
               }
@@ -217,10 +223,10 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         confirmDismiss: !widget.delete
             ? (direction) async {
                 if (direction == DismissDirection.startToEnd) {
-                  const snackBar = SnackBar(
+                  SnackBar snackBar = SnackBar(
                     content: Text(
-                      "Dodano do ulubionych",
-                      style: TextStyle(
+                      translation(context).added_to_favorites.capitalize(),
+                      style: const TextStyle(
                           fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                     behavior: SnackBarBehavior.floating,
@@ -238,7 +244,10 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                     }
                   } on FormatException catch (e) {
                     GlobalSnackbar.errorSnackbar(
-                        context, "Błąd podczas dodwania do ulubionych");
+                        context,
+                        translation(context)
+                            .error_while_adding_to_favorites
+                            .capitalize());
                   }
                   // setState(() {
                   //   widget.calendarList[index] = widget.calendarList[index];
@@ -282,8 +291,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                           ),
                           const SizedBox(width: 20),
                           Text(
-                            DateFormat.Hm("pl_PL").format(
-                                DateFormat("yyyy-MM-ddTHH:mm:ssZ")
+                            DateFormat.Hm(
+                                    AppLocalizations.of(context)!.localeName)
+                                .format(DateFormat("yyyy-MM-ddTHH:mm:ssZ")
                                     .parseUTC(event.eventTime)
                                     .toLocal()),
                             style: const TextStyle(
@@ -316,9 +326,12 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                           style: const TextStyle(
                                               color: grayColor,
                                               fontWeight: FontWeight.bold))
-                                      : const Text("Brak podanej lokalizacji",
+                                      : Text(
+                                          translation(context)
+                                              .no_location_provided
+                                              .capitalize(),
                                           overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: grayColor,
                                               fontWeight: FontWeight.bold,
                                               fontStyle: FontStyle.italic)),

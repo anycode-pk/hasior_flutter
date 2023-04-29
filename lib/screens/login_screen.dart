@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/models/user.dart';
 import 'package:hasior_flutter/screens/home_screen.dart';
 import 'package:hasior_flutter/screens/register_screen.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 
-import '../class/globalSnackbar.dart';
+import '../classes/globalSnackbar.dart';
+import '../classes/language_constants.dart';
 import '../theme.dart';
 
 class Login extends StatefulWidget {
@@ -48,7 +50,11 @@ class _LoginState extends State<Login> {
                         Column(
                           children: [
                             const SizedBox(height: 10),
-                            Text("Wpisz swój adres e-mail", style: textStyle),
+                            Text(
+                                translation(context)
+                                    .enter_your_email_address
+                                    .capitalize(),
+                                style: textStyle),
                             const SizedBox(height: 10),
                             TextFormField(
                               cursorColor: Colors.white,
@@ -56,19 +62,22 @@ class _LoginState extends State<Login> {
                               controller: emailController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Podaj e-mail";
+                                  return translation(context)
+                                      .enter_your_email
+                                      .capitalize();
                                 }
                                 // else if (!RegExp(
                                 //         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                                 //     .hasMatch(value)) {
-                                //   return "Podaj poprawny e-mail";
+                                //   return translation(context).please_enter_valid_email.capitalize();
                                 // }
                                 return null;
                               },
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: "E-mail",
-                                focusedBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                hintText:
+                                    translation(context).email.capitalize(),
+                                focusedBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.white),
                                 ),
                                 // errorStyle: TextStyle(
@@ -81,7 +90,11 @@ class _LoginState extends State<Login> {
                               ),
                             ),
                             const SizedBox(height: 15),
-                            Text("Wpisz hasło", style: textStyle),
+                            Text(
+                                translation(context)
+                                    .enter_your_password
+                                    .capitalize(),
+                                style: textStyle),
                             const SizedBox(height: 10),
                             TextFormField(
                               cursorColor: Colors.white,
@@ -91,14 +104,17 @@ class _LoginState extends State<Login> {
                               controller: passwordController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Podaj hasło";
+                                  return translation(context)
+                                      .enter_password
+                                      .capitalize();
                                 }
                                 return null;
                               },
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: "Hasło",
-                                focusedBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                hintText:
+                                    translation(context).password.capitalize(),
+                                focusedBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.white),
                                 ),
                               ),
@@ -151,7 +167,7 @@ class _LoginState extends State<Login> {
                                           } on FormatException catch (e) {
                                             GlobalSnackbar.errorSnackbar(
                                                 context,
-                                                "Błąd podczas logowania: ${e.message}");
+                                                "${translation(context).error_while_logging_in.capitalize()}: ${e.message}");
                                             setState(() {
                                               _isLoading = false;
                                             });
@@ -160,7 +176,9 @@ class _LoginState extends State<Login> {
                                       },
                                 label: _isLoading
                                     ? const Text("")
-                                    : const Text("Kontynuuj"),
+                                    : Text(translation(context)
+                                        .continue_button
+                                        .capitalize()),
                               ),
                             ),
                             const SizedBox(height: 10),
@@ -180,7 +198,9 @@ class _LoginState extends State<Login> {
                                       ),
                                     );
                                   },
-                                  child: const Text("Zarejestruj się"),
+                                  child: Text(translation(context)
+                                      .sign_up
+                                      .capitalize()),
                                 )),
                           ],
                         ),

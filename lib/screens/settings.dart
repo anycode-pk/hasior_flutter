@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hasior_flutter/classes/language.dart';
+import 'package:hasior_flutter/classes/language_constants.dart';
+import 'package:hasior_flutter/extensions/string_capitalize.dart';
+import 'package:hasior_flutter/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../class/globalSnackbar.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../classes/globalSnackbar.dart';
 import '../services/api_service.dart';
 import 'home_screen.dart';
 
@@ -31,7 +35,8 @@ class _SettingsState extends State<Settings> {
         _isLoaded = true;
       });
     } catch (e) {
-      GlobalSnackbar.errorSnackbar(context, "Błąd podczas ładowania");
+      GlobalSnackbar.errorSnackbar(
+          context, translation(context).error_while_loading.capitalize());
     }
   }
 
@@ -39,7 +44,7 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Ustawienia"),
+          title: Text(translation(context).settings.capitalize()),
           centerTitle: true,
         ),
         body: Visibility(
@@ -55,20 +60,53 @@ class _SettingsState extends State<Settings> {
                   child: Container(
                       padding: const EdgeInsets.all(20),
                       child: Column(children: [
-                        const Align(
+                        Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              "Adres API",
-                              style: TextStyle(fontSize: 20),
+                              translation(context).language.capitalize(),
+                              style: const TextStyle(fontSize: 20),
+                            )),
+                        const SizedBox(height: 20),
+                        DropdownButtonFormField(
+                            isExpanded: true,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                            ),
+                            value: Language.languageList()
+                                .firstWhere((language) =>
+                                    language.languageCode ==
+                                    AppLocalizations.of(context)!.localeName)
+                                .languageCode,
+                            items: Language.languageList()
+                                .map((item) => DropdownMenuItem<String>(
+                                    value: item.languageCode,
+                                    child: Text(item.name)))
+                                .toList(),
+                            onChanged: (String? language) async {
+                              if (language != null) {
+                                Locale locale = await setLocale(language);
+                                MyApp.setLocale(context, locale);
+                              }
+                            }),
+                        const SizedBox(height: 20),
+                        const Divider(
+                          color: Color.fromRGBO(105, 105, 105, 1),
+                        ),
+                        const SizedBox(height: 20),
+                        Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              translation(context).api_address,
+                              style: const TextStyle(fontSize: 20),
                             )),
                         const SizedBox(height: 20),
                         TextFormField(
                           cursorColor: Colors.white,
                           controller: apiAddress,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: "Adres API",
-                            focusedBorder: OutlineInputBorder(
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            hintText: translation(context).api_address,
+                            focusedBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
                             ),
                           ),
@@ -106,14 +144,17 @@ class _SettingsState extends State<Settings> {
                                             "apiAddress", apiAddress.text);
                                         if (context.mounted) {
                                           GlobalSnackbar.infoSnackbar(
-                                              context, "Zapisano ustawienia");
+                                              context,
+                                              translation(context)
+                                                  .settings_saved
+                                                  .capitalize());
                                           setState(() {
                                             _isLoading = false;
                                           });
                                         }
                                       } on FormatException catch (e) {
                                         GlobalSnackbar.errorSnackbar(context,
-                                            "Błąd podczas zapisu: ${e.message}");
+                                            "${translation(context).error_while_saving_settings.capitalize()}: ${e.message}");
                                         setState(() {
                                           _isLoading = false;
                                         });
@@ -122,7 +163,7 @@ class _SettingsState extends State<Settings> {
                                   },
                             label: _isLoading
                                 ? const Text("")
-                                : const Text("Zapisz"),
+                                : Text(translation(context).save.capitalize()),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -141,7 +182,8 @@ class _SettingsState extends State<Settings> {
                                 ),
                               );
                             },
-                            child: const Text("Przeładuj"),
+                            child:
+                                Text(translation(context).reload.capitalize()),
                           ),
                         ),
                       ]))),

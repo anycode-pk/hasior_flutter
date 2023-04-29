@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 
-import '../class/globalSnackbar.dart';
+import '../classes/globalSnackbar.dart';
+import '../classes/language_constants.dart';
 import '../theme.dart';
 
 class Register extends StatefulWidget {
@@ -46,7 +48,10 @@ class _RegisterState extends State<Register> {
                         Column(
                           children: [
                             const SizedBox(height: 10),
-                            Text("Wpisz swoją nazwę użytkownika",
+                            Text(
+                                translation(context)
+                                    .enter_your_username
+                                    .capitalize(),
                                 style: textStyle),
                             const SizedBox(height: 10),
                             TextFormField(
@@ -54,20 +59,27 @@ class _RegisterState extends State<Register> {
                               controller: userNameController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Podaj nazwę użytkownika";
+                                  return translation(context)
+                                      .enter_username
+                                      .capitalize();
                                 }
                                 return null;
                               },
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: "Nazwa użytkownika",
-                                focusedBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                hintText:
+                                    translation(context).username.capitalize(),
+                                focusedBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.white),
                                 ),
                               ),
                             ),
                             const SizedBox(height: 15),
-                            Text("Wpisz swój adres e-mail", style: textStyle),
+                            Text(
+                                translation(context)
+                                    .enter_your_email_address
+                                    .capitalize(),
+                                style: textStyle),
                             const SizedBox(height: 10),
                             TextFormField(
                               cursorColor: Colors.white,
@@ -75,24 +87,33 @@ class _RegisterState extends State<Register> {
                               controller: emailController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Podaj e-mail";
+                                  return translation(context)
+                                      .enter_your_email
+                                      .capitalize();
                                 } else if (!RegExp(
                                         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                                     .hasMatch(value)) {
-                                  return "Podaj poprawny e-mail";
+                                  return translation(context)
+                                      .please_enter_valid_email
+                                      .capitalize();
                                 }
                                 return null;
                               },
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: "E-mail",
-                                focusedBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                hintText:
+                                    translation(context).email.capitalize(),
+                                focusedBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.white),
                                 ),
                               ),
                             ),
                             const SizedBox(height: 15),
-                            Text("Wpisz hasło", style: textStyle),
+                            Text(
+                                translation(context)
+                                    .enter_your_password
+                                    .capitalize(),
+                                style: textStyle),
                             const SizedBox(height: 10),
                             TextFormField(
                               cursorColor: Colors.white,
@@ -102,20 +123,27 @@ class _RegisterState extends State<Register> {
                               controller: passwordController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Podaj hasło";
+                                  return translation(context)
+                                      .enter_password
+                                      .capitalize();
                                 }
                                 return null;
                               },
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: "Hasło",
-                                focusedBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                hintText:
+                                    translation(context).password.capitalize(),
+                                focusedBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.white),
                                 ),
                               ),
                             ),
                             const SizedBox(height: 15),
-                            Text("Powtórz hasło", style: textStyle),
+                            Text(
+                                translation(context)
+                                    .repeat_password
+                                    .capitalize(),
+                                style: textStyle),
                             const SizedBox(height: 10),
                             TextFormField(
                               cursorColor: Colors.white,
@@ -125,17 +153,22 @@ class _RegisterState extends State<Register> {
                               controller: passwordRepeatController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Podaj hasło";
+                                  return translation(context)
+                                      .enter_password
+                                      .capitalize();
                                 } else if (passwordController.text !=
                                     passwordRepeatController.text) {
-                                  return "Podane hasła są różne";
+                                  return translation(context)
+                                      .passwords_provided_are_different
+                                      .capitalize();
                                 }
                                 return null;
                               },
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: "Hasło",
-                                focusedBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                hintText:
+                                    translation(context).password.capitalize(),
+                                focusedBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.white),
                                 ),
                               ),
@@ -180,12 +213,14 @@ class _RegisterState extends State<Register> {
                                               Navigator.pop(context);
                                               GlobalSnackbar.infoSnackbar(
                                                   context,
-                                                  "Pomyślnie zarejestrowano");
+                                                  translation(context)
+                                                      .account_created_successfully
+                                                      .capitalize());
                                             }
                                           } on FormatException catch (e) {
                                             GlobalSnackbar.errorSnackbar(
                                                 context,
-                                                "Błąd podczas rejestracji: ${e.message}");
+                                                "${translation(context).error_while_creating_account.capitalize()}: ${e.message}");
                                             setState(() {
                                               _isLoading = false;
                                             });
@@ -194,7 +229,9 @@ class _RegisterState extends State<Register> {
                                       },
                                 label: _isLoading
                                     ? const Text("")
-                                    : const Text("Kontynuuj"),
+                                    : Text(translation(context)
+                                        .continue_button
+                                        .capitalize()),
                               ),
                             ),
                           ],

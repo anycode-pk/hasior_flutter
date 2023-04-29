@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:hasior_flutter/class/globalSnackbar.dart';
+import 'package:hasior_flutter/classes/globalSnackbar.dart';
+import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../classes/language_constants.dart';
 import '../models/events.dart';
 
 class EventDetails extends StatefulWidget {
@@ -34,7 +36,8 @@ class _EventDetailsState extends State<EventDetails> {
         isLoaded = true;
       });
     } catch (e) {
-      GlobalSnackbar.errorSnackbar(context, "Błąd podczas ładowania");
+      GlobalSnackbar.errorSnackbar(
+          context, translation(context).error_while_loading.capitalize());
     }
   }
 
@@ -51,7 +54,7 @@ class _EventDetailsState extends State<EventDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Widok szczegółowy"),
+          title: Text(translation(context).detailed_view.capitalize()),
           centerTitle: true,
         ),
         body: Visibility(
@@ -119,7 +122,7 @@ class _EventDetailsState extends State<EventDetails> {
                                                     ),
                                                     Expanded(
                                                       child: Text(
-                                                          "${DateFormat.yMMMMEEEEd("pl_PL").format(DateTime.parse(widget.event.eventTime))} o godzinie ${DateFormat.Hm("pl_PL").format(DateFormat("yyyy-MM-ddTHH:mm:ssZ").parseUTC(widget.event.eventTime).toLocal())}",
+                                                          "${DateFormat.yMMMMEEEEd(AppLocalizations.of(context)!.localeName).format(DateTime.parse(widget.event.eventTime))} ${translation(context).at_hour} ${DateFormat.Hm("pl_PL").format(DateFormat("yyyy-MM-ddTHH:mm:ssZ").parseUTC(widget.event.eventTime).toLocal())}",
                                                           overflow: TextOverflow
                                                               .ellipsis,
                                                           style: const TextStyle(
@@ -161,12 +164,8 @@ class _EventDetailsState extends State<EventDetails> {
                                                             ),
                                                     ),
                                                     Expanded(
-                                                      child: widget.event
-                                                                  .localization !=
-                                                              null
-                                                          ? Text(
-                                                              widget.event.localization ??
-                                                                  "",
+                                                      child: widget.event.localization != null
+                                                          ? Text(widget.event.localization ?? "",
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
@@ -176,12 +175,14 @@ class _EventDetailsState extends State<EventDetails> {
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .bold))
-                                                          : const Text(
-                                                              "Brak podanej lokalizacji",
+                                                          : Text(
+                                                              translation(context)
+                                                                  .no_location_provided
+                                                                  .capitalize(),
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
-                                                              style: TextStyle(
+                                                              style: const TextStyle(
                                                                   color:
                                                                       grayColor,
                                                                   fontWeight:
@@ -271,16 +272,17 @@ class _EventDetailsState extends State<EventDetails> {
                         Container(
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           child: Row(
-                            children: const [
-                              Icon(
+                            children: [
+                              const Icon(
                                 Icons.format_quote,
                                 size: 40,
                               ),
                               Expanded(
-                                child: Text("Opis wydarzenia:",
+                                child: Text(
+                                    "${translation(context).event_description.capitalize()}:",
                                     overflow: TextOverflow.ellipsis,
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold)),
                               )
                             ],
                           ),
@@ -293,8 +295,11 @@ class _EventDetailsState extends State<EventDetails> {
                                   widget.event.description ?? "",
                                   style: const TextStyle(color: grayColor),
                                 )
-                              : const Text("Brak opisu wydarzenia",
-                                  style: TextStyle(
+                              : Text(
+                                  translation(context)
+                                      .no_event_description
+                                      .capitalize(),
+                                  style: const TextStyle(
                                       color: grayColor,
                                       fontStyle: FontStyle.italic)),
                         )
@@ -312,7 +317,9 @@ class _EventDetailsState extends State<EventDetails> {
                                 },
                                 style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.all(20)),
-                                child: const Text("Przejdź do wydarzenia")),
+                                child: Text(translation(context)
+                                    .go_to_event_page
+                                    .capitalize())),
                           )
                         : Container(),
                   ],

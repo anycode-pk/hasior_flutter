@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hasior_flutter/class/globalSnackbar.dart';
+import 'package:hasior_flutter/classes/globalSnackbar.dart';
+import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/widgets/calendar_widget.dart';
+import '../classes/language_constants.dart';
 import '../models/calendarList.dart';
 import '../models/calendar.dart';
 import '../models/user.dart';
@@ -59,7 +61,8 @@ class _HomeState extends State<Home> {
         });
       }
     } catch (e) {
-      GlobalSnackbar.errorSnackbar(context, "Błąd podczas ładowania");
+      GlobalSnackbar.errorSnackbar(
+          context, translation(context).error_while_loading.capitalize());
     }
   }
 
@@ -84,7 +87,8 @@ class _HomeState extends State<Home> {
         }
       }
     } catch (e) {
-      GlobalSnackbar.errorSnackbar(context, "Błąd podczas ładowania");
+      GlobalSnackbar.errorSnackbar(
+          context, translation(context).event_calendar.capitalize());
     }
   }
 
@@ -111,7 +115,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Kalendarz wydarzeń"),
+        title: Text(translation(context).event_calendar.capitalize()),
         // title: !isSearching
         //     ? const Text("Kalendarz wydarzeń")
         //     : TextField(
@@ -187,11 +191,15 @@ class _HomeState extends State<Home> {
                       }
                       currentIndex = index;
                     }),
-                    items: const [
+                    items: [
                       BottomNavigationBarItem(
-                          icon: Icon(Icons.calendar_month), label: "Wszystkie"),
+                          icon: const Icon(Icons.calendar_month),
+                          label: translation(context).all_events.capitalize()),
                       BottomNavigationBarItem(
-                          icon: Icon(Icons.favorite), label: "Ulubione"),
+                          icon: const Icon(Icons.favorite),
+                          label: translation(context)
+                              .favorite_events
+                              .capitalize()),
                     ],
                   )),
             )

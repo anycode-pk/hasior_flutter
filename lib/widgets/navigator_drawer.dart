@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/screens/login_screen.dart';
 import 'package:hasior_flutter/screens/settings.dart';
+import '../classes/language_constants.dart';
 import '../models/user.dart';
 import '../screens/home_screen.dart';
 import '../services/api_service.dart';
@@ -74,7 +76,7 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
           children: [
             ListTile(
               leading: const Icon(Icons.settings),
-              title: const Text("Ustawienia"),
+              title: Text(translation(context).settings.capitalize()),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return const Settings();
@@ -84,7 +86,7 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
             widget.user != null
                 ? ListTile(
                     leading: const Icon(Icons.logout),
-                    title: const Text("Wyloguj"),
+                    title: Text(translation(context).log_out.capitalize()),
                     onTap: () {
                       ApiService().logout();
                       Navigator.pushReplacement(
@@ -127,11 +129,12 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
         padding: const EdgeInsets.symmetric(horizontal: 14),
         child: Column(
           children: [
-            const Text("Niezalogowano", style: TextStyle(fontSize: 28)),
+            Text(translation(context).not_logged_in.capitalize(),
+                style: const TextStyle(fontSize: 28)),
             const SizedBox(height: 12),
             ListTile(
               leading: const Icon(Icons.login),
-              title: const Text("Zaloguj się"),
+              title: Text(translation(context).log_in.capitalize()),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return const Login();
