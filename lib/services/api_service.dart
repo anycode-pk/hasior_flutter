@@ -23,7 +23,7 @@ class ApiService {
     throw FormatException(response.body);
   }
 
-  Future<List<Calendar>?> getCalendarEvents([String? name]) async {
+  Future<List<Calendar>?> getAllUpcomingEvents([String? name]) async {
     var uri = Uri.parse(
         "${await getApiAddress() ?? ""}Event/GetAllUpcomingEvents${name != null ? "?EventName=$name" : ""}");
     var response = await client.get(uri);
@@ -34,8 +34,24 @@ class ApiService {
     throw FormatException(response.body);
   }
 
+  Future<List<Calendar>?> getAllUpcomingEventsForUser([String? name]) async {
+    var uri = Uri.parse(
+        "${await getApiAddress() ?? ""}Event/GetAllUpcomingEventsForUser${name != null ? "?EventName=$name" : ""}");
+    User? user = await userFromSharedPreferences();
+    var response = await client.get(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
+    if (response.statusCode == 200) {
+      var json = response.body;
+      return calendarFromJson(json);
+    }
+    throw FormatException(response.body);
+  }
+
   Future<List<Calendar>?> getFavouriteEvents([String? name]) async {
-    var uri = Uri.parse("${await getApiAddress() ?? ""}FavouriteEvent");
+    var uri = Uri.parse(
+        "${await getApiAddress() ?? ""}FavouriteEvent${name != null ? "?EventName=$name" : ""}");
     User? user = await userFromSharedPreferences();
     var response = await client.get(uri, headers: {
       "accept": "text/plain",
@@ -55,7 +71,8 @@ class ApiService {
     if (response.statusCode == 200) {
       return Image.memory(response.bodyBytes);
     }
-    throw FormatException(response.body);
+    return null;
+    //throw FormatException(response.body);
   }
 
   Future<bool> addFavouriteEvent(int id) async {
@@ -63,6 +80,19 @@ class ApiService {
         Uri.parse("${await getApiAddress() ?? ""}FavouriteEvent?eventId=$id");
     User? user = await userFromSharedPreferences();
     var response = await client.post(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
+    if (response.statusCode == 200) {
+      return true;
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<bool> deleteFavouriteEvent(int id) async {
+    var uri = Uri.parse("${await getApiAddress() ?? ""}FavouriteEvent/$id");
+    User? user = await userFromSharedPreferences();
+    var response = await client.delete(uri, headers: {
       "accept": "text/plain",
       "Authorization": "Bearer ${user?.token}"
     });

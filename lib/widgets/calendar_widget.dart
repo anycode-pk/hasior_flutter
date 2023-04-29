@@ -30,7 +30,6 @@ class CalendarWidget extends StatefulWidget {
 
 class _CalendarWidgetState extends State<CalendarWidget> {
   static const grayColor = Color.fromRGBO(105, 105, 105, 1);
-
   // Future _getData() async {
   //   widget.dataEvents = await ApiService().getFavouriteEvents();
   //   widget.calendarList = [];
@@ -155,7 +154,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           ),
         ),
         onDismissed: widget.delete
-            ? (direction) {
+            ? (direction) async {
                 if (direction == DismissDirection.endToStart) {
                   const snackBar = SnackBar(
                     content: Text(
@@ -165,21 +164,45 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                     ),
                     backgroundColor: Colors.red,
                   );
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  // ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   setState(() {
                     var time = "";
-                    if (widget.calendarList[index - 1].time != null &&
-                        index == widget.calendarList.length - 1) {
-                      time = widget.calendarList[index - 1].time ?? "";
-                      widget.calendarList.removeAt(index);
-                      widget.calendarList.removeWhere((e) => e.time == time);
-                    } else if (widget.calendarList[index - 1].time != null &&
-                        widget.calendarList[index + 1].time != null) {
-                      time = widget.calendarList[index - 1].time ?? "";
-                      widget.calendarList.removeAt(index);
-                      widget.calendarList.removeWhere((e) => e.time == time);
+                    // if (widget.calendarList[index - 1].time != null &&
+                    //     index == widget.calendarList.length - 1) {
+                    //   time = widget.calendarList[index - 1].time ?? "";
+                    //   widget.calendarList.removeAt(index);
+                    //   widget.calendarList.removeWhere((e) => e.time == time);
+                    // } else if (widget.calendarList[index - 1].time != null &&
+                    //     widget.calendarList[index + 1].time != null) {
+                    //   time = widget.calendarList[index - 1].time ?? "";
+                    //   widget.calendarList.removeAt(index);
+                    //   widget.calendarList.removeWhere((e) => e.time == time);
+                    // }
+                    widget.calendarList.removeAt(index);
+                    for (var i = 0; i < widget.calendarList.length; i++) {
+                      if (widget.calendarList.length < 2 &&
+                          widget.calendarList[i].time != null) {
+                        widget.calendarList.removeAt(i);
+                      } else if (i == widget.calendarList.length - 1 &&
+                          widget.calendarList[i].time != null) {
+                        widget.calendarList.removeAt(i);
+                      } else if (widget.calendarList[i].time != null &&
+                          widget.calendarList[i + 1].time != null) {
+                        time = widget.calendarList[index - 1].time ?? "";
+                        widget.calendarList.removeWhere((e) => e.time == time);
+                      }
                     }
                   });
+                  try {
+                    bool result =
+                        await ApiService().deleteFavouriteEvent(event.id);
+                    if (result && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                  } on FormatException catch (e) {
+                    GlobalSnackbar.errorSnackbar(
+                        context, "Błąd podczas usuwania z ulubionych");
+                  }
                 }
               }
             : null,
@@ -199,6 +222,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                         await ApiService().addFavouriteEvent(event.id);
                     if (result && context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      setState(() {
+                        widget.calendarList[index].events?.favorite = true;
+                      });
                     }
                   } on FormatException catch (e) {
                     GlobalSnackbar.errorSnackbar(
@@ -268,7 +294,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                   ),
                                 ),
                                 Expanded(
-                                  child: Text(event.localization,
+                                  child: Text(event.localization ?? "",
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                           color: grayColor,
@@ -278,10 +304,12 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                             ),
                           ),
                           const SizedBox(width: 20),
-                          const Icon(
-                            Icons.favorite,
-                            color: Color.fromRGBO(0, 150, 136, 1),
-                          )
+                          event.favorite
+                              ? const Icon(
+                                  Icons.favorite,
+                                  color: Color.fromRGBO(0, 150, 136, 1),
+                                )
+                              : Container()
                         ],
                       ),
                     ],

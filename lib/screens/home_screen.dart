@@ -40,7 +40,12 @@ class _HomeState extends State<Home> {
 
   Future _getEvents([String? name]) async {
     try {
-      dataEvents = await ApiService().getCalendarEvents(name);
+      var checkUser = await ApiService().userFromSharedPreferences();
+      if (checkUser != null) {
+        dataEvents = await ApiService().getAllUpcomingEventsForUser(name);
+      } else {
+        dataEvents = await ApiService().getAllUpcomingEvents(name);
+      }
       if (dataEvents != null) {
         calendarList = [];
         dataEvents?.forEach((element) {

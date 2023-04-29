@@ -154,7 +154,8 @@ class _EventDetailsState extends State<EventDetails> {
                                                     Expanded(
                                                       child: Text(
                                                           widget.event
-                                                              .localization,
+                                                                  .localization ??
+                                                              "",
                                                           overflow: TextOverflow
                                                               .ellipsis,
                                                           style: const TextStyle(
@@ -189,8 +190,9 @@ class _EventDetailsState extends State<EventDetails> {
                                                     Expanded(
                                                       child: Text(
                                                           currencyFormat.format(
-                                                              widget
-                                                                  .event.price),
+                                                              widget.event
+                                                                      .price ??
+                                                                  0),
                                                           overflow: TextOverflow
                                                               .ellipsis,
                                                           style: const TextStyle(
@@ -261,7 +263,7 @@ class _EventDetailsState extends State<EventDetails> {
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Text(
-                            widget.event.description,
+                            widget.event.description ?? "",
                             style: const TextStyle(color: grayColor),
                           ),
                         )
@@ -272,7 +274,9 @@ class _EventDetailsState extends State<EventDetails> {
                       padding: const EdgeInsets.all(20),
                       child: ElevatedButton(
                           onPressed: () {
-                            _launchURL(widget.event.ticketsLink);
+                            if (widget.event.ticketsLink != null) {
+                              _launchURL(widget.event.ticketsLink ?? "");
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.all(20)),
