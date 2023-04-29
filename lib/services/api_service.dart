@@ -7,6 +7,7 @@ import 'package:hasior_flutter/models/login.dart';
 import 'package:hasior_flutter/models/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
@@ -68,7 +69,7 @@ class ApiService {
     var uri = Uri.parse(
         "${await getApiAddress() ?? ""}HasiorFile/GetFileByEventId?eventId=$id");
     var response = await client.get(uri);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
       return Image.memory(response.bodyBytes);
     }
     return null;
@@ -168,7 +169,13 @@ class ApiService {
     String? userString = prefs.getString("user");
     if (userString != null) {
       Map userMap = jsonDecode(userString);
-      return User.fromJson(userMap as Map<String, dynamic>);
+      User user = User.fromJson(userMap as Map<String, dynamic>);
+      bool hasExpired = JwtDecoder.isExpired(user.token ?? "");
+      if (hasExpired) {
+        await prefs.remove("user");
+        return null;
+      }
+      return user;
     }
     return null;
   }

@@ -146,23 +146,49 @@ class _EventDetailsState extends State<EventDetails> {
                                                       transform: Matrix4
                                                           .translationValues(
                                                               -4.0, 0.0, 0.0),
-                                                      child: const Icon(
-                                                        Icons.location_pin,
-                                                        color: grayColor,
-                                                      ),
+                                                      child: widget.event
+                                                                  .localization !=
+                                                              null
+                                                          ? const Icon(
+                                                              Icons
+                                                                  .location_pin,
+                                                              color: grayColor,
+                                                            )
+                                                          : const Icon(
+                                                              Icons
+                                                                  .location_off,
+                                                              color: grayColor,
+                                                            ),
                                                     ),
                                                     Expanded(
-                                                      child: Text(
-                                                          widget.event
-                                                                  .localization ??
-                                                              "",
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style: const TextStyle(
-                                                              color: grayColor,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold)),
+                                                      child: widget.event
+                                                                  .localization !=
+                                                              null
+                                                          ? Text(
+                                                              widget.event.localization ??
+                                                                  "",
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              style: const TextStyle(
+                                                                  color:
+                                                                      grayColor,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold))
+                                                          : const Text(
+                                                              "Brak podanej lokalizacji",
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              style: TextStyle(
+                                                                  color:
+                                                                      grayColor,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontStyle:
+                                                                      FontStyle.italic)),
                                                     )
                                                   ],
                                                 ),
@@ -217,7 +243,7 @@ class _EventDetailsState extends State<EventDetails> {
                               image: eventImage != null
                                   ? DecorationImage(
                                       image: eventImage?.image ??
-                                          const AssetImage(''),
+                                          const AssetImage("assets/logo.png"),
                                       fit: BoxFit.cover,
                                     )
                                   : const DecorationImage(
@@ -262,26 +288,33 @@ class _EventDetailsState extends State<EventDetails> {
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            widget.event.description ?? "",
-                            style: const TextStyle(color: grayColor),
-                          ),
+                          child: widget.event.description != null
+                              ? Text(
+                                  widget.event.description ?? "",
+                                  style: const TextStyle(color: grayColor),
+                                )
+                              : const Text("Brak opisu wydarzenia",
+                                  style: TextStyle(
+                                      color: grayColor,
+                                      fontStyle: FontStyle.italic)),
                         )
                       ],
                     ),
                     const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      child: ElevatedButton(
-                          onPressed: () {
-                            if (widget.event.ticketsLink != null) {
-                              _launchURL(widget.event.ticketsLink ?? "");
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.all(20)),
-                          child: const Text("Przejdź do wydarzenia")),
-                    ),
+                    widget.event.ticketsLink != null
+                        ? Container(
+                            padding: const EdgeInsets.all(20),
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  if (widget.event.ticketsLink != null) {
+                                    _launchURL(widget.event.ticketsLink ?? "");
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.all(20)),
+                                child: const Text("Przejdź do wydarzenia")),
+                          )
+                        : Container(),
                   ],
                 ),
               ),
