@@ -84,7 +84,7 @@ class _SettingsState extends State<Settings> {
                                 .toList(),
                             onChanged: (String? language) async {
                               if (language != null) {
-                                Locale locale = await setLocale(language);
+                                Locale? locale = await setLocale(language);
                                 MyApp.setLocale(context, locale);
                               }
                             }),

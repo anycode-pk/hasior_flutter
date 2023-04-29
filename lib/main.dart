@@ -17,7 +17,7 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 
-  static void setLocale(BuildContext context, Locale newLocale) {
+  static void setLocale(BuildContext context, Locale? newLocale) {
     _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
     state?.setLocale(newLocale);
   }
@@ -26,7 +26,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   Locale? _locale;
 
-  setLocale(Locale locale) {
+  setLocale(Locale? locale) {
     setState(() {
       _locale = locale;
     });
@@ -35,7 +35,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void didChangeDependencies() {
     ApiService().setDefaultApiAddress();
-    getLocale().then((locale) => setLocale(locale));
+    getLocale().then((locale) => locale != null ? setLocale(locale) : null);
     super.didChangeDependencies();
   }
 
