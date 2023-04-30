@@ -30,7 +30,7 @@ class _SettingsState extends State<Settings> {
 
   Future _getData() async {
     try {
-      apiAddress.text = await ApiService().getApiAddress() ?? "";
+      apiAddress.text = await ApiService().getApiAddress();
       setState(() {
         _isLoaded = true;
       });

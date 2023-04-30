@@ -15,7 +15,7 @@ class ApiService {
   final Client client = http.Client();
 
   Future<List<Events>?> getCalendar() async {
-    var uri = Uri.parse("${await getApiAddress() ?? ""}Event/GetAllEvents");
+    var uri = Uri.parse("${await getApiAddress()}Event/GetAllEvents");
     var response = await client.get(uri);
     if (response.statusCode == 200) {
       var json = response.body;
@@ -26,7 +26,7 @@ class ApiService {
 
   Future<List<Calendar>?> getAllUpcomingEvents([String? name]) async {
     var uri = Uri.parse(
-        "${await getApiAddress() ?? ""}Event/GetAllUpcomingEvents${name != null ? "?EventName=$name" : ""}");
+        "${await getApiAddress()}Event/GetAllUpcomingEvents${name != null ? "?EventName=$name" : ""}");
     var response = await client.get(uri);
     if (response.statusCode == 200) {
       var json = response.body;
@@ -37,7 +37,7 @@ class ApiService {
 
   Future<List<Calendar>?> getAllUpcomingEventsForUser([String? name]) async {
     var uri = Uri.parse(
-        "${await getApiAddress() ?? ""}Event/GetAllUpcomingEventsForUser${name != null ? "?EventName=$name" : ""}");
+        "${await getApiAddress()}Event/GetAllUpcomingEventsForUser${name != null ? "?EventName=$name" : ""}");
     User? user = await userFromSharedPreferences();
     var response = await client.get(uri, headers: {
       "accept": "text/plain",
@@ -52,7 +52,7 @@ class ApiService {
 
   Future<List<Calendar>?> getFavouriteEvents([String? name]) async {
     var uri = Uri.parse(
-        "${await getApiAddress() ?? ""}FavouriteEvent${name != null ? "?EventName=$name" : ""}");
+        "${await getApiAddress()}FavouriteEvent${name != null ? "?EventName=$name" : ""}");
     User? user = await userFromSharedPreferences();
     var response = await client.get(uri, headers: {
       "accept": "text/plain",
@@ -67,7 +67,7 @@ class ApiService {
 
   Future<Image?> getFileByEventId(int id) async {
     var uri = Uri.parse(
-        "${await getApiAddress() ?? ""}HasiorFile/GetFileByEventId?eventId=$id");
+        "${await getApiAddress()}HasiorFile/GetFileByEventId?eventId=$id");
     var response = await client.get(uri);
     if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
       return Image.memory(response.bodyBytes);
@@ -77,8 +77,7 @@ class ApiService {
   }
 
   Future<bool> addFavouriteEvent(int id) async {
-    var uri =
-        Uri.parse("${await getApiAddress() ?? ""}FavouriteEvent?eventId=$id");
+    var uri = Uri.parse("${await getApiAddress()}FavouriteEvent?eventId=$id");
     User? user = await userFromSharedPreferences();
     var response = await client.post(uri, headers: {
       "accept": "text/plain",
@@ -91,7 +90,7 @@ class ApiService {
   }
 
   Future<bool> deleteFavouriteEvent(int id) async {
-    var uri = Uri.parse("${await getApiAddress() ?? ""}FavouriteEvent/$id");
+    var uri = Uri.parse("${await getApiAddress()}FavouriteEvent/$id");
     User? user = await userFromSharedPreferences();
     var response = await client.delete(uri, headers: {
       "accept": "text/plain",
@@ -105,7 +104,7 @@ class ApiService {
 
   Future<User?> loginUser(String email, String password) async {
     try {
-      var uri = Uri.parse("${await getApiAddress() ?? ""}User/Login");
+      var uri = Uri.parse("${await getApiAddress()}User/Login");
       var response = await client.post(uri,
           headers: {
             "content-type": "application/json",
@@ -135,7 +134,7 @@ class ApiService {
   Future<bool> registerUser(
       String userName, String email, String password) async {
     try {
-      var uri = Uri.parse("${await getApiAddress() ?? ""}User/Create");
+      var uri = Uri.parse("${await getApiAddress()}User/Create");
       var response = await client.post(uri,
           headers: {
             "content-type": "application/json",
@@ -155,7 +154,7 @@ class ApiService {
   }
 
   Future<User?> getUserData(String token) async {
-    var uri = Uri.parse("${await getApiAddress() ?? ""}User/GetUserData");
+    var uri = Uri.parse("${await getApiAddress()}User/GetUserData");
     var response = await client.get(uri,
         headers: {"accept": "text/plain", "Authorization": "Bearer $token"});
     if (response.statusCode == 200) {
@@ -185,15 +184,8 @@ class ApiService {
     await prefs.remove("user");
   }
 
-  Future<String?> getApiAddress() async {
+  Future<String> getApiAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString("apiAddress");
-  }
-
-  Future setDefaultApiAddress() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("apiAddress") == "") {
-      prefs.setString("apiAddress", "https://localhost:7226/api/");
-    }
+    return prefs.getString("apiAddress") ?? "https://localhost:7226/api/";
   }
 }

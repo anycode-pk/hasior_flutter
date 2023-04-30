@@ -34,7 +34,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void didChangeDependencies() {
-    ApiService().setDefaultApiAddress();
     getLocale().then((locale) => locale != null ? setLocale(locale) : null);
     super.didChangeDependencies();
   }
