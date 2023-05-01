@@ -5,7 +5,7 @@ import 'package:hasior_flutter/widgets/calendar_widget.dart';
 import '../classes/language_constants.dart';
 import '../models/calendarList.dart';
 import '../models/calendar.dart';
-import '../models/user.dart';
+import '../models/userWithToken.dart';
 import '../widgets/navigator_drawer.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -26,7 +26,7 @@ class _HomeState extends State<Home> {
   int currentIndex = 0;
   bool isLoaded = false;
   bool isLoadedFavourite = false;
-  User? user;
+  UserWithToken? user;
 
   @override
   void initState() {
@@ -88,7 +88,7 @@ class _HomeState extends State<Home> {
       }
     } catch (e) {
       GlobalSnackbar.errorSnackbar(
-          context, translation(context).event_calendar.capitalize());
+          context, translation(context).error_while_loading.capitalize());
     }
   }
 

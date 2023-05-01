@@ -11,7 +11,6 @@ class User {
     required this.email,
     required this.userName,
     this.points,
-    this.token,
   });
 
   String id;
@@ -19,7 +18,6 @@ class User {
   String email;
   String userName;
   int? points;
-  String? token;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["id"],
@@ -27,7 +25,6 @@ class User {
         email: json["email"],
         userName: json["userName"],
         points: json["points"],
-        token: json["token"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -36,6 +33,5 @@ class User {
         "email": email,
         "userName": userName,
         "points": points,
-        "token": token,
       };
 }

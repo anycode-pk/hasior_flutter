@@ -1,14 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:hasior_flutter/models/events.dart';
 import 'package:hasior_flutter/models/calendar.dart';
 import 'package:hasior_flutter/models/login.dart';
 import 'package:hasior_flutter/models/user.dart';
+import 'package:hasior_flutter/models/userWithToken.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../models/token.dart';
 
 class ApiService {
   final String url = "https://localhost:7226/api/";
@@ -38,7 +42,7 @@ class ApiService {
   Future<List<Calendar>?> getAllUpcomingEventsForUser([String? name]) async {
     var uri = Uri.parse(
         "${await getApiAddress()}Event/GetAllUpcomingEventsForUser${name != null ? "?EventName=$name" : ""}");
-    User? user = await userFromSharedPreferences();
+    UserWithToken? user = await userFromSharedPreferences();
     var response = await client.get(uri, headers: {
       "accept": "text/plain",
       "Authorization": "Bearer ${user?.token}"
@@ -53,7 +57,7 @@ class ApiService {
   Future<List<Calendar>?> getFavouriteEvents([String? name]) async {
     var uri = Uri.parse(
         "${await getApiAddress()}FavouriteEvent${name != null ? "?EventName=$name" : ""}");
-    User? user = await userFromSharedPreferences();
+    UserWithToken? user = await userFromSharedPreferences();
     var response = await client.get(uri, headers: {
       "accept": "text/plain",
       "Authorization": "Bearer ${user?.token}"
@@ -78,7 +82,7 @@ class ApiService {
 
   Future<bool> addFavouriteEvent(int id) async {
     var uri = Uri.parse("${await getApiAddress()}FavouriteEvent?eventId=$id");
-    User? user = await userFromSharedPreferences();
+    UserWithToken? user = await userFromSharedPreferences();
     var response = await client.post(uri, headers: {
       "accept": "text/plain",
       "Authorization": "Bearer ${user?.token}"
@@ -91,7 +95,7 @@ class ApiService {
 
   Future<bool> deleteFavouriteEvent(int id) async {
     var uri = Uri.parse("${await getApiAddress()}FavouriteEvent/$id");
-    User? user = await userFromSharedPreferences();
+    UserWithToken? user = await userFromSharedPreferences();
     var response = await client.delete(uri, headers: {
       "accept": "text/plain",
       "Authorization": "Bearer ${user?.token}"
@@ -119,9 +123,17 @@ class ApiService {
         var loginArr = loginFromJson(response.body);
         var userData = await getUserData(loginArr.token);
         if (userData != null) {
-          userData.token = loginArr.token;
-          String user = jsonEncode(userData);
-          prefs.setString("user", user);
+          UserWithToken user = UserWithToken(
+              id: userData.id,
+              roles: userData.roles,
+              email: userData.email,
+              userName: userData.userName,
+              points: userData.points,
+              token: loginArr.token,
+              refreshToken: loginArr.refreshToken,
+              refreshTokenExpiryTime: loginArr.refreshTokenExpiryTime);
+          String userJson = jsonEncode(user);
+          prefs.setString("user", userJson);
           return userData;
         }
       }
@@ -163,20 +175,44 @@ class ApiService {
     throw FormatException(response.body);
   }
 
-  Future<User?> userFromSharedPreferences() async {
+  Future<UserWithToken?> userFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userString = prefs.getString("user");
     if (userString != null) {
       Map userMap = jsonDecode(userString);
-      User user = User.fromJson(userMap as Map<String, dynamic>);
-      bool hasExpired = JwtDecoder.isExpired(user.token ?? "");
+      UserWithToken user =
+          UserWithToken.fromJson(userMap as Map<String, dynamic>);
+      bool hasExpired = JwtDecoder.isExpired(user.token);
       if (hasExpired) {
-        await prefs.remove("user");
-        return null;
+        bool isExpired = user.refreshTokenExpiryTime.isBefore(DateTime.now());
+        if (!isExpired) {
+          Token token = await refreshToken(user.refreshToken, user.token);
+          user.token = token.token;
+        } else {
+          await prefs.remove("user");
+          return null;
+        }
       }
       return user;
     }
     return null;
+  }
+
+  Future<Token> refreshToken(String refreshToken, String accesToken) async {
+    var uri = Uri.parse("${await getApiAddress()}User/LoginRefreshToken");
+    var response = await client.post(uri,
+        headers: {
+          "accept": "text/plain",
+          "content-type": "application/json",
+        },
+        body: jsonEncode({
+          "refreshToken": refreshToken,
+          "accesToken": accesToken,
+        }));
+    if (response.statusCode == 200) {
+      return tokenFromJson(response.body);
+    }
+    throw FormatException(response.body);
   }
 
   Future logout() async {
@@ -186,6 +222,6 @@ class ApiService {
 
   Future<String> getApiAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString("apiAddress") ?? "https://localhost:7226/api/";
+    return prefs.getString("apiAddress") ?? url;
   }
 }

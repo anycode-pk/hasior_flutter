@@ -6,7 +6,7 @@ import '../classes/language_constants.dart';
 import '../models/calendar.dart';
 import '../models/calendarList.dart';
 import '../models/events.dart';
-import '../models/user.dart';
+import '../models/userWithToken.dart';
 import '../screens/event_detail_screen.dart';
 import 'package:hasior_flutter/classes/globalSnackbar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -25,7 +25,7 @@ class CalendarWidget extends StatefulWidget {
   final List<Calendar>? dataEvents;
   final Future<void> Function([String? name]) getData;
   final bool delete;
-  final User? user;
+  final UserWithToken? user;
 
   @override
   State<CalendarWidget> createState() => _CalendarWidgetState();
@@ -211,6 +211,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     }
                   } on FormatException catch (e) {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
                     GlobalSnackbar.errorSnackbar(
                         context,
                         translation(context)
@@ -243,6 +244,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                       });
                     }
                   } on FormatException catch (e) {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
                     GlobalSnackbar.errorSnackbar(
                         context,
                         translation(context)

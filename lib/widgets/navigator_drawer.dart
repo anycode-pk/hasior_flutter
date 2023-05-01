@@ -3,13 +3,13 @@ import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/screens/login_screen.dart';
 import 'package:hasior_flutter/screens/settings.dart';
 import '../classes/language_constants.dart';
-import '../models/user.dart';
+import '../models/userWithToken.dart';
 import '../screens/home_screen.dart';
 import '../services/api_service.dart';
 
 class MenuNavigationDrawer extends StatefulWidget {
   const MenuNavigationDrawer({Key? key, required this.user}) : super(key: key);
-  final User? user;
+  final UserWithToken? user;
 
   @override
   State<MenuNavigationDrawer> createState() => _MenuNavigationDrawerState();
