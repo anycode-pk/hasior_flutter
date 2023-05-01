@@ -40,5 +40,7 @@
     "log_out": "wyloguj się",
     "not_logged_in": "nie zalogowano",
     "log_in": "zaloguj się",
-    "error_while_loading": "błąd podczas ładowania"
+    "error_while_loading": "błąd podczas ładowania",
+    "no_upcoming_events": "brak nadchodzących wydarzeń",
+    "no_favorite_events": "brak ulubionych wydarzeń"
 }

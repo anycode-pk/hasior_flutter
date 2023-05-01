@@ -83,6 +83,33 @@ class _CalendarWidgetState extends State<CalendarWidget> {
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
                   if (index == widget.calendarList.length) {
+                    if (widget.calendarList.isEmpty) {
+                      return widget.delete
+                          ? Container(
+                              padding: const EdgeInsets.all(20),
+                              child: Text(
+                                translation(context)
+                                    .no_favorite_events
+                                    .capitalize(),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                    color: grayColor,
+                                    fontSize: 20,
+                                    fontStyle: FontStyle.italic),
+                              ))
+                          : Container(
+                              padding: const EdgeInsets.all(20),
+                              child: Text(
+                                translation(context)
+                                    .no_upcoming_events
+                                    .capitalize(),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                    color: grayColor,
+                                    fontSize: 20,
+                                    fontStyle: FontStyle.italic),
+                              ));
+                    }
                     return const SizedBox(
                         height: kBottomNavigationBarHeight + 20);
                   }
