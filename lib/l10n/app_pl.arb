@@ -1,8 +1,8 @@
 {
     "event_calendar": "kalendarz wydarzeń",
     "search": "wyszukaj",
-    "all_events": "wszystkie wydarzenia",
-    "favorite_events": "ulubione wydarzenia",
+    "all_events": "wydarzenia",
+    "favorite_events": "ulubione",
     "detailed_view": "widok szczegółowy",
     "at_hour": "o godzinie",
     "no_location_provided": "brak podanej lokalizacji",

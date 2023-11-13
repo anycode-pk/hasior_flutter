@@ -159,226 +159,236 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       );
 
   Widget buildCard(Events event, int index) => Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      child: Dismissible(
-        direction: widget.user != null
-            ? widget.delete
-                ? DismissDirection.endToStart
-                : widget.calendarList[index].events?.favorite == false
-                    ? DismissDirection.startToEnd
-                    : DismissDirection.none
-            : DismissDirection.none,
-        key: UniqueKey(),
-        background: Container(
-          color: Colors.green,
-          child: const Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: EdgeInsets.only(left: 16),
-              child: Icon(Icons.favorite),
+      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 7),
+      child: ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+          child: Dismissible(
+            direction: widget.user != null
+                ? widget.delete
+                    ? DismissDirection.endToStart
+                    : widget.calendarList[index].events?.favorite == false
+                        ? DismissDirection.startToEnd
+                        : DismissDirection.none
+                : DismissDirection.none,
+            key: UniqueKey(),
+            background: Container(
+              color: Colors.green,
+              child: const Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 16),
+                  child: Icon(Icons.favorite),
+                ),
+              ),
             ),
-          ),
-        ),
-        secondaryBackground: Container(
-          color: Colors.red,
-          child: const Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: Icon(Icons.delete),
+            secondaryBackground: Container(
+              color: Colors.red,
+              child: const Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: EdgeInsets.only(right: 16),
+                  child: Icon(Icons.delete),
+                ),
+              ),
             ),
-          ),
-        ),
-        onDismissed: widget.delete
-            ? (direction) async {
-                if (direction == DismissDirection.endToStart) {
-                  SnackBar snackBar = SnackBar(
-                    content: Text(
-                      translation(context).removed_from_favorites.capitalize(),
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: Colors.red,
-                  );
-                  // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  setState(() {
-                    var time = "";
-                    // if (widget.calendarList[index - 1].time != null &&
-                    //     index == widget.calendarList.length - 1) {
-                    //   time = widget.calendarList[index - 1].time ?? "";
-                    //   widget.calendarList.removeAt(index);
-                    //   widget.calendarList.removeWhere((e) => e.time == time);
-                    // } else if (widget.calendarList[index - 1].time != null &&
-                    //     widget.calendarList[index + 1].time != null) {
-                    //   time = widget.calendarList[index - 1].time ?? "";
-                    //   widget.calendarList.removeAt(index);
-                    //   widget.calendarList.removeWhere((e) => e.time == time);
-                    // }
-                    widget.calendarList.removeAt(index);
-                    for (var i = 0; i < widget.calendarList.length; i++) {
-                      if (widget.calendarList.length < 2 &&
-                          widget.calendarList[i].time != null) {
-                        widget.calendarList.removeAt(i);
-                      } else if (i == widget.calendarList.length - 1 &&
-                          widget.calendarList[i].time != null) {
-                        widget.calendarList.removeAt(i);
-                      } else if (widget.calendarList[i].time != null &&
-                          widget.calendarList[i + 1].time != null) {
-                        time = widget.calendarList[index - 1].time ?? "";
-                        widget.calendarList.removeWhere((e) => e.time == time);
+            onDismissed: widget.delete
+                ? (direction) async {
+                    if (direction == DismissDirection.endToStart) {
+                      SnackBar snackBar = SnackBar(
+                        content: Text(
+                          translation(context)
+                              .removed_from_favorites
+                              .capitalize(),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: Colors.red,
+                      );
+                      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      setState(() {
+                        var time = "";
+                        // if (widget.calendarList[index - 1].time != null &&
+                        //     index == widget.calendarList.length - 1) {
+                        //   time = widget.calendarList[index - 1].time ?? "";
+                        //   widget.calendarList.removeAt(index);
+                        //   widget.calendarList.removeWhere((e) => e.time == time);
+                        // } else if (widget.calendarList[index - 1].time != null &&
+                        //     widget.calendarList[index + 1].time != null) {
+                        //   time = widget.calendarList[index - 1].time ?? "";
+                        //   widget.calendarList.removeAt(index);
+                        //   widget.calendarList.removeWhere((e) => e.time == time);
+                        // }
+                        widget.calendarList.removeAt(index);
+                        for (var i = 0; i < widget.calendarList.length; i++) {
+                          if (widget.calendarList.length < 2 &&
+                              widget.calendarList[i].time != null) {
+                            widget.calendarList.removeAt(i);
+                          } else if (i == widget.calendarList.length - 1 &&
+                              widget.calendarList[i].time != null) {
+                            widget.calendarList.removeAt(i);
+                          } else if (widget.calendarList[i].time != null &&
+                              widget.calendarList[i + 1].time != null) {
+                            time = widget.calendarList[index - 1].time ?? "";
+                            widget.calendarList
+                                .removeWhere((e) => e.time == time);
+                          }
+                        }
+                      });
+                      try {
+                        bool result =
+                            await ApiService().deleteFavouriteEvent(event.id);
+                        if (result && context.mounted) {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
+                      } on FormatException catch (e) {
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        GlobalSnackbar.errorSnackbar(
+                            context,
+                            translation(context)
+                                .error_while_removing_from_favorites
+                                .capitalize());
                       }
                     }
-                  });
-                  try {
-                    bool result =
-                        await ApiService().deleteFavouriteEvent(event.id);
-                    if (result && context.mounted) {
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    }
-                  } on FormatException catch (e) {
-                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                    GlobalSnackbar.errorSnackbar(
-                        context,
-                        translation(context)
-                            .error_while_removing_from_favorites
-                            .capitalize());
                   }
-                }
-              }
-            : null,
-        confirmDismiss: !widget.delete
-            ? (direction) async {
-                if (direction == DismissDirection.startToEnd) {
-                  SnackBar snackBar = SnackBar(
-                    content: Text(
-                      translation(context).added_to_favorites.capitalize(),
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: Colors.green,
-                  );
-                  try {
-                    bool result =
-                        await ApiService().addFavouriteEvent(event.id);
-                    if (result && context.mounted) {
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      setState(() {
-                        widget.calendarList[index].events?.favorite = true;
-                      });
+                : null,
+            confirmDismiss: !widget.delete
+                ? (direction) async {
+                    if (direction == DismissDirection.startToEnd) {
+                      SnackBar snackBar = SnackBar(
+                        content: Text(
+                          translation(context).added_to_favorites.capitalize(),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: Colors.green,
+                      );
+                      try {
+                        bool result =
+                            await ApiService().addFavouriteEvent(event.id);
+                        if (result && context.mounted) {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          setState(() {
+                            widget.calendarList[index].events?.favorite = true;
+                          });
+                        }
+                      } on FormatException catch (e) {
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        GlobalSnackbar.errorSnackbar(
+                            context,
+                            translation(context)
+                                .error_while_adding_to_favorites
+                                .capitalize());
+                      }
+                      // setState(() {
+                      //   widget.calendarList[index] = widget.calendarList[index];
+                      // });
+                      return false;
                     }
-                  } on FormatException catch (e) {
-                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                    GlobalSnackbar.errorSnackbar(
-                        context,
-                        translation(context)
-                            .error_while_adding_to_favorites
-                            .capitalize());
+                    return null;
                   }
-                  // setState(() {
-                  //   widget.calendarList[index] = widget.calendarList[index];
-                  // });
-                  return false;
-                }
-                return null;
-              }
-            : null,
-        child: InkWell(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return EventDetails(
-                  event: event,
-                );
-              }));
-            },
-            child: Container(
-                color: const Color.fromRGBO(49, 52, 57, 1),
-                width: double.infinity,
-                height: 90,
+                : null,
+            child: InkWell(
+                highlightColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                hoverColor: Colors.transparent,
+                focusColor: Colors.transparent,
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return EventDetails(
+                      event: event,
+                    );
+                  }));
+                },
                 child: Container(
-                  decoration: const BoxDecoration(
-                      border: Border(
-                          left: BorderSide(
-                    color: grayColor,
-                    width: 7.0,
-                  ))),
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Row(
+                    color: const Color.fromRGBO(49, 52, 57, 1),
+                    width: double.infinity,
+                    height: 90,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                          border: Border(
+                              left: BorderSide(
+                        color: grayColor,
+                        width: 7.0,
+                      ))),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Expanded(
-                            child: Text(
-                              event.name,
-                              style: const TextStyle(fontSize: 20),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Text(
-                            DateFormat.Hm(
-                                    AppLocalizations.of(context)!.localeName)
-                                .format(DateFormat("yyyy-MM-ddTHH:mm:ssZ")
-                                    .parseUTC(event.eventTime)
-                                    .toLocal()),
-                            style: const TextStyle(
-                                color: grayColor, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Container(
-                                  transform:
-                                      Matrix4.translationValues(-4.0, 0.0, 0.0),
-                                  child: event.localization != null
-                                      ? const Icon(
-                                          Icons.location_pin,
-                                          color: grayColor,
-                                        )
-                                      : const Icon(
-                                          Icons.location_off,
-                                          color: grayColor,
-                                        ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  event.name,
+                                  style: const TextStyle(fontSize: 20),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                Expanded(
-                                  child: event.localization != null
-                                      ? Text(event.localization ?? "",
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                              color: grayColor,
-                                              fontWeight: FontWeight.bold))
-                                      : Text(
-                                          translation(context)
-                                              .no_location_provided
-                                              .capitalize(),
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                              color: grayColor,
-                                              fontWeight: FontWeight.bold,
-                                              fontStyle: FontStyle.italic)),
-                                )
-                              ],
-                            ),
+                              ),
+                              const SizedBox(width: 20),
+                              Text(
+                                DateFormat.Hm(AppLocalizations.of(context)!
+                                        .localeName)
+                                    .format(DateFormat("yyyy-MM-ddTHH:mm:ssZ")
+                                        .parseUTC(event.eventTime)
+                                        .toLocal()),
+                                style: const TextStyle(
+                                    color: grayColor,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 20),
-                          event.favorite
-                              ? const Icon(
-                                  Icons.favorite,
-                                  color: Color.fromRGBO(0, 150, 136, 1),
-                                )
-                              : Container()
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      transform: Matrix4.translationValues(
+                                          -4.0, 0.0, 0.0),
+                                      child: event.localization != null
+                                          ? const Icon(
+                                              Icons.location_pin,
+                                              color: grayColor,
+                                            )
+                                          : const Icon(
+                                              Icons.location_off,
+                                              color: grayColor,
+                                            ),
+                                    ),
+                                    Expanded(
+                                      child: event.localization != null
+                                          ? Text(event.localization ?? "",
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                  color: grayColor,
+                                                  fontWeight: FontWeight.bold))
+                                          : Text(
+                                              translation(context)
+                                                  .no_location_provided
+                                                  .capitalize(),
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                  color: grayColor,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontStyle: FontStyle.italic)),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 20),
+                              event.favorite
+                                  ? const Icon(
+                                      Icons.favorite,
+                                      color: Color.fromRGBO(0, 150, 136, 1),
+                                    )
+                                  : Container()
+                            ],
+                          ),
                         ],
                       ),
-                    ],
-                  ),
-                ))),
-      ));
+                    ))),
+          )));
 }

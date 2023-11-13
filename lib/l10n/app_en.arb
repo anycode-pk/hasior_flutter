@@ -1,8 +1,8 @@
 {
     "event_calendar": "event calendar",
     "search": "search",
-    "all_events": "all events",
-    "favorite_events": "favorite events",
+    "all_events": "events",
+    "favorite_events": "favorite",
     "detailed_view": "detailed view",
     "at_hour": "at",
     "no_location_provided": "no location provided",

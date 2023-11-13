@@ -29,8 +29,9 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
               buildHeader(context),
               const Divider(
                 color: grayColor,
-                indent: 24,
-                endIndent: 24,
+                thickness: 0.1,
+                indent: 18,
+                endIndent: 18,
               ),
               buildMenuItems(context),
               const Spacer(),
@@ -48,7 +49,7 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
       );
 
   Widget buildMenuItems(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14),
+        // padding: const EdgeInsets.symmetric(horizontal: 14),
         child: Column(
           children: const [
             ListTile(
@@ -71,7 +72,7 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
       );
 
   Widget buildMenuItemsBottom(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14),
+        // padding: const EdgeInsets.symmetric(horizontal: 14),
         child: Column(
           children: [
             ListTile(
@@ -126,22 +127,22 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
       );
     }
     return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14),
+        // padding: const EdgeInsets.symmetric(horizontal: 14),
         child: Column(
-          children: [
-            Text(translation(context).not_logged_in.capitalize(),
-                style: const TextStyle(fontSize: 28)),
-            const SizedBox(height: 12),
-            ListTile(
-              leading: const Icon(Icons.login),
-              title: Text(translation(context).log_in.capitalize()),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const Login();
-                }));
-              },
-            )
-          ],
-        ));
+      children: [
+        Text(translation(context).not_logged_in.capitalize(),
+            style: const TextStyle(fontSize: 28)),
+        const SizedBox(height: 12),
+        ListTile(
+          leading: const Icon(Icons.login),
+          title: Text(translation(context).log_in.capitalize()),
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return const Login();
+            }));
+          },
+        )
+      ],
+    ));
   }
 }
