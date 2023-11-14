@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
+import 'package:hasior_flutter/screens/admin_panel/user_panel.dart';
 import 'package:hasior_flutter/screens/login_screen.dart';
 import 'package:hasior_flutter/screens/settings.dart';
 import '../classes/language_constants.dart';
 import '../models/userWithToken.dart';
 import '../screens/home_screen.dart';
 import '../services/api_service.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class MenuNavigationDrawer extends StatefulWidget {
   const MenuNavigationDrawer({Key? key, required this.user}) : super(key: key);
@@ -51,25 +53,32 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
   Widget buildMenuItems(BuildContext context) => Container(
         // padding: const EdgeInsets.symmetric(horizontal: 14),
         child: Column(
-          children: const [
-            ListTile(
-              leading: Icon(Icons.home_outlined),
-              title: Text("Wydziały PK"),
-              onTap: null,
-            ),
-            ListTile(
-              leading: Icon(Icons.calendar_today),
-              title: Text("Kalendarz wydarzeń"),
-              onTap: null,
-            ),
-            ListTile(
-              leading: Icon(Icons.book),
-              title: Text("Zarząd"),
-              onTap: null,
-            ),
-          ],
+          children: selectMenuItems(),
         ),
       );
+
+  List<Widget> selectMenuItems() {
+    var test = [const ListTile(
+      leading: Icon(Icons.calendar_today),
+      title: Text("Kalendarz wydarzeń"),
+      onTap: null,
+    ),];
+
+    if (kIsWeb) {
+      test.add(ListTile(
+        leading: const Icon(Icons.admin_panel_settings),
+        title: const Text("Panel Admina"),
+        onTap: () {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) => const UserPanel()));
+        },
+      ));
+    }
+
+    return test;  
+  }
 
   Widget buildMenuItemsBottom(BuildContext context) => Container(
         // padding: const EdgeInsets.symmetric(horizontal: 14),
