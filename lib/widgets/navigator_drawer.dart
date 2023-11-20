@@ -58,10 +58,15 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
       );
 
   List<Widget> selectMenuItems() {
-    var test = [const ListTile(
-      leading: Icon(Icons.calendar_today),
-      title: Text("Kalendarz wydarzeń"),
-      onTap: null,
+    var test = [ListTile(
+      leading: const Icon(Icons.calendar_today),
+      title: const Text("Kalendarz wydarzeń"),
+      onTap: () {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) => const Home()));
+        },
     ),];
 
     if (kIsWeb) {

@@ -42,5 +42,6 @@
     "log_in": "zaloguj się",
     "error_while_loading": "błąd podczas ładowania",
     "no_upcoming_events": "brak nadchodzących wydarzeń",
-    "no_favorite_events": "brak ulubionych wydarzeń"
+    "no_favorite_events": "brak ulubionych wydarzeń",
+    "admin_panel": "Panel Admina"
 }

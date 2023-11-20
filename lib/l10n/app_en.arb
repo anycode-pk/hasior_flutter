@@ -42,5 +42,6 @@
     "log_in": "log in",
     "error_while_loading": "error while loading",
     "no_upcoming_events": "there are no upcoming events",
-    "no_favorite_events": "no favorite events"
+    "no_favorite_events": "no favorite events",
+    "admin_panel": "Admin Panel"
 }
