@@ -3,7 +3,7 @@ import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 
 import '../classes/globalSnackbar.dart';
-import '../classes/language_constants.dart';
+import '../constants/language_constants.dart';
 import '../theme.dart';
 
 class Register extends StatefulWidget {

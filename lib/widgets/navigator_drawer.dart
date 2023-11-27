@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/screens/login_screen.dart';
 import 'package:hasior_flutter/screens/settings.dart';
-import '../classes/language_constants.dart';
+import '../constants/language_constants.dart';
 import '../models/userWithToken.dart';
 import '../screens/home_screen.dart';
 import '../services/api_service.dart';

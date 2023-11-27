@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hasior_flutter/classes/language.dart';
-import 'package:hasior_flutter/classes/language_constants.dart';
+import 'package:hasior_flutter/constants/language_constants.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';

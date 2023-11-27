@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:hasior_flutter/classes/globalSnackbar.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/widgets/calendar_widget.dart';
-import '../classes/language_constants.dart';
+import '../constants/language_constants.dart';
 import '../models/calendarList.dart';
 import '../models/calendar.dart';
 import '../models/userWithToken.dart';
 import '../widgets/navigator_drawer.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import 'create_event.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -110,7 +111,8 @@ class _HomeState extends State<Home> {
         getData: _getFavouriteEvents,
         delete: true,
         user: user,
-      )
+      ),
+      const CreateEvent()
     ];
     return Scaffold(
       appBar: AppBar(
@@ -185,6 +187,7 @@ class _HomeState extends State<Home> {
                     backgroundColor: Colors.transparent,
                     currentIndex: currentIndex,
                     onTap: (index) => setState(() {
+                      //zrobić odświeżanie tylko potym jak zostanie dodane do ulubionych
                       if (currentIndex != index) {
                         _getEvents();
                         _getFavouriteEvents();
@@ -200,6 +203,8 @@ class _HomeState extends State<Home> {
                           label: translation(context)
                               .favorite_events
                               .capitalize()),
+                      BottomNavigationBarItem(
+                          icon: const Icon(Icons.add), label: "Dodaj"),
                     ],
                   )),
             )

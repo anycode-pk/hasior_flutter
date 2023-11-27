@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 import 'package:intl/intl.dart';
-import '../classes/language_constants.dart';
+import '../constants/language_constants.dart';
 import '../models/calendar.dart';
 import '../models/calendarList.dart';
 import '../models/events.dart';

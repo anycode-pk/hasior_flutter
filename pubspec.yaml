@@ -42,6 +42,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
+  image_picker: ^1.0.4
 
 dependency_overrides:
   intl: ^0.18.0

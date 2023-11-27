@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
+import 'package:http_parser/http_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:hasior_flutter/models/events.dart';
 import 'package:hasior_flutter/models/calendar.dart';
@@ -160,6 +162,37 @@ class ApiService {
         return true;
       }
       throw FormatException(response.body);
+    } on SocketException catch (e) {
+      throw FormatException(e.message);
+    }
+  }
+
+  Future<bool> createEvent(
+      String name,
+      double? price,
+      String? description,
+      String? localization,
+      String? ticketsLink,
+      DateTime eventTime,
+      File? thumbnail) async {
+    try {
+      var uri = Uri.parse("${await getApiAddress()}Event/CreateEvent");
+      var request = http.MultipartRequest("POST", uri);
+      request.fields['Name'] = name;
+      request.fields['Price'] = price != null ? price.toString() : "";
+      request.fields['Description'] = description ?? "";
+      request.fields['Localization'] = localization ?? "";
+      request.fields['TicketsLink'] = ticketsLink ?? "";
+      request.fields['EventTime'] = eventTime.toIso8601String();
+      UserWithToken? user = await userFromSharedPreferences();
+      request.headers.addAll(
+          {"accept": "text/plain", "Authorization": "Bearer ${user?.token}"});
+      request.files.add(http.MultipartFile.fromBytes(
+          'file', await thumbnail!.readAsBytes(),
+          contentType: MediaType('image', 'jpeg')));
+      var response = await request.send();
+      if (response.statusCode == 200) return true;
+      return false;
     } on SocketException catch (e) {
       throw FormatException(e.message);
     }

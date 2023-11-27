@@ -5,7 +5,8 @@ import 'package:hasior_flutter/services/api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../classes/language_constants.dart';
+import '../classes/currency.dart';
+import '../constants/language_constants.dart';
 import '../models/events.dart';
 
 class EventDetails extends StatefulWidget {
@@ -19,8 +20,8 @@ class EventDetails extends StatefulWidget {
 
 class _EventDetailsState extends State<EventDetails> {
   static const grayColor = Color.fromRGBO(105, 105, 105, 1);
-  var currencyFormat = NumberFormat.currency(locale: "pl_PL", symbol: "zł");
-  var isLoaded = false;
+  NumberFormat currencyFormat = Currency().getPLN();
+  bool isLoaded = false;
   Image? eventImage;
 
   @override
@@ -129,7 +130,7 @@ class _EventDetailsState extends State<EventDetails> {
                                                         ),
                                                         Expanded(
                                                           child: Text(
-                                                              "${DateFormat.yMMMMEEEEd(AppLocalizations.of(context)!.localeName).format(DateTime.parse(widget.event.eventTime))} ${translation(context).at_hour} ${DateFormat.Hm("pl_PL").format(DateFormat("yyyy-MM-ddTHH:mm:ssZ").parseUTC(widget.event.eventTime).toLocal())}",
+                                                              "${DateFormat.yMMMMEEEEd(AppLocalizations.of(context)!.localeName).format(DateTime.parse(widget.event.eventTime))} ${translation(context).at_hour} ${DateFormat.Hm(AppLocalizations.of(context)!.localeName).format(DateFormat("yyyy-MM-ddTHH:mm:ssZ").parseUTC(widget.event.eventTime).toLocal())}",
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
@@ -261,17 +262,11 @@ class _EventDetailsState extends State<EventDetails> {
                                   )),
                               Container(
                                 decoration: BoxDecoration(
-                                  image: eventImage != null
-                                      ? DecorationImage(
-                                          image: eventImage?.image ??
-                                              const AssetImage(
-                                                  "assets/logo.png"),
-                                          fit: BoxFit.cover,
-                                        )
-                                      : const DecorationImage(
-                                          image: AssetImage("assets/logo.png"),
-                                          fit: BoxFit.fitHeight,
-                                        ),
+                                  image: DecorationImage(
+                                    image: eventImage?.image ??
+                                        const AssetImage("assets/logo.png"),
+                                    fit: BoxFit.cover,
+                                  ),
                                   boxShadow: const [
                                     BoxShadow(
                                       color: Color.fromRGBO(0, 0, 0, 0.25),

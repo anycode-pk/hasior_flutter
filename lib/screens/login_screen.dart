@@ -6,7 +6,7 @@ import 'package:hasior_flutter/screens/register_screen.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 
 import '../classes/globalSnackbar.dart';
-import '../classes/language_constants.dart';
+import '../constants/language_constants.dart';
 import '../theme.dart';
 
 class Login extends StatefulWidget {

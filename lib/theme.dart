@@ -34,13 +34,14 @@ const int _primarycolorPrimaryValue = 0xFF4574E8;
 
 const accentColor = Color(0xFF4574E8);
 const drawerColor = Color.fromRGBO(24, 32, 38, 1);
+const scaffoldBackgroundColor = Color(0xff15181E);
 
 final ThemeData theme = ThemeData(
     primarySwatch: primarycolor,
     fontFamily: 'Kanit',
     brightness: Brightness.dark,
     primaryColor: accentColor,
-    scaffoldBackgroundColor: const Color(0xff15181E),
+    scaffoldBackgroundColor: scaffoldBackgroundColor,
     disabledColor: const Color.fromARGB(120, 255, 255, 255),
     appBarTheme: const AppBarTheme(
         backgroundColor: Color(0xff15181E),
