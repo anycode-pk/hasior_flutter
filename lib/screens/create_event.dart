@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../classes/globalSnackbar.dart';
+import '../classes/global_snackbar.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
@@ -333,10 +333,15 @@ class _CreateEventState extends State<CreateEvent> {
                                               eventTimeData!,
                                               imageFile);
                                       if (response && context.mounted) {
-                                        Navigator.pop(context);
                                         GlobalSnackbar.infoSnackbar(context,
                                             "Pomyślnie utworzono wydarzenie");
+                                      } else {
+                                        GlobalSnackbar.infoSnackbar(context,
+                                            "Nie udało się utworzyć wydarzenia");
                                       }
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
                                     } on FormatException catch (e) {
                                       GlobalSnackbar.errorSnackbar(context,
                                           "Błąd podczas tworzenia wydarzenia: ${e.message}");

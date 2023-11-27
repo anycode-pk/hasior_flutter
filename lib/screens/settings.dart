@@ -5,7 +5,7 @@ import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../classes/globalSnackbar.dart';
+import '../classes/global_snackbar.dart';
 import '../services/api_service.dart';
 import 'home_screen.dart';
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 
-import '../classes/globalSnackbar.dart';
+import '../classes/global_snackbar.dart';
 import '../constants/language_constants.dart';
 import '../theme.dart';
 

@@ -72,8 +72,7 @@ class ApiService {
   }
 
   Future<Image?> getFileByEventId(int id) async {
-    var uri = Uri.parse(
-        "${await getApiAddress()}file/event/$id");
+    var uri = Uri.parse("${await getApiAddress()}file/event/$id");
     var response = await client.get(uri);
     if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
       return Image.memory(response.bodyBytes);
@@ -176,7 +175,7 @@ class ApiService {
       DateTime eventTime,
       File? thumbnail) async {
     try {
-      var uri = Uri.parse("${await getApiAddress()}Event/CreateEvent");
+      var uri = Uri.parse("${await getApiAddress()}Event");
       var request = http.MultipartRequest("POST", uri);
       request.fields['Name'] = name;
       request.fields['Price'] = price != null ? price.toString() : "";
@@ -185,11 +184,15 @@ class ApiService {
       request.fields['TicketsLink'] = ticketsLink ?? "";
       request.fields['EventTime'] = eventTime.toIso8601String();
       UserWithToken? user = await userFromSharedPreferences();
-      request.headers.addAll(
-          {"accept": "text/plain", "Authorization": "Bearer ${user?.token}"});
-      request.files.add(http.MultipartFile.fromBytes(
-          'file', await thumbnail!.readAsBytes(),
-          contentType: MediaType('image', 'jpeg')));
+      request.headers.addAll({
+        "Content-Type": "multipart/form-data",
+        "Authorization": "Bearer ${user?.token}"
+      });
+      if (thumbnail != null) {
+        request.files.add(http.MultipartFile.fromBytes(
+            'file', await thumbnail.readAsBytes(),
+            contentType: MediaType('image', 'jpeg')));
+      }
       var response = await request.send();
       if (response.statusCode == 200) return true;
       return false;
@@ -244,6 +247,10 @@ class ApiService {
         }));
     if (response.statusCode == 200) {
       return tokenFromJson(response.body);
+    }
+    if (response.statusCode == 400) {
+      await logout();
+      await userFromSharedPreferences();
     }
     throw FormatException(response.body);
   }

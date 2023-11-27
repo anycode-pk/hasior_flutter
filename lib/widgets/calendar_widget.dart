@@ -8,7 +8,7 @@ import '../models/calendarList.dart';
 import '../models/events.dart';
 import '../models/userWithToken.dart';
 import '../screens/event_detail_screen.dart';
-import 'package:hasior_flutter/classes/globalSnackbar.dart';
+import 'package:hasior_flutter/classes/global_snackbar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CalendarWidget extends StatefulWidget {

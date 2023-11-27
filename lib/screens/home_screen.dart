@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hasior_flutter/classes/globalSnackbar.dart';
+import 'package:hasior_flutter/classes/global_snackbar.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/widgets/calendar_widget.dart';
 import '../constants/language_constants.dart';
