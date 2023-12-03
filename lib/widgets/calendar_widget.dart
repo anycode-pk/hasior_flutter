@@ -11,6 +11,8 @@ import '../screens/event_detail_screen.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../theme.dart';
+
 class CalendarWidget extends StatefulWidget {
   const CalendarWidget(
       {super.key,
@@ -48,6 +50,61 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   //     });
   //   }
   // }
+
+  Future _addFavouriteEvent(int id, int index) async {
+    SnackBar snackBar = SnackBar(
+      content: Text(
+        translation(context).added_to_favorites.capitalize(),
+        style:
+            const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.green,
+    );
+    try {
+      bool result = await ApiService().addFavouriteEvent(id);
+      if (result && context.mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        setState(() {
+          widget.calendarList[index].events?.favorite = true;
+        });
+      }
+    } on FormatException catch (e) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      GlobalSnackbar.errorSnackbar(context,
+          translation(context).error_while_adding_to_favorites.capitalize());
+    }
+  }
+
+  Future _removeFavouriteEvent(int id, int index) async {
+    SnackBar snackBar = SnackBar(
+      content: Text(
+        translation(context).removed_from_favorites.capitalize(),
+        style:
+            const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.red,
+    );
+    try {
+      bool result = await ApiService().deleteFavouriteEvent(id);
+      if (result && context.mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        setState(() {
+          widget.calendarList[index].events?.favorite = false;
+        });
+      }
+    } on FormatException catch (e) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      GlobalSnackbar.errorSnackbar(
+          context,
+          translation(context)
+              .error_while_removing_from_favorites
+              .capitalize());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,17 +251,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             onDismissed: widget.delete
                 ? (direction) async {
                     if (direction == DismissDirection.endToStart) {
-                      SnackBar snackBar = SnackBar(
-                        content: Text(
-                          translation(context)
-                              .removed_from_favorites
-                              .capitalize(),
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: Colors.red,
-                      );
                       // ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       setState(() {
                         var time = "";
@@ -235,54 +281,14 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                           }
                         }
                       });
-                      try {
-                        bool result =
-                            await ApiService().deleteFavouriteEvent(event.id);
-                        if (result && context.mounted) {
-                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        }
-                      } on FormatException catch (e) {
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                        GlobalSnackbar.errorSnackbar(
-                            context,
-                            translation(context)
-                                .error_while_removing_from_favorites
-                                .capitalize());
-                      }
+                      await _removeFavouriteEvent(event.id, index);
                     }
                   }
                 : null,
             confirmDismiss: !widget.delete
                 ? (direction) async {
                     if (direction == DismissDirection.startToEnd) {
-                      SnackBar snackBar = SnackBar(
-                        content: Text(
-                          translation(context).added_to_favorites.capitalize(),
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: Colors.green,
-                      );
-                      try {
-                        bool result =
-                            await ApiService().addFavouriteEvent(event.id);
-                        if (result && context.mounted) {
-                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          setState(() {
-                            widget.calendarList[index].events?.favorite = true;
-                          });
-                        }
-                      } on FormatException catch (e) {
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                        GlobalSnackbar.errorSnackbar(
-                            context,
-                            translation(context)
-                                .error_while_adding_to_favorites
-                                .capitalize());
-                      }
+                      await _addFavouriteEvent(event.id, index);
                       // setState(() {
                       //   widget.calendarList[index] = widget.calendarList[index];
                       // });
@@ -338,6 +344,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                     color: grayColor,
                                     fontWeight: FontWeight.bold),
                               ),
+                              const SizedBox(width: 10),
                             ],
                           ),
                           Row(
@@ -380,11 +387,38 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                               ),
                               const SizedBox(width: 20),
                               event.favorite
-                                  ? const Icon(
-                                      Icons.favorite,
-                                      color: Color.fromRGBO(0, 150, 136, 1),
+                                  ? ElevatedButton(
+                                      onPressed: () async {
+                                        await _removeFavouriteEvent(
+                                            event.id, index);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.transparent,
+                                        shadowColor: Colors.transparent,
+                                        shape: const CircleBorder(),
+                                        padding: const EdgeInsets.all(15),
+                                      ),
+                                      child: const Icon(
+                                        Icons.favorite,
+                                        color: Color.fromRGBO(0, 150, 136, 1),
+                                      ),
                                     )
-                                  : Container()
+                                  : ElevatedButton(
+                                      onPressed: () async {
+                                        await _addFavouriteEvent(
+                                            event.id, index);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.transparent,
+                                        shadowColor: Colors.transparent,
+                                        shape: const CircleBorder(),
+                                        padding: const EdgeInsets.all(15),
+                                      ),
+                                      child: const Icon(
+                                        Icons.favorite_outline,
+                                        color: Color.fromRGBO(0, 150, 136, 1),
+                                      ),
+                                    )
                             ],
                           ),
                         ],

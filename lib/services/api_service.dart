@@ -82,12 +82,16 @@ class ApiService {
   }
 
   Future<bool> addFavouriteEvent(int id) async {
-    var uri = Uri.parse("${await getApiAddress()}favourite-event/$id");
+    var uri = Uri.parse("${await getApiAddress()}favourite-event");
     UserWithToken? user = await userFromSharedPreferences();
-    var response = await client.post(uri, headers: {
-      "accept": "text/plain",
-      "Authorization": "Bearer ${user?.token}"
-    });
+    var response = await client.post(uri,
+        headers: {
+          "accept": "text/plain",
+          "Authorization": "Bearer ${user?.token}"
+        },
+        body: jsonEncode({
+          "eventId": id,
+        }));
     if (response.statusCode == 200) {
       return true;
     }
@@ -190,8 +194,8 @@ class ApiService {
       });
       if (thumbnail != null) {
         request.files.add(http.MultipartFile.fromBytes(
-            'file', await thumbnail.readAsBytes(),
-            contentType: MediaType('image', 'jpeg')));
+            'file', thumbnail.readAsBytesSync(),
+            contentType: MediaType('image', 'jpg')));
       }
       var response = await request.send();
       if (response.statusCode == 200) return true;

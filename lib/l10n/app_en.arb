@@ -42,5 +42,22 @@
     "log_in": "log in",
     "error_while_loading": "error while loading",
     "no_upcoming_events": "there are no upcoming events",
-    "no_favorite_events": "no favorite events"
+    "no_favorite_events": "no favorite events",
+    "add": "add",
+    "error_while_selecting_a_photo": "error while selecting a photo",
+    "add_new_event": "add new event",
+    "name": "name",
+    "enter_event_name": "enter event name",
+    "price": "price",
+    "description": "description",
+    "location": "location",
+    "link_to_page": "link to page",
+    "event_date": "event date",
+    "enter_event_date": "enter event date",
+    "event_photo": "event photo",
+    "add_picture": "add picture",
+    "event_has_been_successfully_created": "event has been successfully created",
+    "failed_to_create_event": "failed to create event",
+    "an_error_occurred_during_creating_event": "an error occurred during creating event",
+    "create_event": "create event"
 }

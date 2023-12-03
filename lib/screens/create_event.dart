@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../classes/global_snackbar.dart';
+import '../constants/language_constants.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
@@ -62,16 +62,18 @@ class _CreateEventState extends State<CreateEvent> {
         imageFile = imageTemporary;
         this.image = Image.file(imageTemporary);
       });
-    } on PlatformException catch (e) {
-      GlobalSnackbar.errorSnackbar(context, "Błąd podczas wybierania obrazu");
+    } on PlatformException {
+      GlobalSnackbar.errorSnackbar(context,
+          translation(context).error_while_selecting_a_photo.capitalize());
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          AppBar(title: const Text("Dodaj nowe wydarzenie"), centerTitle: true),
+      appBar: AppBar(
+          title: Text(translation(context).add_new_event.capitalize()),
+          centerTitle: true),
       body: CustomScrollView(slivers: [
         SliverFillRemaining(
           hasScrollBody: false,
@@ -82,27 +84,32 @@ class _CreateEventState extends State<CreateEvent> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Nazwa", style: textStyle),
+                      Text("${translation(context).name.capitalize()}*",
+                          style: textStyle),
                       const SizedBox(height: 10),
                       TextFormField(
                         cursorColor: Colors.white,
                         controller: nameController,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "Wprowadź nazwę";
+                            return translation(context)
+                                .enter_event_name
+                                .capitalize();
                           }
                           return null;
                         },
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
-                          hintText: "Nazwa",
+                          hintText:
+                              "${translation(context).name.capitalize()}*",
                           focusedBorder: const OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white),
                           ),
                         ),
                       ),
                       const SizedBox(height: 15),
-                      Text("Cena", style: textStyle),
+                      Text(translation(context).price.capitalize(),
+                          style: textStyle),
                       const SizedBox(height: 10),
                       TextFormField(
                         cursorColor: Colors.white,
@@ -123,14 +130,15 @@ class _CreateEventState extends State<CreateEvent> {
                         // },
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
-                          hintText: "Cena",
+                          hintText: translation(context).price.capitalize(),
                           focusedBorder: const OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white),
                           ),
                         ),
                       ),
                       const SizedBox(height: 15),
-                      Text("Opis", style: textStyle),
+                      Text(translation(context).description.capitalize(),
+                          style: textStyle),
                       const SizedBox(height: 10),
                       TextFormField(
                         cursorColor: Colors.white,
@@ -144,14 +152,16 @@ class _CreateEventState extends State<CreateEvent> {
                         // },
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
-                          hintText: "Opis",
+                          hintText:
+                              translation(context).description.capitalize(),
                           focusedBorder: const OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white),
                           ),
                         ),
                       ),
                       const SizedBox(height: 15),
-                      Text("Lokalizacja", style: textStyle),
+                      Text(translation(context).location.capitalize(),
+                          style: textStyle),
                       const SizedBox(height: 10),
                       TextFormField(
                         cursorColor: Colors.white,
@@ -164,14 +174,15 @@ class _CreateEventState extends State<CreateEvent> {
                         // },
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
-                          hintText: "Lokalizacja",
+                          hintText: translation(context).location.capitalize(),
                           focusedBorder: const OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white),
                           ),
                         ),
                       ),
                       const SizedBox(height: 15),
-                      Text("Link do strony", style: textStyle),
+                      Text(translation(context).link_to_page.capitalize(),
+                          style: textStyle),
                       const SizedBox(height: 10),
                       TextFormField(
                         cursorColor: Colors.white,
@@ -184,14 +195,16 @@ class _CreateEventState extends State<CreateEvent> {
                         // },
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
-                          hintText: "Link do strony",
+                          hintText:
+                              translation(context).link_to_page.capitalize(),
                           focusedBorder: const OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white),
                           ),
                         ),
                       ),
                       const SizedBox(height: 15),
-                      Text("Data wydarzenia", style: textStyle),
+                      Text("${translation(context).event_date.capitalize()}*",
+                          style: textStyle),
                       const SizedBox(height: 10),
                       TextFormField(
                         cursorColor: Colors.white,
@@ -199,7 +212,9 @@ class _CreateEventState extends State<CreateEvent> {
                         controller: eventTimeController,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "Wprowadź datę wydarzenia";
+                            return translation(context)
+                                .enter_event_date
+                                .capitalize();
                           }
                           return null;
                         },
@@ -223,14 +238,16 @@ class _CreateEventState extends State<CreateEvent> {
                         },
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
-                          hintText: "Data wydarzenia",
+                          hintText:
+                              "${translation(context).event_date.capitalize()}*",
                           focusedBorder: const OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white),
                           ),
                         ),
                       ),
                       const SizedBox(height: 15),
-                      Text("Zdjęcie wydarzenia", style: textStyle),
+                      Text(translation(context).event_photo.capitalize(),
+                          style: textStyle),
                       const SizedBox(height: 10),
                       SizedBox(
                           width: double.infinity,
@@ -240,17 +257,18 @@ class _CreateEventState extends State<CreateEvent> {
                                 foregroundColor: Colors.white,
                                 side: const BorderSide(color: Colors.white)),
                             onPressed: () => pickImage(),
-                            child: Text("Dodaj zdjęcie"),
+                            child: Text(
+                                translation(context).add_picture.capitalize()),
                           )),
                       const SizedBox(height: 15),
                       image != null
-                          ? Container(
+                          ? SizedBox(
                               height: 120,
                               width: 120,
                               child: Stack(
                                 children: [
                                   Container(
-                                    margin: EdgeInsets.all(10),
+                                    margin: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
                                         image: image!.image,
@@ -271,22 +289,22 @@ class _CreateEventState extends State<CreateEvent> {
                                     child: null,
                                   ),
                                   Align(
-                                    alignment: Alignment(1.5, -1),
+                                    alignment: const Alignment(1.5, -1),
                                     child: ElevatedButton(
                                       onPressed: () {
                                         setState(() {
                                           image = null;
                                         });
                                       },
-                                      child: Icon(
-                                        Icons.clear,
-                                        color: primarycolor,
-                                      ),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
                                             scaffoldBackgroundColor,
-                                        shape: CircleBorder(),
-                                        padding: EdgeInsets.all(10),
+                                        shape: const CircleBorder(),
+                                        padding: const EdgeInsets.all(10),
+                                      ),
+                                      child: const Icon(
+                                        Icons.clear,
+                                        color: primarycolor,
                                       ),
                                     ),
                                   )
@@ -333,18 +351,24 @@ class _CreateEventState extends State<CreateEvent> {
                                               eventTimeData!,
                                               imageFile);
                                       if (response && context.mounted) {
-                                        GlobalSnackbar.infoSnackbar(context,
-                                            "Pomyślnie utworzono wydarzenie");
+                                        GlobalSnackbar.infoSnackbar(
+                                            context,
+                                            translation(context)
+                                                .event_has_been_successfully_created
+                                                .capitalize());
                                       } else {
-                                        GlobalSnackbar.infoSnackbar(context,
-                                            "Nie udało się utworzyć wydarzenia");
+                                        GlobalSnackbar.infoSnackbar(
+                                            context,
+                                            translation(context)
+                                                .failed_to_create_event
+                                                .capitalize());
                                       }
                                       setState(() {
                                         _isLoading = false;
                                       });
                                     } on FormatException catch (e) {
                                       GlobalSnackbar.errorSnackbar(context,
-                                          "Błąd podczas tworzenia wydarzenia: ${e.message}");
+                                          "${translation(context).an_error_occurred_during_creating_event.capitalize()}: ${e.message}");
                                       setState(() {
                                         _isLoading = false;
                                       });
@@ -353,7 +377,9 @@ class _CreateEventState extends State<CreateEvent> {
                                 },
                           label: _isLoading
                               ? const Text("")
-                              : Text("Utwórz wydarzenie"),
+                              : Text(translation(context)
+                                  .create_event
+                                  .capitalize()),
                         ),
                       ),
                       const SizedBox(height: kBottomNavigationBarHeight + 20)

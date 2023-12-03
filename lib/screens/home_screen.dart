@@ -204,7 +204,8 @@ class _HomeState extends State<Home> {
                               .favorite_events
                               .capitalize()),
                       BottomNavigationBarItem(
-                          icon: const Icon(Icons.add), label: "Dodaj"),
+                          icon: const Icon(Icons.add),
+                          label: translation(context).add.capitalize()),
                     ],
                   )),
             )

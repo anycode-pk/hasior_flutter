@@ -42,5 +42,22 @@
     "log_in": "zaloguj się",
     "error_while_loading": "błąd podczas ładowania",
     "no_upcoming_events": "brak nadchodzących wydarzeń",
-    "no_favorite_events": "brak ulubionych wydarzeń"
+    "no_favorite_events": "brak ulubionych wydarzeń",
+    "add": "dodaj",
+    "error_while_selecting_a_photo": "błąd podczas wybierania zdjęcia",
+    "add_new_event": "dodaj nowe wydarzenie",
+    "name": "nazwa",
+    "enter_event_name": "wprowadź nazwę wydarzenia",
+    "price": "cena",
+    "description": "opis",
+    "location": "lokalizacja",
+    "link_to_page": "link do strony",
+    "event_date": "data wydarzenia",
+    "enter_event_date": "wprowadź datę wydarzenia",
+    "event_photo": "zdjęcie wydarzenia",
+    "add_picture": "dodaj zdjęcie",
+    "event_has_been_successfully_created": "pomyślnie utworzono wydarzenie",
+    "failed_to_create_event": "nie udało się utworzyć wydarzenia",
+    "an_error_occurred_during_creating_event": "błąd podczas tworzenia wydarzenia",
+    "create_event": "utwórz wydarzenie"
 }
