@@ -71,11 +71,11 @@ class ApiService {
     throw FormatException(response.body);
   }
 
-  Future<Image?> getFileByEventId(int id) async {
+  Future<File?> getFileByEventId(int id) async {
     var uri = Uri.parse("${await getApiAddress()}file/event/$id");
     var response = await client.get(uri);
     if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
-      return Image.memory(response.bodyBytes);
+      return File.fromRawPath(response.bodyBytes);
     }
     return null;
     //throw FormatException(response.body);
@@ -179,7 +179,7 @@ class ApiService {
       DateTime eventTime,
       File? thumbnail) async {
     try {
-      var uri = Uri.parse("${await getApiAddress()}Event");
+      var uri = Uri.parse("${await getApiAddress()}event");
       var request = http.MultipartRequest("POST", uri);
       request.fields['Name'] = name;
       request.fields['Price'] = price != null ? price.toString() : "";
@@ -200,6 +200,40 @@ class ApiService {
       var response = await request.send();
       if (response.statusCode == 200) return true;
       return false;
+    } on SocketException catch (e) {
+      throw FormatException(e.message);
+    }
+  }
+
+  Future<bool> editEvent(
+      int id,
+      String name,
+      double? price,
+      String? description,
+      String? localization,
+      String? ticketsLink,
+      DateTime eventTime) async {
+    try {
+      var uri = Uri.parse("${await getApiAddress()}event");
+      UserWithToken? user = await userFromSharedPreferences();
+      var response = await client.put(uri,
+          headers: {
+            "content-type": "application/json",
+            "Authorization": "Bearer ${user?.token}"
+          },
+          body: jsonEncode({
+            "id": id,
+            "name": name,
+            "price": price,
+            "description": description,
+            "localization": localization,
+            "ticketsLink": ticketsLink,
+            "eventTime": eventTime.toIso8601String(),
+          }));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      throw FormatException(response.body);
     } on SocketException catch (e) {
       throw FormatException(e.message);
     }

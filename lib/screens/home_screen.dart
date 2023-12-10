@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
+import 'package:hasior_flutter/enums/role.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/widgets/calendar_widget.dart';
 import '../constants/language_constants.dart';
@@ -9,7 +10,7 @@ import '../models/userWithToken.dart';
 import '../widgets/navigator_drawer.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
-import 'create_event.dart';
+import 'create_or_edit_event.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -39,6 +40,13 @@ class _HomeState extends State<Home> {
 
   Future _getUser() async {
     user = await ApiService().userFromSharedPreferences();
+  }
+
+  bool _isAdmin() {
+    if (user == null) {
+      return false;
+    }
+    return user!.roles.contains(Role.ADMIN);
   }
 
   Future _getEvents([String? name]) async {
@@ -111,8 +119,7 @@ class _HomeState extends State<Home> {
         getData: _getFavouriteEvents,
         delete: true,
         user: user,
-      ),
-      const CreateEvent()
+      )
     ];
     return Scaffold(
       appBar: AppBar(
@@ -165,6 +172,22 @@ class _HomeState extends State<Home> {
       ),
       extendBody: true,
       body: screens[currentIndex],
+      floatingActionButton: _isAdmin()
+          ? FloatingActionButton(
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const CreateOrEditEvent()),
+                );
+                if (result != null) {
+                  _getEvents();
+                }
+              },
+              backgroundColor: theme.primaryColor,
+              child: const Icon(Icons.add),
+            )
+          : null,
       bottomNavigationBar: user != null
           ? Container(
               decoration: BoxDecoration(
@@ -187,7 +210,6 @@ class _HomeState extends State<Home> {
                     backgroundColor: Colors.transparent,
                     currentIndex: currentIndex,
                     onTap: (index) => setState(() {
-                      //zrobić odświeżanie tylko potym jak zostanie dodane do ulubionych
                       if (currentIndex != index) {
                         _getEvents();
                         _getFavouriteEvents();
@@ -203,13 +225,11 @@ class _HomeState extends State<Home> {
                           label: translation(context)
                               .favorite_events
                               .capitalize()),
-                      BottomNavigationBarItem(
-                          icon: const Icon(Icons.add),
-                          label: translation(context).add.capitalize()),
                     ],
                   )),
             )
           : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
+import 'package:hasior_flutter/enums/role.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
+import 'package:hasior_flutter/models/userWithToken.dart';
+import 'package:hasior_flutter/screens/create_or_edit_event.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,8 +16,9 @@ import '../models/events.dart';
 
 class EventDetails extends StatefulWidget {
   final Events event;
+  final UserWithToken? user;
 
-  const EventDetails({super.key, required this.event});
+  const EventDetails({super.key, required this.event, required this.user});
 
   @override
   State<EventDetails> createState() => _EventDetailsState();
@@ -30,9 +36,12 @@ class _EventDetailsState extends State<EventDetails> {
     _getData();
   }
 
-  void _getData() async {
+  Future _getData() async {
     try {
-      eventImage = await ApiService().getFileByEventId(widget.event.id);
+      File? file = await ApiService().getFileByEventId(widget.event.id);
+      if (file != null) {
+        eventImage = Image.file(file);
+      }
       setState(() {
         isLoaded = true;
       });
@@ -42,7 +51,14 @@ class _EventDetailsState extends State<EventDetails> {
     }
   }
 
-  _launchURL(String url) async {
+  bool _isAdmin() {
+    if (widget.user == null) {
+      return false;
+    }
+    return widget.user!.roles.contains(Role.ADMIN);
+  }
+
+  Future _launchURL(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
@@ -57,6 +73,21 @@ class _EventDetailsState extends State<EventDetails> {
         appBar: AppBar(
           title: Text(translation(context).detailed_view.capitalize()),
           centerTitle: true,
+          actions: _isAdmin()
+              ? [
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                CreateOrEditEvent(event: widget.event)),
+                      );
+                    },
+                  ),
+                ]
+              : null,
         ),
         body: Visibility(
             visible: isLoaded,

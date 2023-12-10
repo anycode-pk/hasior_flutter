@@ -59,5 +59,9 @@
     "event_has_been_successfully_created": "event has been successfully created",
     "failed_to_create_event": "failed to create event",
     "an_error_occurred_during_creating_event": "an error occurred during creating event",
-    "create_event": "create event"
+    "create_event": "create event",
+    "edit_event": "edit event",
+    "event_has_been_successfully_edited": "event has been successfully edited",
+    "failed_to_edit_event": "failed to edit event",
+    "an_error_occurred_during_editing_event": "an error occurred during editing event"
 }

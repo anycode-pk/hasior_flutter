@@ -59,5 +59,9 @@
     "event_has_been_successfully_created": "pomyślnie utworzono wydarzenie",
     "failed_to_create_event": "nie udało się utworzyć wydarzenia",
     "an_error_occurred_during_creating_event": "błąd podczas tworzenia wydarzenia",
-    "create_event": "utwórz wydarzenie"
+    "create_event": "utwórz wydarzenie",
+    "edit_event": "edytuj wydarzenie",
+    "event_has_been_successfully_edited": "pomyślnie zedytowano wydarzenie",
+    "failed_to_edit_event": "nie udało się zedytować wydarzenia",
+    "an_error_occurred_during_editing_event": "błąd podczas edycji wydarzenia"
 }

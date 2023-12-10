@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
+import 'package:hasior_flutter/models/events.dart';
+import 'package:hasior_flutter/screens/home_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -12,14 +14,15 @@ import '../constants/language_constants.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
-class CreateEvent extends StatefulWidget {
-  const CreateEvent({super.key});
+class CreateOrEditEvent extends StatefulWidget {
+  final Events? event;
+  const CreateOrEditEvent({super.key, this.event});
 
   @override
-  State<CreateEvent> createState() => _CreateEventState();
+  State<CreateOrEditEvent> createState() => _CreateOrEditEventState();
 }
 
-class _CreateEventState extends State<CreateEvent> {
+class _CreateOrEditEventState extends State<CreateOrEditEvent> {
   final _formKey = GlobalKey<FormState>();
   final firstDate = DateTime.now();
   final lastDate = DateTime(DateTime.now().year + 120);
@@ -35,15 +38,133 @@ class _CreateEventState extends State<CreateEvent> {
   TextEditingController linkController = TextEditingController();
   TextEditingController eventTimeController = TextEditingController();
 
-  Future<DateTime?> pickDate() => showDatePicker(
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _setForm();
+  }
+
+  Future _setForm() async {
+    if (widget.event != null) {
+      nameController.text = widget.event!.name;
+      priceController.text =
+          widget.event!.price == null ? "" : widget.event!.price.toString();
+      descriptionController.text = widget.event!.description ?? "";
+      localizationController.text = widget.event!.localization ?? "";
+      linkController.text = widget.event!.ticketsLink ?? "";
+      eventTimeData = DateTime.parse(widget.event!.eventTime);
+      eventTimeController.value = TextEditingValue(
+          text:
+              "${DateFormat.yMd(AppLocalizations.of(context)!.localeName).format(DateTime.parse(widget.event!.eventTime))} ${DateFormat.Hm(AppLocalizations.of(context)!.localeName).format(DateTime.parse(widget.event!.eventTime))}",
+          selection: TextSelection.fromPosition(
+            TextPosition(offset: widget.event!.eventTime.length),
+          ));
+      await _getData(widget.event!.id);
+    }
+  }
+
+  Future<File?> _getData(int id) async {
+    try {
+      imageFile = await ApiService().getFileByEventId(id);
+    } catch (e) {
+      GlobalSnackbar.errorSnackbar(
+          context, translation(context).error_while_loading.capitalize());
+    }
+  }
+
+  Future _createNewEvent() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      var response = await ApiService().createEvent(
+          nameController.text,
+          double.tryParse(priceController.text.replaceAll(",", "")),
+          descriptionController.text,
+          localizationController.text,
+          linkController.text,
+          eventTimeData!,
+          imageFile);
+      if (response && context.mounted) {
+        GlobalSnackbar.infoSnackbar(
+            context,
+            translation(context)
+                .event_has_been_successfully_created
+                .capitalize());
+        Navigator.pop(context, true);
+      } else {
+        GlobalSnackbar.errorSnackbar(
+            context, translation(context).failed_to_create_event.capitalize());
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    } on FormatException catch (e) {
+      GlobalSnackbar.errorSnackbar(context,
+          "${translation(context).an_error_occurred_during_creating_event.capitalize()}: ${e.message}");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future _editEvent() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      var response = await ApiService().editEvent(
+          widget.event!.id,
+          nameController.text,
+          priceController.text.isEmpty
+              ? null
+              : double.tryParse(priceController.text.replaceAll(",", "")),
+          descriptionController.text.isEmpty
+              ? null
+              : descriptionController.text,
+          localizationController.text.isEmpty
+              ? null
+              : localizationController.text,
+          linkController.text.isEmpty ? null : linkController.text,
+          eventTimeData!);
+      if (response && context.mounted) {
+        GlobalSnackbar.infoSnackbar(
+            context,
+            translation(context)
+                .event_has_been_successfully_edited
+                .capitalize());
+        Navigator.of(context).popUntil((route) => route.isFirst);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const Home(),
+          ),
+        );
+      } else {
+        GlobalSnackbar.errorSnackbar(
+            context, translation(context).failed_to_edit_event.capitalize());
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    } on FormatException catch (e) {
+      GlobalSnackbar.errorSnackbar(context,
+          "${translation(context).an_error_occurred_during_editing_event.capitalize()}: ${e.message}");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<DateTime?> pickDate([DateTime? initialDate]) => showDatePicker(
       context: context,
-      initialDate: firstDate,
+      initialDate: initialDate ?? firstDate,
       firstDate: firstDate,
       lastDate: lastDate);
 
-  Future<TimeOfDay?> pickTime() => showTimePicker(
+  Future<TimeOfDay?> pickTime([TimeOfDay? initialTime]) => showTimePicker(
         context: context,
-        initialTime: TimeOfDay.now(),
+        initialTime: initialTime ?? TimeOfDay.now(),
         initialEntryMode: TimePickerEntryMode.input,
         builder: (BuildContext context, Widget? child) {
           return MediaQuery(
@@ -72,7 +193,9 @@ class _CreateEventState extends State<CreateEvent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(translation(context).add_new_event.capitalize()),
+          title: Text(widget.event == null
+              ? translation(context).add_new_event.capitalize()
+              : translation(context).edit_event.capitalize()),
           centerTitle: true),
       body: CustomScrollView(slivers: [
         SliverFillRemaining(
@@ -219,9 +342,11 @@ class _CreateEventState extends State<CreateEvent> {
                           return null;
                         },
                         onTap: () async {
-                          DateTime? date = await pickDate();
+                          DateTime? date = await pickDate(eventTimeData);
                           if (date == null) return;
-                          TimeOfDay? time = await pickTime();
+                          TimeOfDay? time = await pickTime(eventTimeData != null
+                              ? TimeOfDay.fromDateTime(eventTimeData!)
+                              : null);
                           if (time == null) return;
                           final dateTime = DateTime(date.year, date.month,
                               date.day, time.hour, time.minute);
@@ -333,56 +458,27 @@ class _CreateEventState extends State<CreateEvent> {
                           onPressed: _isLoading
                               ? null
                               : () async {
-                                  if (_formKey.currentState!.validate() &&
-                                      eventTimeData != null) {
-                                    try {
-                                      setState(() {
-                                        _isLoading = true;
-                                      });
-                                      var response = await ApiService()
-                                          .createEvent(
-                                              nameController.text,
-                                              double.tryParse(priceController
-                                                  .text
-                                                  .replaceAll(",", "")),
-                                              descriptionController.text,
-                                              localizationController.text,
-                                              linkController.text,
-                                              eventTimeData!,
-                                              imageFile);
-                                      if (response && context.mounted) {
-                                        GlobalSnackbar.infoSnackbar(
-                                            context,
-                                            translation(context)
-                                                .event_has_been_successfully_created
-                                                .capitalize());
-                                      } else {
-                                        GlobalSnackbar.infoSnackbar(
-                                            context,
-                                            translation(context)
-                                                .failed_to_create_event
-                                                .capitalize());
-                                      }
-                                      setState(() {
-                                        _isLoading = false;
-                                      });
-                                    } on FormatException catch (e) {
-                                      GlobalSnackbar.errorSnackbar(context,
-                                          "${translation(context).an_error_occurred_during_creating_event.capitalize()}: ${e.message}");
-                                      setState(() {
-                                        _isLoading = false;
-                                      });
-                                    }
+                                  if (!_formKey.currentState!.validate() &&
+                                      eventTimeData == null) {
+                                    return;
+                                  }
+                                  if (widget.event == null) {
+                                    await _createNewEvent();
+                                  } else {
+                                    await _editEvent();
                                   }
                                 },
                           label: _isLoading
                               ? const Text("")
-                              : Text(translation(context)
-                                  .create_event
-                                  .capitalize()),
+                              : Text(widget.event == null
+                                  ? translation(context)
+                                      .create_event
+                                      .capitalize()
+                                  : translation(context)
+                                      .edit_event
+                                      .capitalize()),
                         ),
-                      ),
-                      const SizedBox(height: kBottomNavigationBarHeight + 20)
+                      )
                     ],
                   ))),
         )

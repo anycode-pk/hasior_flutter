@@ -306,6 +306,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return EventDetails(
                       event: event,
+                      user: widget.user,
                     );
                   }));
                 },
@@ -386,39 +387,43 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                 ),
                               ),
                               const SizedBox(width: 20),
-                              event.favorite
-                                  ? ElevatedButton(
-                                      onPressed: () async {
-                                        await _removeFavouriteEvent(
-                                            event.id, index);
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.transparent,
-                                        shadowColor: Colors.transparent,
-                                        shape: const CircleBorder(),
-                                        padding: const EdgeInsets.all(15),
-                                      ),
-                                      child: const Icon(
-                                        Icons.favorite,
-                                        color: Color.fromRGBO(0, 150, 136, 1),
-                                      ),
-                                    )
-                                  : ElevatedButton(
-                                      onPressed: () async {
-                                        await _addFavouriteEvent(
-                                            event.id, index);
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.transparent,
-                                        shadowColor: Colors.transparent,
-                                        shape: const CircleBorder(),
-                                        padding: const EdgeInsets.all(15),
-                                      ),
-                                      child: const Icon(
-                                        Icons.favorite_outline,
-                                        color: Color.fromRGBO(0, 150, 136, 1),
-                                      ),
-                                    )
+                              widget.user != null
+                                  ? event.favorite
+                                      ? ElevatedButton(
+                                          onPressed: () async {
+                                            await _removeFavouriteEvent(
+                                                event.id, index);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.transparent,
+                                            shadowColor: Colors.transparent,
+                                            shape: const CircleBorder(),
+                                            padding: const EdgeInsets.all(15),
+                                          ),
+                                          child: const Icon(
+                                            Icons.favorite,
+                                            color:
+                                                Color.fromRGBO(0, 150, 136, 1),
+                                          ),
+                                        )
+                                      : ElevatedButton(
+                                          onPressed: () async {
+                                            await _addFavouriteEvent(
+                                                event.id, index);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.transparent,
+                                            shadowColor: Colors.transparent,
+                                            shape: const CircleBorder(),
+                                            padding: const EdgeInsets.all(15),
+                                          ),
+                                          child: const Icon(
+                                            Icons.favorite_outline,
+                                            color:
+                                                Color.fromRGBO(0, 150, 136, 1),
+                                          ),
+                                        )
+                                  : Container()
                             ],
                           ),
                         ],

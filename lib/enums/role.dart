@@ -1,6 +1,7 @@
-enum Role { USER, ADMIN }
+enum Role { USER, ADMIN, OWNER }
 
-final roleValues = EnumValues({"USER": Role.USER, "ADMIN": Role.ADMIN});
+final roleValues =
+    EnumValues({"USER": Role.USER, "ADMIN": Role.ADMIN, "OWNER": Role.OWNER});
 
 class EnumValues<T> {
   Map<String, T> map;
