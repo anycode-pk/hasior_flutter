@@ -6,6 +6,7 @@ import 'package:hasior_flutter/enums/role.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/models/userWithToken.dart';
 import 'package:hasior_flutter/screens/create_or_edit_event.dart';
+import 'package:hasior_flutter/screens/home_screen.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -67,6 +68,51 @@ class _EventDetailsState extends State<EventDetails> {
     }
   }
 
+  void showAlertDialog(BuildContext context) {
+    Widget cancelButton = TextButton(
+      child: Text(translation(context).cancel.capitalize()),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = ElevatedButton(
+        onPressed: () async {
+          try {
+            await ApiService().deleteEvent(widget.event.id).then((value) {
+              GlobalSnackbar.infoSnackbar(context,
+                  translation(context).event_successfully_deleted.capitalize());
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Home(),
+                ),
+              );
+            });
+          } catch (e) {
+            Navigator.pop(context);
+            GlobalSnackbar.errorSnackbar(context,
+                translation(context).error_while_deleting_event.capitalize());
+          }
+        },
+        style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+        child: Text(translation(context).delete.capitalize()));
+    AlertDialog alert = AlertDialog(
+      title: Text(translation(context).delete_event_question.capitalize()),
+      content: Text(translation(context).confirm_deletion.capitalize()),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,6 +130,12 @@ class _EventDetailsState extends State<EventDetails> {
                             builder: (context) =>
                                 CreateOrEditEvent(event: widget.event)),
                       );
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      showAlertDialog(context);
                     },
                   ),
                 ]

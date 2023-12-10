@@ -63,5 +63,11 @@
     "edit_event": "edytuj wydarzenie",
     "event_has_been_successfully_edited": "pomyślnie zedytowano wydarzenie",
     "failed_to_edit_event": "nie udało się zedytować wydarzenia",
-    "an_error_occurred_during_editing_event": "błąd podczas edycji wydarzenia"
+    "an_error_occurred_during_editing_event": "błąd podczas edycji wydarzenia",
+    "cancel": "anuluj",
+    "delete": "usuń",
+    "delete_event_question": "usunąć wydarzenie?",
+    "confirm_deletion": "Czy napewno chcesz usunąć to wydarzenie? Tej operacji nie da się cofnąć.",
+    "error_while_deleting_event": "błąd podczas usuwania wydarzenia",
+    "event_successfully_deleted": "pomyślnie usunięto wydarzenie"
 }
