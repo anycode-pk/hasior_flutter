@@ -245,12 +245,16 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
                           FilteringTextInputFormatter.allow(
                               RegExp(r'^\d+\.?\d{0,2}')),
                         ],
-                        // validator: (value) {
-                        //   if (value == null || value.isEmpty) {
-                        //     return "Wprowadź cenę";
-                        //   }
-                        //   return null;
-                        // },
+                        validator: (value) {
+                          if (value != null &&
+                              value.isNotEmpty &&
+                              !RegExp(r'^\d+\.?\d{0,2}').hasMatch(value)) {
+                            return translation(context)
+                                .enter_valid_price
+                                .capitalize();
+                          }
+                          return null;
+                        },
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
                           hintText: translation(context).price.capitalize(),
@@ -310,12 +314,17 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
                       TextFormField(
                         cursorColor: Colors.white,
                         controller: linkController,
-                        // validator: (value) {
-                        //   if (value == null || value.isEmpty) {
-                        //     return "Wprowadź link do strony";
-                        //   }
-                        //   return null;
-                        // },
+                        validator: (value) {
+                          if (value != null &&
+                              value.isNotEmpty &&
+                              !(Uri.tryParse(value)?.hasAbsolutePath ??
+                                  false)) {
+                            return translation(context)
+                                .enter_valid_website_link
+                                .capitalize();
+                          }
+                          return null;
+                        },
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
                           hintText:
@@ -353,6 +362,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
                           setState(() {
                             eventTimeData = dateTime;
                           });
+                          if (!mounted) return;
                           eventTimeController.value = TextEditingValue(
                               text:
                                   "${DateFormat.yMd(AppLocalizations.of(context)!.localeName).format(DateTime.parse(dateTime.toIso8601String()))} ${DateFormat.Hm(AppLocalizations.of(context)!.localeName).format(DateTime.parse(dateTime.toIso8601String()))}",
@@ -458,7 +468,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
                           onPressed: _isLoading
                               ? null
                               : () async {
-                                  if (!_formKey.currentState!.validate() &&
+                                  if (!_formKey.currentState!.validate() ||
                                       eventTimeData == null) {
                                     return;
                                   }

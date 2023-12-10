@@ -65,12 +65,13 @@ class _LoginState extends State<Login> {
                                   return translation(context)
                                       .enter_your_email
                                       .capitalize();
+                                } else if (!RegExp(
+                                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                    .hasMatch(value)) {
+                                  return translation(context)
+                                      .please_enter_valid_email
+                                      .capitalize();
                                 }
-                                // else if (!RegExp(
-                                //         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                //     .hasMatch(value)) {
-                                //   return translation(context).please_enter_valid_email.capitalize();
-                                // }
                                 return null;
                               },
                               decoration: InputDecoration(
