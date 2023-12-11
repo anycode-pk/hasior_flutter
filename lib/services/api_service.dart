@@ -82,16 +82,12 @@ class ApiService {
   }
 
   Future<bool> addFavouriteEvent(int id) async {
-    var uri = Uri.parse("${await getApiAddress()}favourite-event");
+    var uri = Uri.parse("${await getApiAddress()}favourite-event/$id");
     UserWithToken? user = await userFromSharedPreferences();
-    var response = await client.post(uri,
-        headers: {
-          "accept": "text/plain",
-          "Authorization": "Bearer ${user?.token}"
-        },
-        body: jsonEncode({
-          "eventId": id,
-        }));
+    var response = await client.post(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
     if (response.statusCode == 200) {
       return true;
     }

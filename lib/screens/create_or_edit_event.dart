@@ -86,7 +86,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
           eventTimeData!,
           imageFile);
       if (response && context.mounted) {
-        GlobalSnackbar.infoSnackbar(
+        GlobalSnackbar.successSnackbar(
             context,
             translation(context)
                 .event_has_been_successfully_created
@@ -128,7 +128,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
           linkController.text.isEmpty ? null : linkController.text,
           eventTimeData!);
       if (response && context.mounted) {
-        GlobalSnackbar.infoSnackbar(
+        GlobalSnackbar.successSnackbar(
             context,
             translation(context)
                 .event_has_been_successfully_edited

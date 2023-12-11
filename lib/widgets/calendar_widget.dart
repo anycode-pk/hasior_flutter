@@ -52,20 +52,12 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   // }
 
   Future _addFavouriteEvent(int id, int index) async {
-    SnackBar snackBar = SnackBar(
-      content: Text(
-        translation(context).added_to_favorites.capitalize(),
-        style:
-            const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-      ),
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: Colors.green,
-    );
     try {
       bool result = await ApiService().addFavouriteEvent(id);
       if (result && context.mounted) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        GlobalSnackbar.successSnackbar(
+            context, translation(context).added_to_favorites.capitalize());
         setState(() {
           widget.calendarList[index].events?.favorite = true;
         });
@@ -78,23 +70,12 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   }
 
   Future _removeFavouriteEvent(int id, int index) async {
-    SnackBar snackBar = SnackBar(
-      content: Text(
-        translation(context).removed_from_favorites.capitalize(),
-        style:
-            const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-      ),
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: Colors.red,
-    );
     try {
       bool result = await ApiService().deleteFavouriteEvent(id);
       if (result && context.mounted) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        setState(() {
-          widget.calendarList[index].events?.favorite = false;
-        });
+        GlobalSnackbar.successSnackbar(
+            context, translation(context).removed_from_favorites.capitalize());
       }
     } on FormatException catch (e) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
