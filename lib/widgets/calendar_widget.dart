@@ -76,6 +76,11 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         GlobalSnackbar.successSnackbar(
             context, translation(context).removed_from_favorites.capitalize());
+        if (widget.calendarList.length >= index) {
+          setState(() {
+            widget.calendarList[index].events?.favorite = false;
+          });
+        }
       }
     } on FormatException catch (e) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
