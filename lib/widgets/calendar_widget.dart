@@ -92,6 +92,25 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     }
   }
 
+  void _removeFavouriteEventFromList(int index) {
+    setState(() {
+      widget.calendarList.removeAt(index);
+      for (var i = 0; i < widget.calendarList.length; i++) {
+        if (widget.calendarList.length < 2 &&
+            widget.calendarList[i].time != null) {
+          widget.calendarList.removeAt(i);
+        } else if (i == widget.calendarList.length - 1 &&
+            widget.calendarList[i].time != null) {
+          widget.calendarList.removeAt(i);
+        } else if (widget.calendarList[i].time != null &&
+            widget.calendarList[i + 1].time != null) {
+          var time = widget.calendarList[index - 1].time ?? "";
+          widget.calendarList.removeWhere((e) => e.time == time);
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Visibility(
@@ -238,35 +257,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 ? (direction) async {
                     if (direction == DismissDirection.endToStart) {
                       // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      setState(() {
-                        var time = "";
-                        // if (widget.calendarList[index - 1].time != null &&
-                        //     index == widget.calendarList.length - 1) {
-                        //   time = widget.calendarList[index - 1].time ?? "";
-                        //   widget.calendarList.removeAt(index);
-                        //   widget.calendarList.removeWhere((e) => e.time == time);
-                        // } else if (widget.calendarList[index - 1].time != null &&
-                        //     widget.calendarList[index + 1].time != null) {
-                        //   time = widget.calendarList[index - 1].time ?? "";
-                        //   widget.calendarList.removeAt(index);
-                        //   widget.calendarList.removeWhere((e) => e.time == time);
-                        // }
-                        widget.calendarList.removeAt(index);
-                        for (var i = 0; i < widget.calendarList.length; i++) {
-                          if (widget.calendarList.length < 2 &&
-                              widget.calendarList[i].time != null) {
-                            widget.calendarList.removeAt(i);
-                          } else if (i == widget.calendarList.length - 1 &&
-                              widget.calendarList[i].time != null) {
-                            widget.calendarList.removeAt(i);
-                          } else if (widget.calendarList[i].time != null &&
-                              widget.calendarList[i + 1].time != null) {
-                            time = widget.calendarList[index - 1].time ?? "";
-                            widget.calendarList
-                                .removeWhere((e) => e.time == time);
-                          }
-                        }
-                      });
+                      _removeFavouriteEventFromList(index);
                       await _removeFavouriteEvent(event.id, index);
                     }
                   }
@@ -377,6 +368,10 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                   ? event.favorite
                                       ? ElevatedButton(
                                           onPressed: () async {
+                                            if (widget.delete) {
+                                              _removeFavouriteEventFromList(
+                                                  index);
+                                            }
                                             await _removeFavouriteEvent(
                                                 event.id, index);
                                           },

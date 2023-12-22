@@ -29,6 +29,7 @@ class _HomeState extends State<Home> {
   bool isLoaded = false;
   bool isLoadedFavourite = false;
   UserWithToken? user;
+  PageController _pageController = PageController(initialPage: 0);
 
   @override
   void initState() {
@@ -171,7 +172,19 @@ class _HomeState extends State<Home> {
         ),
       ),
       extendBody: true,
-      body: screens[currentIndex],
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (newIndex) {
+          setState(() {
+            if (currentIndex != newIndex) {
+              _getEvents();
+              _getFavouriteEvents();
+            }
+            currentIndex = newIndex;
+          });
+        },
+        children: screens,
+      ),
       floatingActionButton: _isAdmin()
           ? FloatingActionButton(
               onPressed: () async {
@@ -209,13 +222,11 @@ class _HomeState extends State<Home> {
                   child: BottomNavigationBar(
                     backgroundColor: Colors.transparent,
                     currentIndex: currentIndex,
-                    onTap: (index) => setState(() {
-                      if (currentIndex != index) {
-                        _getEvents();
-                        _getFavouriteEvents();
-                      }
-                      currentIndex = index;
-                    }),
+                    onTap: (index) {
+                      _pageController.animateToPage(index,
+                          duration: Duration(milliseconds: 500),
+                          curve: Curves.ease);
+                    },
                     items: [
                       BottomNavigationBarItem(
                           icon: const Icon(Icons.calendar_month),
