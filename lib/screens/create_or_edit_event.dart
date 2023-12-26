@@ -63,7 +63,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
     }
   }
 
-  Future<File?> _getData(int id) async {
+  Future _getData(int id) async {
     try {
       imageFile = await ApiService().getFileByEventId(id);
     } catch (e) {
@@ -80,12 +80,24 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
       var response = await ApiService().createEvent(
           nameController.text,
           double.tryParse(priceController.text.replaceAll(",", "")),
-          descriptionController.text,
-          localizationController.text,
-          linkController.text,
-          eventTimeData!,
-          imageFile);
-      if (response && context.mounted) {
+          descriptionController.text.isEmpty
+              ? null
+              : descriptionController.text,
+          localizationController.text.isEmpty
+              ? null
+              : localizationController.text,
+          linkController.text.isEmpty ? null : linkController.text,
+          eventTimeData!);
+      if (response == null && context.mounted) {
+        GlobalSnackbar.errorSnackbar(
+            context, translation(context).failed_to_create_event.capitalize());
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+      var responseImage = await uploadImage(response!.id);
+      if (responseImage && context.mounted) {
         GlobalSnackbar.successSnackbar(
             context,
             translation(context)
@@ -127,7 +139,16 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
               : localizationController.text,
           linkController.text.isEmpty ? null : linkController.text,
           eventTimeData!);
-      if (response && context.mounted) {
+      if (response == false && context.mounted) {
+        GlobalSnackbar.errorSnackbar(
+            context, translation(context).failed_to_edit_event.capitalize());
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+      var responseImage = await uploadImage(widget.event!.id);
+      if (responseImage && context.mounted) {
         GlobalSnackbar.successSnackbar(
             context,
             translation(context)
@@ -154,6 +175,17 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
         _isLoading = false;
       });
     }
+  }
+
+  Future<bool> uploadImage(int id) async {
+    if (imageFile == null) {
+      return true;
+    }
+    var responseImage = await ApiService().putImageToEvent(id, imageFile!);
+    if (!responseImage) {
+      return false;
+    }
+    return true;
   }
 
   Future<DateTime?> pickDate([DateTime? initialDate]) => showDatePicker(

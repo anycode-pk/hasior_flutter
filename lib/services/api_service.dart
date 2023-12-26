@@ -13,11 +13,12 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path/path.dart';
 
 import '../models/token.dart';
 
 class ApiService {
-  final String url = "https://localhost:7226/api/";
+  final String url = "https://prod.bytebunka.net/api/";
   final Client client = http.Client();
 
   Future<List<Events>?> getCalendar() async {
@@ -166,33 +167,47 @@ class ApiService {
     }
   }
 
-  Future<bool> createEvent(
-      String name,
-      double? price,
-      String? description,
-      String? localization,
-      String? ticketsLink,
-      DateTime eventTime,
-      File? thumbnail) async {
+  Future<Events?> createEvent(String name, double? price, String? description,
+      String? localization, String? ticketsLink, DateTime eventTime) async {
     try {
-      var uri = Uri.parse("${await getApiAddress()}event");
-      var request = http.MultipartRequest("POST", uri);
-      request.fields['Name'] = name;
-      request.fields['Price'] = price != null ? price.toString() : "";
-      request.fields['Description'] = description ?? "";
-      request.fields['Localization'] = localization ?? "";
-      request.fields['TicketsLink'] = ticketsLink ?? "";
-      request.fields['EventTime'] = eventTime.toIso8601String();
+      var uri = Uri.parse("${await getApiAddress()}event/simple-event");
+      UserWithToken? user = await userFromSharedPreferences();
+      var response = await client.post(uri,
+          headers: {
+            "content-type": "application/json",
+            "Authorization": "Bearer ${user?.token}"
+          },
+          body: jsonEncode({
+            "name": name,
+            "price": price,
+            "description": description,
+            "localization": localization,
+            "ticketsLink": ticketsLink,
+            "eventTime": eventTime.toIso8601String(),
+          }));
+      if (response.statusCode == 200) {
+        var json = response.body;
+        return eventFromJson(json);
+      }
+      throw FormatException(response.body);
+    } on SocketException catch (e) {
+      throw FormatException(e.message);
+    }
+  }
+
+  Future<bool> putImageToEvent(int id, File image) async {
+    try {
+      var uri = Uri.parse("${await getApiAddress()}file/event/$id");
+      var request = http.MultipartRequest("PUT", uri);
       UserWithToken? user = await userFromSharedPreferences();
       request.headers.addAll({
         "Content-Type": "multipart/form-data",
         "Authorization": "Bearer ${user?.token}"
       });
-      if (thumbnail != null) {
-        request.files.add(http.MultipartFile.fromBytes(
-            'file', thumbnail.readAsBytesSync(),
-            contentType: MediaType('image', 'jpg')));
-      }
+      request.files.add(http.MultipartFile.fromBytes(
+          'file', image.readAsBytesSync(),
+          filename: "${basename(image.path)}.jpg",
+          contentType: MediaType('image', 'jpg')));
       var response = await request.send();
       if (response.statusCode == 200) return true;
       return false;

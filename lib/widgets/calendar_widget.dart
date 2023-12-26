@@ -124,6 +124,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
+              //TODO: albo dodać czyszczenie, albo zmienić wyszukiwanie
               title: TextField(
                 textInputAction: TextInputAction.search,
                 onSubmitted: (value) {

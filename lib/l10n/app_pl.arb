@@ -71,5 +71,6 @@
     "delete_event_question": "usunąć wydarzenie?",
     "confirm_deletion": "Czy napewno chcesz usunąć to wydarzenie? Tej operacji nie da się cofnąć.",
     "error_while_deleting_event": "błąd podczas usuwania wydarzenia",
-    "event_successfully_deleted": "pomyślnie usunięto wydarzenie"
+    "event_successfully_deleted": "pomyślnie usunięto wydarzenie",
+    "free": "za darmo"
 }

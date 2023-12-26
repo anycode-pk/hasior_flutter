@@ -1,7 +1,11 @@
 import 'dart:convert';
 
+import 'package:hasior_flutter/models/thumbnail.dart';
+
 List<Events> eventsFromJson(String str) =>
     List<Events>.from(json.decode(str).map((x) => Events.fromJson(x)));
+
+Events eventFromJson(String str) => Events.fromJson(json.decode(str));
 
 String eventsToJson(List<Events> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
@@ -15,7 +19,7 @@ class Events {
       this.localization,
       this.ticketsLink,
       required this.eventTime,
-      this.thumbnailId,
+      this.thumbnail,
       this.favorite = false});
 
   int id;
@@ -25,30 +29,34 @@ class Events {
   String? localization;
   String? ticketsLink;
   String eventTime;
-  int? thumbnailId;
+  Thumbnail? thumbnail;
   bool favorite;
 
   factory Events.fromJson(Map<String, dynamic> json) => Events(
         id: json["id"],
         name: json["name"],
-        price: json["price"],
+        price: json["thumbnail"] == null
+            ? null
+            : double.parse(json["price"].toString()), //TODO: poprawić do double
         description: json["description"],
         localization: json["localization"],
         ticketsLink: json["ticketsLink"],
         eventTime: json["eventTime"],
-        thumbnailId: json["thumbnailId"],
+        thumbnail: json["thumbnail"] == null
+            ? null
+            : Thumbnail.fromJson(json["thumbnail"]),
         favorite: json["favorite"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
-        "price": price,
+        "price": price?.round(), //TODO: poprawić do double
         "description": description,
         "localization": localization,
         "ticketsLink": ticketsLink,
         "eventTime": eventTime,
-        "thumbnailId": thumbnailId,
+        "thumbnail": thumbnail?.toJson(),
         "favorite": favorite,
       };
 }

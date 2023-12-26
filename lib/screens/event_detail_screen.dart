@@ -68,6 +68,13 @@ class _EventDetailsState extends State<EventDetails> {
     }
   }
 
+  String _priceFormat(double? price) {
+    if (price == null || price == 0) {
+      return translation(context).free.capitalize();
+    }
+    return currencyFormat.format(price);
+  }
+
   void showAlertDialog(BuildContext context) {
     Widget cancelButton = TextButton(
       child: Text(translation(context).cancel.capitalize()),
@@ -317,11 +324,9 @@ class _EventDetailsState extends State<EventDetails> {
                                                         ),
                                                         Expanded(
                                                           child: Text(
-                                                              currencyFormat
-                                                                  .format(widget
-                                                                          .event
-                                                                          .price ??
-                                                                      0),
+                                                              _priceFormat(
+                                                                  widget.event
+                                                                      .price),
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
