@@ -52,13 +52,6 @@ class _EventDetailsState extends State<EventDetails> {
     }
   }
 
-  bool _isAdmin() {
-    if (widget.user == null) {
-      return false;
-    }
-    return widget.user!.roles.contains(Role.ADMIN);
-  }
-
   Future _launchURL(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
@@ -126,7 +119,7 @@ class _EventDetailsState extends State<EventDetails> {
         appBar: AppBar(
           title: Text(translation(context).detailed_view.capitalize()),
           centerTitle: true,
-          actions: _isAdmin()
+          actions: widget.user != null && widget.user!.isAdmin()
               ? [
                   IconButton(
                     icon: const Icon(Icons.edit),

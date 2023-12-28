@@ -29,7 +29,7 @@ class _HomeState extends State<Home> {
   bool isLoaded = false;
   bool isLoadedFavourite = false;
   UserWithToken? user;
-  PageController _pageController = PageController(initialPage: 0);
+  final PageController _pageController = PageController(initialPage: 0);
 
   @override
   void initState() {
@@ -41,13 +41,6 @@ class _HomeState extends State<Home> {
 
   Future _getUser() async {
     user = await ApiService().userFromSharedPreferences();
-  }
-
-  bool _isAdmin() {
-    if (user == null) {
-      return false;
-    }
-    return user!.roles.contains(Role.ADMIN);
   }
 
   Future _getEvents([String? name]) async {
@@ -185,7 +178,7 @@ class _HomeState extends State<Home> {
         },
         children: screens,
       ),
-      floatingActionButton: _isAdmin()
+      floatingActionButton: user != null && user!.isAdmin()
           ? FloatingActionButton(
               onPressed: () async {
                 final result = await Navigator.push(
@@ -224,7 +217,7 @@ class _HomeState extends State<Home> {
                     currentIndex: currentIndex,
                     onTap: (index) {
                       _pageController.animateToPage(index,
-                          duration: Duration(milliseconds: 500),
+                          duration: const Duration(milliseconds: 500),
                           curve: Curves.ease);
                     },
                     items: [

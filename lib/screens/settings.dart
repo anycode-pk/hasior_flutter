@@ -40,6 +40,10 @@ class _SettingsState extends State<Settings> {
     }
   }
 
+  void _setAppLocale(Locale? locale) {
+    MyApp.setLocale(context, locale);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,7 +89,7 @@ class _SettingsState extends State<Settings> {
                             onChanged: (String? language) async {
                               if (language != null) {
                                 Locale? locale = await setLocale(language);
-                                MyApp.setLocale(context, locale);
+                                _setAppLocale(locale);
                               }
                             }),
                         const SizedBox(height: 20),

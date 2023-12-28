@@ -28,6 +28,10 @@ class UserWithToken {
   String refreshToken;
   DateTime refreshTokenExpiryTime;
 
+  bool isAdmin() {
+    return roles.contains(Role.ADMIN);
+  }
+
   factory UserWithToken.fromJson(Map<String, dynamic> json) => UserWithToken(
         id: json["id"],
         roles: List<Role>.from(json["roles"].map((x) => roleValues.map[x]!)),

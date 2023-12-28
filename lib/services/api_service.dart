@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
-import 'dart:typed_data';
 import 'package:http_parser/http_parser.dart';
-import 'package:flutter/material.dart';
 import 'package:hasior_flutter/models/events.dart';
 import 'package:hasior_flutter/models/calendar.dart';
 import 'package:hasior_flutter/models/login.dart';

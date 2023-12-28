@@ -68,6 +68,7 @@
     "an_error_occurred_during_editing_event": "an error occurred during editing event",
     "cancel": "cancel",
     "delete": "delete",
+    "edit": "edit",
     "delete_event_question": "delete event?",
     "confirm_deletion": "Are you sure you want to delete this event? This operation cannot be undone.",
     "error_while_deleting_event": "error while deleting event",

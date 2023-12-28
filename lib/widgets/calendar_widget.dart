@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
+import 'package:hasior_flutter/screens/create_or_edit_event.dart';
+import 'package:hasior_flutter/screens/home_screen.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 import 'package:intl/intl.dart';
 import '../constants/language_constants.dart';
@@ -62,7 +64,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           widget.calendarList[index].events?.favorite = true;
         });
       }
-    } on FormatException catch (e) {
+    } on FormatException {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       GlobalSnackbar.errorSnackbar(context,
           translation(context).error_while_adding_to_favorites.capitalize());
@@ -82,7 +84,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           });
         }
       }
-    } on FormatException catch (e) {
+    } on FormatException {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       GlobalSnackbar.errorSnackbar(
           context,
@@ -109,6 +111,51 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         }
       }
     });
+  }
+
+  void showAlertDialog(BuildContext context, Events event) {
+    Widget cancelButton = TextButton(
+      child: Text(translation(context).cancel.capitalize()),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = ElevatedButton(
+        onPressed: () async {
+          try {
+            await ApiService().deleteEvent(event.id).then((value) {
+              GlobalSnackbar.infoSnackbar(context,
+                  translation(context).event_successfully_deleted.capitalize());
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Home(),
+                ),
+              );
+            });
+          } catch (e) {
+            Navigator.pop(context);
+            GlobalSnackbar.errorSnackbar(context,
+                translation(context).error_while_deleting_event.capitalize());
+          }
+        },
+        style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+        child: Text(translation(context).delete.capitalize()));
+    AlertDialog alert = AlertDialog(
+      title: Text(translation(context).delete_event_question.capitalize()),
+      content: Text(translation(context).confirm_deletion.capitalize()),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   @override
@@ -280,6 +327,63 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 splashColor: Colors.transparent,
                 hoverColor: Colors.transparent,
                 focusColor: Colors.transparent,
+                onLongPress: widget.user != null && widget.user!.isAdmin()
+                    ? () {
+                        showModalBottomSheet<void>(
+                          context: context,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          builder: (BuildContext context) {
+                            return SizedBox(
+                                height: 200,
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.only(
+                                          top: 6.0, bottom: 2.0, left: 20.0),
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        event.name,
+                                        style: const TextStyle(fontSize: 20),
+                                      ),
+                                    ),
+                                    const Divider(
+                                      color: grayColor,
+                                      thickness: 0.1,
+                                      indent: 18,
+                                      endIndent: 18,
+                                    ),
+                                    ListTile(
+                                      leading: const Icon(Icons.edit),
+                                      title: Text(translation(context)
+                                          .edit
+                                          .capitalize()),
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CreateOrEditEvent(
+                                                      event: event)),
+                                        );
+                                      },
+                                    ),
+                                    ListTile(
+                                      leading: const Icon(Icons.delete),
+                                      title: Text(translation(context)
+                                          .delete
+                                          .capitalize()),
+                                      onTap: () {
+                                        showAlertDialog(context, event);
+                                      },
+                                    ),
+                                  ],
+                                ));
+                          },
+                        );
+                      }
+                    : null,
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return EventDetails(

@@ -48,57 +48,51 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
         child: userInfo(context),
       );
 
-  Widget buildMenuItems(BuildContext context) => Container(
-        // padding: const EdgeInsets.symmetric(horizontal: 14),
-        child: Column(
-          children: const [
-            ListTile(
-              leading: Icon(Icons.home_outlined),
-              title: Text("Wydziały PK"),
-              onTap: null,
-            ),
-            ListTile(
-              leading: Icon(Icons.calendar_today),
-              title: Text("Kalendarz wydarzeń"),
-              onTap: null,
-            ),
-            ListTile(
-              leading: Icon(Icons.book),
-              title: Text("Zarząd"),
-              onTap: null,
-            ),
-          ],
-        ),
+  Widget buildMenuItems(BuildContext context) => Column(
+        children: const [
+          ListTile(
+            leading: Icon(Icons.home_outlined),
+            title: Text("Wydziały PK"),
+            onTap: null,
+          ),
+          ListTile(
+            leading: Icon(Icons.calendar_today),
+            title: Text("Kalendarz wydarzeń"),
+            onTap: null,
+          ),
+          ListTile(
+            leading: Icon(Icons.book),
+            title: Text("Zarząd"),
+            onTap: null,
+          ),
+        ],
       );
 
-  Widget buildMenuItemsBottom(BuildContext context) => Container(
-        // padding: const EdgeInsets.symmetric(horizontal: 14),
-        child: Column(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: Text(translation(context).settings.capitalize()),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const Settings();
-                }));
-              },
-            ),
-            widget.user != null
-                ? ListTile(
-                    leading: const Icon(Icons.logout),
-                    title: Text(translation(context).log_out.capitalize()),
-                    onTap: () {
-                      ApiService().logout();
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => const Home()));
-                    },
-                  )
-                : Container(),
-          ],
-        ),
+  Widget buildMenuItemsBottom(BuildContext context) => Column(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: Text(translation(context).settings.capitalize()),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const Settings();
+              }));
+            },
+          ),
+          widget.user != null
+              ? ListTile(
+                  leading: const Icon(Icons.logout),
+                  title: Text(translation(context).log_out.capitalize()),
+                  onTap: () {
+                    ApiService().logout();
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => const Home()));
+                  },
+                )
+              : Container(),
+        ],
       );
 
   Widget userInfo(BuildContext context) {
@@ -126,9 +120,7 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
         ],
       );
     }
-    return Container(
-        // padding: const EdgeInsets.symmetric(horizontal: 14),
-        child: Column(
+    return Column(
       children: [
         Text(translation(context).not_logged_in.capitalize(),
             style: const TextStyle(fontSize: 28)),
@@ -143,6 +135,6 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
           },
         )
       ],
-    ));
+    );
   }
 }
