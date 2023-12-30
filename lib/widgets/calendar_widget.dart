@@ -37,6 +37,7 @@ class CalendarWidget extends StatefulWidget {
 
 class _CalendarWidgetState extends State<CalendarWidget> {
   static const grayColor = Color.fromRGBO(105, 105, 105, 1);
+  TextEditingController _searchController = TextEditingController();
   // Future _getData() async {
   //   widget.dataEvents = await ApiService().getFavouriteEvents();
   //   widget.calendarList = [];
@@ -190,18 +191,29 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                       //TODO: albo dodać czyszczenie, albo zmienić wyszukiwanie
                       title: TextField(
                         textInputAction: TextInputAction.search,
+                        controller: _searchController,
                         onSubmitted: (value) {
                           widget.getData(value);
                         },
                         style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
-                            prefixIcon: const Icon(
-                              Icons.search,
-                              color: Colors.white,
-                            ),
-                            hintText:
-                                "${translation(context).search.capitalize()}...",
-                            hintStyle: const TextStyle(color: Colors.white)),
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            color: Colors.white,
+                          ),
+                          hintText:
+                              "${translation(context).search.capitalize()}...",
+                          hintStyle: const TextStyle(color: Colors.white),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              if (_searchController.text.isNotEmpty) {
+                                _searchController.clear();
+                                widget.getData();
+                              }
+                            },
+                            icon: Icon(Icons.clear),
+                          ),
+                        ),
                       ),
                       floating: true,
                       automaticallyImplyLeading: false,
