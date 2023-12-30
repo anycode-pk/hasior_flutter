@@ -20,7 +20,8 @@ class Event {
       this.ticketsLink,
       required this.eventTime,
       this.thumbnail,
-      this.favorite = false});
+      this.favorite = false,
+      this.isCanceled = false});
 
   int id;
   String name;
@@ -31,6 +32,7 @@ class Event {
   String eventTime;
   Thumbnail? thumbnail;
   bool favorite;
+  bool isCanceled;
 
   factory Event.fromJson(Map<String, dynamic> json) => Event(
         id: json["id"],
@@ -46,6 +48,7 @@ class Event {
             ? null
             : Thumbnail.fromJson(json["thumbnail"]),
         favorite: json["favorite"],
+        isCanceled: json["isCanceled"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -58,5 +61,6 @@ class Event {
         "eventTime": eventTime,
         "thumbnail": thumbnail?.toJson(),
         "favorite": favorite,
+        "isCanceled": isCanceled,
       };
 }
