@@ -203,6 +203,19 @@ class ApiService {
     }
   }
 
+  Future<bool> putNullImageToEvent(int id) async {
+    var uri = Uri.parse("${await getApiAddress()}file/event/$id");
+    UserWithToken? user = await userFromSharedPreferences();
+    var response = await client.delete(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
+    if (response.statusCode == 200) {
+      return true;
+    }
+    throw FormatException(response.body);
+  }
+
   Future<bool> editEvent(
       int id,
       String name,

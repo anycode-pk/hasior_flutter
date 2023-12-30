@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
-import 'package:hasior_flutter/enums/role.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/widgets/calendar_widget.dart';
 import 'package:hasior_flutter/widgets/offline_widget.dart';

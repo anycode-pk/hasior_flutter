@@ -184,6 +184,13 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
     if (imageFile == null) {
       return true;
     }
+    if (imageFile == null && image == null) {
+      var response = await ApiService().putNullImageToEvent(id);
+      if (!response) {
+        return false;
+      }
+      return true;
+    }
     var responseImage = await ApiService().putImageToEvent(id, imageFile!);
     if (!responseImage) {
       return false;
