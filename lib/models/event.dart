@@ -37,7 +37,7 @@ class Event {
         name: json["name"],
         price: json["price"] == null
             ? null
-            : double.parse(json["price"].toString()), //TODO: poprawić do double
+            : double.parse(json["price"].toString()),
         description: json["description"],
         localization: json["localization"],
         ticketsLink: json["ticketsLink"],
@@ -51,7 +51,7 @@ class Event {
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
-        "price": price?.round(), //TODO: poprawić do double
+        "price": price?.round(),
         "description": description,
         "localization": localization,
         "ticketsLink": ticketsLink,
