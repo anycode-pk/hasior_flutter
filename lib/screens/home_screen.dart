@@ -25,10 +25,10 @@ class _HomeState extends State<Home> {
   List<Calendar>? favouriteEvents;
   List<CalendarList> calendarList = [];
   List<CalendarList> calendarListFavourite = [];
-  bool isSearching = false;
+  // bool isSearching = false;
   int currentIndex = 0;
-  bool isLoaded = false;
-  bool isLoadedFavourite = false;
+  bool isLoading = false;
+  bool isLoadingFavourite = false;
   UserWithToken? user;
   final PageController _pageController = PageController(initialPage: 0);
 
@@ -61,7 +61,7 @@ class _HomeState extends State<Home> {
           }
         });
         setState(() {
-          isLoaded = true;
+          isLoading = true;
         });
       }
     } catch (e) {
@@ -86,7 +86,7 @@ class _HomeState extends State<Home> {
             }
           });
           setState(() {
-            isLoadedFavourite = true;
+            isLoadingFavourite = true;
           });
         }
       }
@@ -100,7 +100,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     List<Widget> screens = [
       CalendarWidget(
-        isLoaded: isLoaded,
+        isLoading: isLoading,
         calendarList: calendarList,
         dataEvents: dataEvents,
         getData: _getEvents,
@@ -108,7 +108,7 @@ class _HomeState extends State<Home> {
         user: user,
       ),
       CalendarWidget(
-        isLoaded: isLoadedFavourite,
+        isLoading: isLoadingFavourite,
         calendarList: calendarListFavourite,
         dataEvents: favouriteEvents,
         getData: _getFavouriteEvents,

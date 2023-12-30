@@ -18,13 +18,13 @@ import '../theme.dart';
 class CalendarWidget extends StatefulWidget {
   const CalendarWidget(
       {super.key,
-      required this.isLoaded,
+      required this.isLoading,
       required this.calendarList,
       required this.dataEvents,
       required this.getData,
       required this.delete,
       required this.user});
-  final bool isLoaded;
+  final bool isLoading;
   final List<CalendarList> calendarList;
   final List<Calendar>? dataEvents;
   final Future<void> Function([String? name]) getData;
@@ -179,7 +179,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         children: <Widget>[
           ListView(),
           Visibility(
-              visible: widget.isLoaded,
+              visible: widget.isLoading,
               replacement: const Center(
                 child: CircularProgressIndicator(),
               ),
