@@ -483,9 +483,6 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.all(20),
-                              textStyle: const TextStyle(fontSize: 15)),
                           icon: _isLoading
                               ? Container(
                                   width: 24,

@@ -165,19 +165,21 @@ class _HomeState extends State<Home> {
         ),
       ),
       extendBody: true,
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (newIndex) {
-          setState(() {
-            if (currentIndex != newIndex) {
-              _getEvents();
-              _getFavouriteEvents();
-            }
-            currentIndex = newIndex;
-          });
-        },
-        children: screens,
-      ),
+      body: user != null
+          ? PageView(
+              controller: _pageController,
+              onPageChanged: (newIndex) {
+                setState(() {
+                  if (currentIndex != newIndex) {
+                    _getEvents();
+                    _getFavouriteEvents();
+                  }
+                  currentIndex = newIndex;
+                });
+              },
+              children: screens,
+            )
+          : screens[0],
       floatingActionButton: user != null && user!.isAdmin()
           ? FloatingActionButton(
               onPressed: () async {
