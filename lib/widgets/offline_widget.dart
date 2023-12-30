@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:hasior_flutter/constants/language_constants.dart';
+import 'package:hasior_flutter/extensions/string_capitalize.dart';
 
 class OfflineWidget extends StatefulWidget {
   final Widget child;
@@ -28,10 +28,10 @@ class _OfflineWidgetState extends State<OfflineWidget> {
               duration: const Duration(milliseconds: 350),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const <Widget>[
-                  Text('OFFLINE'),
-                  SizedBox(width: 8.0),
-                  SizedBox(
+                children: <Widget>[
+                  Text(translation(context).you_are_offline.capitalize()),
+                  const SizedBox(width: 8.0),
+                  const SizedBox(
                     width: 12.0,
                     height: 12.0,
                     child: CircularProgressIndicator(

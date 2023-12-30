@@ -61,17 +61,18 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
           selection: TextSelection.fromPosition(
             TextPosition(offset: widget.event!.eventTime.length),
           ));
-      await _getData(widget.event!.id);
+      image = _setImageFile();
     }
   }
 
-  Future _getData(int id) async {
-    try {
-      imageFile = await ApiService().getFileByEventId(id);
-    } catch (e) {
-      GlobalSnackbar.errorSnackbar(
-          context, translation(context).error_while_loading.capitalize());
+  Image? _setImageFile() {
+    if (widget.event == null) {
+      return null;
     }
+    if (widget.event!.thumbnail == null) {
+      return null;
+    }
+    return Image.network(widget.event!.thumbnail!.path);
   }
 
   Future _createNewEvent() async {

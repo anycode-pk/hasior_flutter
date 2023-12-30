@@ -74,5 +74,6 @@
     "error_while_deleting_event": "błąd podczas usuwania wydarzenia",
     "event_successfully_deleted": "pomyślnie usunięto wydarzenie",
     "free": "za darmo",
-    "deadline_for_this_event_has_passed": "termin tego wydarzenia już minął"
+    "deadline_for_this_event_has_passed": "termin tego wydarzenia już minął",
+    "you_are_offline": "jesteś offline"
 }

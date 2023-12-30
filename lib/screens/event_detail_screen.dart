@@ -33,29 +33,7 @@ class EventDetails extends StatefulWidget {
 class _EventDetailsState extends State<EventDetails> {
   static const grayColor = Color.fromRGBO(105, 105, 105, 1);
   NumberFormat currencyFormat = Currency().getPLN();
-  bool isLoaded = false;
-  Image? eventImage;
-
-  @override
-  void initState() {
-    super.initState();
-    _getData();
-  }
-
-  Future _getData() async {
-    try {
-      File? file = await ApiService().getFileByEventId(widget.event.id);
-      if (file != null) {
-        eventImage = Image.file(file);
-      }
-      setState(() {
-        isLoaded = true;
-      });
-    } catch (e) {
-      GlobalSnackbar.errorSnackbar(
-          context, translation(context).error_while_loading.capitalize());
-    }
-  }
+  bool isLoaded = true;
 
   Future _launchURL(String url) async {
     final uri = Uri.parse(url);
@@ -393,8 +371,12 @@ class _EventDetailsState extends State<EventDetails> {
                                   Container(
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
-                                        image: eventImage?.image ??
-                                            const AssetImage("assets/logo.png"),
+                                        image: widget.event.thumbnail != null
+                                            ? Image.network(widget
+                                                    .event.thumbnail!.path)
+                                                .image
+                                            : const AssetImage(
+                                                "assets/logo.png"),
                                         fit: BoxFit.cover,
                                       ),
                                       boxShadow: const [

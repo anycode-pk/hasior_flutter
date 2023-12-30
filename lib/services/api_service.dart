@@ -69,16 +69,6 @@ class ApiService {
     throw FormatException(response.body);
   }
 
-  Future<File?> getFileByEventId(int id) async {
-    var uri = Uri.parse("${await getApiAddress()}file/event/$id");
-    var response = await client.get(uri);
-    if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
-      return File.fromRawPath(response.bodyBytes);
-    }
-    return null;
-    //throw FormatException(response.body);
-  }
-
   Future<bool> addFavouriteEvent(int id) async {
     var uri = Uri.parse("${await getApiAddress()}favourite-event/$id");
     UserWithToken? user = await userFromSharedPreferences();

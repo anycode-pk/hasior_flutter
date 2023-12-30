@@ -35,7 +35,7 @@ class Event {
   factory Event.fromJson(Map<String, dynamic> json) => Event(
         id: json["id"],
         name: json["name"],
-        price: json["thumbnail"] == null
+        price: json["price"] == null
             ? null
             : double.parse(json["price"].toString()), //TODO: poprawić do double
         description: json["description"],

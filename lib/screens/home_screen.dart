@@ -37,7 +37,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     _getUser();
-    _getEvents();
+    _getEvents(); //TODO: przenieść do widgetu
     _getFavouriteEvents();
   }
 
