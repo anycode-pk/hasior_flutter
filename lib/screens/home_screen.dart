@@ -178,8 +178,6 @@ class _HomeState extends State<Home> {
               child: child,
             );
           } else {
-            _getEvents();
-            _getFavouriteEvents();
             return child;
           }
         },
