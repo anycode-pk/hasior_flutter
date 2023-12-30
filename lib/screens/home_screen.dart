@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
 import 'package:hasior_flutter/enums/role.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/widgets/calendar_widget.dart';
+import 'package:hasior_flutter/widgets/offline_widget.dart';
 import '../constants/language_constants.dart';
 import '../models/calendarList.dart';
 import '../models/calendar.dart';
@@ -165,21 +167,40 @@ class _HomeState extends State<Home> {
         ),
       ),
       extendBody: true,
-      body: user != null
-          ? PageView(
-              controller: _pageController,
-              onPageChanged: (newIndex) {
-                setState(() {
-                  if (currentIndex != newIndex) {
-                    _getEvents();
-                    _getFavouriteEvents();
-                  }
-                  currentIndex = newIndex;
-                });
-              },
-              children: screens,
-            )
-          : screens[0],
+      body: OfflineBuilder(
+        connectivityBuilder: (
+          BuildContext context,
+          ConnectivityResult connectivity,
+          Widget child,
+        ) {
+          if (connectivity == ConnectivityResult.none) {
+            return OfflineWidget(
+              child: child,
+            );
+          } else {
+            _getEvents();
+            _getFavouriteEvents();
+            return child;
+          }
+        },
+        builder: (BuildContext context) {
+          return user != null
+              ? PageView(
+                  controller: _pageController,
+                  onPageChanged: (newIndex) {
+                    setState(() {
+                      if (currentIndex != newIndex) {
+                        _getEvents();
+                        _getFavouriteEvents();
+                      }
+                      currentIndex = newIndex;
+                    });
+                  },
+                  children: screens,
+                )
+              : screens[0];
+        },
+      ),
       floatingActionButton: user != null && user!.isAdmin()
           ? FloatingActionButton(
               onPressed: () async {

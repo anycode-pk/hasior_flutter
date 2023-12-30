@@ -173,89 +173,96 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Visibility(
-      visible: widget.isLoaded,
-      replacement: const Center(
-        child: CircularProgressIndicator(),
-      ),
-      child: Center(
-          child: RefreshIndicator(
-        onRefresh: widget.getData,
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              //TODO: albo dodać czyszczenie, albo zmienić wyszukiwanie
-              title: TextField(
-                textInputAction: TextInputAction.search,
-                onSubmitted: (value) {
-                  widget.getData(value);
-                },
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      color: Colors.white,
+    return RefreshIndicator(
+      onRefresh: widget.getData,
+      child: Stack(
+        children: <Widget>[
+          ListView(),
+          Visibility(
+              visible: widget.isLoaded,
+              replacement: const Center(
+                child: CircularProgressIndicator(),
+              ),
+              child: Center(
+                child: CustomScrollView(
+                  slivers: [
+                    SliverAppBar(
+                      //TODO: albo dodać czyszczenie, albo zmienić wyszukiwanie
+                      title: TextField(
+                        textInputAction: TextInputAction.search,
+                        onSubmitted: (value) {
+                          widget.getData(value);
+                        },
+                        style: const TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: Colors.white,
+                            ),
+                            hintText:
+                                "${translation(context).search.capitalize()}...",
+                            hintStyle: const TextStyle(color: Colors.white)),
+                      ),
+                      floating: true,
+                      automaticallyImplyLeading: false,
                     ),
-                    hintText: "${translation(context).search.capitalize()}...",
-                    hintStyle: const TextStyle(color: Colors.white)),
-              ),
-              floating: true,
-              automaticallyImplyLeading: false,
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  if (index == widget.calendarList.length) {
-                    if (widget.calendarList.isEmpty) {
-                      return widget.delete
-                          ? Container(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
-                                translation(context)
-                                    .no_favorite_events
-                                    .capitalize(),
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                    color: grayColor,
-                                    fontSize: 20,
-                                    fontStyle: FontStyle.italic),
-                              ))
-                          : Container(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
-                                translation(context)
-                                    .no_upcoming_events
-                                    .capitalize(),
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                    color: grayColor,
-                                    fontSize: 20,
-                                    fontStyle: FontStyle.italic),
-                              ));
-                    }
-                    return const SizedBox(
-                        height: kBottomNavigationBarHeight + 20);
-                  }
-                  return buildListElement(index, widget.calendarList[index]);
-                },
-                childCount: widget.calendarList.length + 1,
-              ),
-            )
-          ],
-        ),
-      )
-          // ListView.separated(
-          //     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-          //     itemCount: widget.filteredCalendarList.length,
-          //     separatorBuilder: (context, index) {
-          //       return const SizedBox(height: 12);
-          //     },
-          //     itemBuilder: (context, index) {
-          //       widget.calendarList;
-          //       widget.dataEvents;
-          //       return buildList(index, widget.filteredCalendarList[index]);
-          //     }),
-          ),
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (BuildContext context, int index) {
+                          if (index == widget.calendarList.length) {
+                            if (widget.calendarList.isEmpty) {
+                              return widget.delete
+                                  ? Container(
+                                      padding: const EdgeInsets.all(20),
+                                      child: Text(
+                                        translation(context)
+                                            .no_favorite_events
+                                            .capitalize(),
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                            color: grayColor,
+                                            fontSize: 20,
+                                            fontStyle: FontStyle.italic),
+                                      ))
+                                  : Container(
+                                      padding: const EdgeInsets.all(20),
+                                      child: Text(
+                                        translation(context)
+                                            .no_upcoming_events
+                                            .capitalize(),
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                            color: grayColor,
+                                            fontSize: 20,
+                                            fontStyle: FontStyle.italic),
+                                      ));
+                            }
+                            return const SizedBox(
+                                height: kBottomNavigationBarHeight + 20);
+                          }
+                          return buildListElement(
+                              index, widget.calendarList[index]);
+                        },
+                        childCount: widget.calendarList.length + 1,
+                      ),
+                    )
+                  ],
+                ),
+              )
+              // ListView.separated(
+              //     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+              //     itemCount: widget.filteredCalendarList.length,
+              //     separatorBuilder: (context, index) {
+              //       return const SizedBox(height: 12);
+              //     },
+              //     itemBuilder: (context, index) {
+              //       widget.calendarList;
+              //       widget.dataEvents;
+              //       return buildList(index, widget.filteredCalendarList[index]);
+              //     }),
+              )
+        ],
+      ),
     );
   }
 

@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/models/userWithToken.dart';
 import 'package:hasior_flutter/screens/create_or_edit_event.dart';
 import 'package:hasior_flutter/screens/home_screen.dart';
 import 'package:hasior_flutter/services/api_service.dart';
+import 'package:hasior_flutter/widgets/offline_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -145,168 +147,121 @@ class _EventDetailsState extends State<EventDetails> {
                     ]
                   : null,
         ),
-        body: Visibility(
-            visible: isLoaded,
-            replacement: const Center(
-              child: CircularProgressIndicator(),
-            ),
-            child: CustomScrollView(slivers: [
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Column(
-                  children: [
-                    ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                            bottom: Radius.circular(10.0)),
-                        child: SizedBox(
-                          height: 380,
-                          child: Stack(
-                            children: [
-                              Container(
-                                  color: const Color.fromRGBO(49, 52, 57, 1),
-                                  width: double.infinity,
-                                  height: 180,
-                                  margin: const EdgeInsets.only(top: 200),
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                        border: Border(
-                                            left: BorderSide(
-                                      color: grayColor,
-                                      width: 7.0,
-                                    ))),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Column(
+        body: OfflineBuilder(
+          connectivityBuilder: (
+            BuildContext context,
+            ConnectivityResult connectivity,
+            Widget child,
+          ) {
+            if (connectivity == ConnectivityResult.none) {
+              return OfflineWidget(
+                child: child,
+              );
+            } else {
+              return child;
+            }
+          },
+          builder: (BuildContext context) {
+            return Visibility(
+                visible: isLoaded,
+                replacement: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                child: CustomScrollView(slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Column(
+                      children: [
+                        ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                                bottom: Radius.circular(10.0)),
+                            child: SizedBox(
+                              height: 380,
+                              child: Stack(
+                                children: [
+                                  Container(
+                                      color:
+                                          const Color.fromRGBO(49, 52, 57, 1),
+                                      width: double.infinity,
+                                      height: 180,
+                                      margin: const EdgeInsets.only(top: 200),
+                                      child: Container(
+                                        decoration: const BoxDecoration(
+                                            border: Border(
+                                                left: BorderSide(
+                                          color: grayColor,
+                                          width: 7.0,
+                                        ))),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
                                           children: [
-                                            Row(
+                                            Column(
                                               children: [
-                                                Expanded(
-                                                  child: Text(
-                                                    widget.event.name,
-                                                    style: const TextStyle(
-                                                        fontSize: 20),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            widget.isExpired
-                                                ? Row(
-                                                    children: [
-                                                      Expanded(
-                                                          child: Text(
-                                                              translation(
-                                                                      context)
-                                                                  .deadline_for_this_event_has_passed
-                                                                  .capitalize(),
-                                                              style: const TextStyle(
-                                                                  color:
-                                                                      grayColor,
-                                                                  fontStyle:
-                                                                      FontStyle
-                                                                          .italic),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis)),
-                                                    ],
-                                                  )
-                                                : Container(),
-                                          ],
-                                        ),
-                                        Column(
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 3),
-                                              child: Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Row(
-                                                      children: [
-                                                        Container(
-                                                          transform: Matrix4
-                                                              .translationValues(
-                                                                  -4.0,
-                                                                  0.0,
-                                                                  0.0),
-                                                          child: const Icon(
-                                                            Icons
-                                                                .calendar_today,
-                                                            color: grayColor,
-                                                          ),
-                                                        ),
-                                                        Expanded(
-                                                          child: Text(
-                                                              "${DateFormat.yMMMMEEEEd(AppLocalizations.of(context)!.localeName).format(DateTime.parse(widget.event.eventTime))} ${translation(context).at_hour} ${DateFormat.Hm(AppLocalizations.of(context)!.localeName).format(DateFormat("yyyy-MM-ddTHH:mm:ssZ").parseUTC(widget.event.eventTime).toLocal())}",
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              style: const TextStyle(
-                                                                  color:
-                                                                      grayColor,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold)),
-                                                        )
-                                                      ],
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        widget.event.name,
+                                                        style: const TextStyle(
+                                                            fontSize: 20),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 3),
-                                              child: Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Row(
-                                                      children: [
-                                                        Container(
-                                                          transform: Matrix4
-                                                              .translationValues(
-                                                                  -4.0,
-                                                                  0.0,
-                                                                  0.0),
-                                                          child: widget.event
-                                                                      .localization !=
-                                                                  null
-                                                              ? const Icon(
-                                                                  Icons
-                                                                      .location_pin,
-                                                                  color:
-                                                                      grayColor,
-                                                                )
-                                                              : const Icon(
-                                                                  Icons
-                                                                      .location_off,
-                                                                  color:
-                                                                      grayColor,
-                                                                ),
-                                                        ),
-                                                        Expanded(
-                                                          child: widget.event.localization !=
-                                                                  null
-                                                              ? Text(widget.event.localization ?? "",
-                                                                  overflow: TextOverflow
-                                                                      .ellipsis,
+                                                  ],
+                                                ),
+                                                widget.isExpired
+                                                    ? Row(
+                                                        children: [
+                                                          Expanded(
+                                                              child: Text(
+                                                                  translation(
+                                                                          context)
+                                                                      .deadline_for_this_event_has_passed
+                                                                      .capitalize(),
                                                                   style: const TextStyle(
                                                                       color:
                                                                           grayColor,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold))
-                                                              : Text(
-                                                                  translation(context)
-                                                                      .no_location_provided
-                                                                      .capitalize(),
+                                                                      fontStyle:
+                                                                          FontStyle
+                                                                              .italic),
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis)),
+                                                        ],
+                                                      )
+                                                    : Container(),
+                                              ],
+                                            ),
+                                            Column(
+                                              children: [
+                                                Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(vertical: 3),
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Row(
+                                                          children: [
+                                                            Container(
+                                                              transform: Matrix4
+                                                                  .translationValues(
+                                                                      -4.0,
+                                                                      0.0,
+                                                                      0.0),
+                                                              child: const Icon(
+                                                                Icons
+                                                                    .calendar_today,
+                                                                color:
+                                                                    grayColor,
+                                                              ),
+                                                            ),
+                                                            Expanded(
+                                                              child: Text(
+                                                                  "${DateFormat.yMMMMEEEEd(AppLocalizations.of(context)!.localeName).format(DateTime.parse(widget.event.eventTime))} ${translation(context).at_hour} ${DateFormat.Hm(AppLocalizations.of(context)!.localeName).format(DateFormat("yyyy-MM-ddTHH:mm:ssZ").parseUTC(widget.event.eventTime).toLocal())}",
                                                                   overflow:
                                                                       TextOverflow
                                                                           .ellipsis,
@@ -315,143 +270,211 @@ class _EventDetailsState extends State<EventDetails> {
                                                                           grayColor,
                                                                       fontWeight:
                                                                           FontWeight
-                                                                              .bold,
-                                                                      fontStyle:
-                                                                          FontStyle.italic)),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 3),
-                                              child: Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Row(
-                                                      children: [
-                                                        Container(
-                                                          transform: Matrix4
-                                                              .translationValues(
-                                                                  -4.0,
-                                                                  0.0,
-                                                                  0.0),
-                                                          child: const Icon(
-                                                            Icons.sell,
-                                                            color: grayColor,
-                                                          ),
+                                                                              .bold)),
+                                                            )
+                                                          ],
                                                         ),
-                                                        Expanded(
-                                                          child: Text(
-                                                              _priceFormat(
-                                                                  widget.event
-                                                                      .price),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              style: const TextStyle(
-                                                                  color:
-                                                                      grayColor,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold)),
-                                                        )
-                                                      ],
-                                                    ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                ],
-                                              ),
+                                                ),
+                                                Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(vertical: 3),
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Row(
+                                                          children: [
+                                                            Container(
+                                                              transform: Matrix4
+                                                                  .translationValues(
+                                                                      -4.0,
+                                                                      0.0,
+                                                                      0.0),
+                                                              child: widget
+                                                                          .event
+                                                                          .localization !=
+                                                                      null
+                                                                  ? const Icon(
+                                                                      Icons
+                                                                          .location_pin,
+                                                                      color:
+                                                                          grayColor,
+                                                                    )
+                                                                  : const Icon(
+                                                                      Icons
+                                                                          .location_off,
+                                                                      color:
+                                                                          grayColor,
+                                                                    ),
+                                                            ),
+                                                            Expanded(
+                                                              child: widget
+                                                                          .event
+                                                                          .localization !=
+                                                                      null
+                                                                  ? Text(
+                                                                      widget.event.localization ??
+                                                                          "",
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
+                                                                      style: const TextStyle(
+                                                                          color:
+                                                                              grayColor,
+                                                                          fontWeight: FontWeight
+                                                                              .bold))
+                                                                  : Text(
+                                                                      translation(context)
+                                                                          .no_location_provided
+                                                                          .capitalize(),
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
+                                                                      style: const TextStyle(
+                                                                          color: grayColor,
+                                                                          fontWeight: FontWeight.bold,
+                                                                          fontStyle: FontStyle.italic)),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(vertical: 3),
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Row(
+                                                          children: [
+                                                            Container(
+                                                              transform: Matrix4
+                                                                  .translationValues(
+                                                                      -4.0,
+                                                                      0.0,
+                                                                      0.0),
+                                                              child: const Icon(
+                                                                Icons.sell,
+                                                                color:
+                                                                    grayColor,
+                                                              ),
+                                                            ),
+                                                            Expanded(
+                                                              child: Text(
+                                                                  _priceFormat(
+                                                                      widget
+                                                                          .event
+                                                                          .price),
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  style: const TextStyle(
+                                                                      color:
+                                                                          grayColor,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold)),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         ),
+                                      )),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: eventImage?.image ??
+                                            const AssetImage("assets/logo.png"),
+                                        fit: BoxFit.cover,
+                                      ),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Color.fromRGBO(0, 0, 0, 0.25),
+                                          spreadRadius: 5,
+                                          blurRadius: 7,
+                                          offset: Offset(0, 4),
+                                        ),
                                       ],
                                     ),
-                                  )),
-                              Container(
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: eventImage?.image ??
-                                        const AssetImage("assets/logo.png"),
-                                    fit: BoxFit.cover,
+                                    height: 200,
+                                    width: double.infinity,
+                                    child: null,
                                   ),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Color.fromRGBO(0, 0, 0, 0.25),
-                                      spreadRadius: 5,
-                                      blurRadius: 7,
-                                      offset: Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                height: 200,
-                                width: double.infinity,
-                                child: null,
+                                ],
                               ),
-                            ],
-                          ),
-                        )),
-                    Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.format_quote,
-                                size: 40,
+                            )),
+                        Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.format_quote,
+                                    size: 40,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                        "${translation(context).event_description.capitalize()}:",
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                  )
+                                ],
                               ),
-                              Expanded(
-                                child: Text(
-                                    "${translation(context).event_description.capitalize()}:",
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold)),
-                              )
-                            ],
-                          ),
+                            ),
+                            Container(
+                              width: double.infinity,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: widget.event.description != null
+                                  ? Text(
+                                      widget.event.description ?? "",
+                                      style: const TextStyle(color: grayColor),
+                                    )
+                                  : Text(
+                                      translation(context)
+                                          .no_event_description
+                                          .capitalize(),
+                                      style: const TextStyle(
+                                          color: grayColor,
+                                          fontStyle: FontStyle.italic)),
+                            )
+                          ],
                         ),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: widget.event.description != null
-                              ? Text(
-                                  widget.event.description ?? "",
-                                  style: const TextStyle(color: grayColor),
-                                )
-                              : Text(
-                                  translation(context)
-                                      .no_event_description
-                                      .capitalize(),
-                                  style: const TextStyle(
-                                      color: grayColor,
-                                      fontStyle: FontStyle.italic)),
-                        )
+                        const Spacer(),
+                        widget.event.ticketsLink != null
+                            ? Container(
+                                padding: const EdgeInsets.all(20),
+                                child: ElevatedButton(
+                                    onPressed: () {
+                                      if (widget.event.ticketsLink != null) {
+                                        _launchURL(
+                                            widget.event.ticketsLink ?? "");
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        padding: const EdgeInsets.all(20)),
+                                    child: Text(translation(context)
+                                        .go_to_event_page
+                                        .capitalize())),
+                              )
+                            : Container(),
                       ],
                     ),
-                    const Spacer(),
-                    widget.event.ticketsLink != null
-                        ? Container(
-                            padding: const EdgeInsets.all(20),
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  if (widget.event.ticketsLink != null) {
-                                    _launchURL(widget.event.ticketsLink ?? "");
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.all(20)),
-                                child: Text(translation(context)
-                                    .go_to_event_page
-                                    .capitalize())),
-                          )
-                        : Container(),
-                  ],
-                ),
-              ),
-            ])));
+                  ),
+                ]));
+          },
+        ));
   }
 }
