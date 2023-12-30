@@ -73,5 +73,6 @@
     "confirm_deletion": "Are you sure you want to delete this event? This operation cannot be undone.",
     "error_while_deleting_event": "error while deleting event",
     "event_successfully_deleted": "event successfully deleted",
-    "free": "free"
+    "free": "free",
+    "deadline_for_this_event_has_passed": "deadline for this event has passed"
 }

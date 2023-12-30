@@ -53,6 +53,19 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   //   }
   // }
 
+  bool _isExpired(String eventTime) {
+    DateTime date = DateTime.parse(eventTime);
+    DateTime now = DateTime.now();
+    return date.isBefore(now);
+  }
+
+  bool _isExpiredDate(String eventTime) {
+    DateTime date = DateTime.parse(eventTime);
+    DateTime now = DateTime.now();
+    DateTime dateOnly = DateTime(now.year, now.month, now.day);
+    return date.isBefore(dateOnly);
+  }
+
   Future _addFavouriteEvent(int id, int index) async {
     try {
       bool result = await ApiService().addFavouriteEvent(id);
@@ -223,7 +236,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                     return const SizedBox(
                         height: kBottomNavigationBarHeight + 20);
                   }
-                  return buildList(index, widget.calendarList[index]);
+                  return buildListElement(index, widget.calendarList[index]);
                 },
                 childCount: widget.calendarList.length + 1,
               ),
@@ -246,7 +259,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     );
   }
 
-  Widget buildList(int index, CalendarList calendar) => Column(
+  Widget buildListElement(int index, CalendarList calendar) => Column(
         children: [
           (() {
             if (calendar.time != null) {
@@ -265,7 +278,8 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             DateFormat.yMMMMEEEEd(AppLocalizations.of(context)!.localeName)
                 .format(DateTime.parse(time))
                 .toUpperCase(),
-            style: const TextStyle(fontSize: 20)),
+            style: TextStyle(
+                fontSize: 20, color: _isExpiredDate(time) ? grayColor : null)),
       );
 
   Widget buildCard(Events event, int index) => Container(
@@ -327,7 +341,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 splashColor: Colors.transparent,
                 hoverColor: Colors.transparent,
                 focusColor: Colors.transparent,
-                onLongPress: widget.user != null && widget.user!.isAdmin()
+                onLongPress: widget.user != null &&
+                        widget.user!.isAdmin() &&
+                        !_isExpired(event.eventTime)
                     ? () {
                         showModalBottomSheet<void>(
                           context: context,
@@ -389,6 +405,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                     return EventDetails(
                       event: event,
                       user: widget.user,
+                      isExpired: _isExpired(event.eventTime),
                     );
                   }));
                 },
@@ -412,7 +429,11 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                               Expanded(
                                 child: Text(
                                   event.name,
-                                  style: const TextStyle(fontSize: 20),
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: _isExpired(event.eventTime)
+                                          ? grayColor
+                                          : null),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),

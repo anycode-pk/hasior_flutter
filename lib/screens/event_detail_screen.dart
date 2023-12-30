@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
-import 'package:hasior_flutter/enums/role.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/models/userWithToken.dart';
 import 'package:hasior_flutter/screens/create_or_edit_event.dart';
@@ -18,8 +17,12 @@ import '../models/events.dart';
 class EventDetails extends StatefulWidget {
   final Events event;
   final UserWithToken? user;
-
-  const EventDetails({super.key, required this.event, required this.user});
+  final bool isExpired;
+  const EventDetails(
+      {super.key,
+      required this.event,
+      required this.user,
+      required this.isExpired});
 
   @override
   State<EventDetails> createState() => _EventDetailsState();
@@ -119,27 +122,28 @@ class _EventDetailsState extends State<EventDetails> {
         appBar: AppBar(
           title: Text(translation(context).detailed_view.capitalize()),
           centerTitle: true,
-          actions: widget.user != null && widget.user!.isAdmin()
-              ? [
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                CreateOrEditEvent(event: widget.event)),
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () {
-                      showAlertDialog(context);
-                    },
-                  ),
-                ]
-              : null,
+          actions:
+              widget.user != null && widget.user!.isAdmin() && !widget.isExpired
+                  ? [
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    CreateOrEditEvent(event: widget.event)),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          showAlertDialog(context);
+                        },
+                      ),
+                    ]
+                  : null,
         ),
         body: Visibility(
             visible: isLoaded,
@@ -176,16 +180,42 @@ class _EventDetailsState extends State<EventDetails> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
-                                        Row(
+                                        Column(
                                           children: [
-                                            Expanded(
-                                              child: Text(
-                                                widget.event.name,
-                                                style: const TextStyle(
-                                                    fontSize: 20),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    widget.event.name,
+                                                    style: const TextStyle(
+                                                        fontSize: 20),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
+                                            widget.isExpired
+                                                ? Row(
+                                                    children: [
+                                                      Expanded(
+                                                          child: Text(
+                                                              translation(
+                                                                      context)
+                                                                  .deadline_for_this_event_has_passed
+                                                                  .capitalize(),
+                                                              style: const TextStyle(
+                                                                  color:
+                                                                      grayColor,
+                                                                  fontStyle:
+                                                                      FontStyle
+                                                                          .italic),
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis)),
+                                                    ],
+                                                  )
+                                                : Container(),
                                           ],
                                         ),
                                         Column(
