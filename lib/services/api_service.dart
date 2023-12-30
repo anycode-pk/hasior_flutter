@@ -203,7 +203,7 @@ class ApiService {
       });
       request.files.add(http.MultipartFile.fromBytes(
           'file', image.readAsBytesSync(),
-          filename: "${basename(image.path)}.jpg",
+          filename: basename(image.path),
           contentType: MediaType('image', 'jpg')));
       var response = await request.send();
       if (response.statusCode == 200) return true;
