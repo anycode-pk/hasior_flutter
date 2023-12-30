@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
-import 'package:hasior_flutter/models/events.dart';
+import 'package:hasior_flutter/models/event.dart';
 import 'package:hasior_flutter/screens/home_screen.dart';
 import 'package:hasior_flutter/widgets/offline_widget.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,7 +17,7 @@ import '../services/api_service.dart';
 import '../theme.dart';
 
 class CreateOrEditEvent extends StatefulWidget {
-  final Events? event;
+  final Event? event;
   const CreateOrEditEvent({super.key, this.event});
 
   @override

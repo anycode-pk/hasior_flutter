@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:hasior_flutter/models/events.dart';
+import 'package:hasior_flutter/models/event.dart';
 
 List<Calendar> calendarFromJson(String str) =>
     List<Calendar>.from(json.decode(str).map((x) => Calendar.fromJson(x)));
@@ -10,7 +10,7 @@ String calendarToJson(List<Calendar> data) =>
 
 class Calendar {
   String time;
-  List<Events> events;
+  List<Event> events;
 
   Calendar({
     required this.time,
@@ -19,8 +19,7 @@ class Calendar {
 
   factory Calendar.fromJson(Map<String, dynamic> json) => Calendar(
         time: json["time"],
-        events:
-            List<Events>.from(json["events"].map((x) => Events.fromJson(x))),
+        events: List<Event>.from(json["events"].map((x) => Event.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {

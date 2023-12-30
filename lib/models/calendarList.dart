@@ -1,11 +1,11 @@
-import 'package:hasior_flutter/models/events.dart';
+import 'package:hasior_flutter/models/event.dart';
 
 class CalendarList {
   CalendarList({
     this.time,
-    this.events,
+    this.event,
   });
 
   String? time;
-  Events? events;
+  Event? event;
 }

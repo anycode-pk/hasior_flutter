@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http_parser/http_parser.dart';
-import 'package:hasior_flutter/models/events.dart';
+import 'package:hasior_flutter/models/event.dart';
 import 'package:hasior_flutter/models/calendar.dart';
 import 'package:hasior_flutter/models/login.dart';
 import 'package:hasior_flutter/models/user.dart';
@@ -18,7 +18,7 @@ class ApiService {
   final String url = "https://prod.bytebunka.net/api/";
   final Client client = http.Client();
 
-  Future<List<Events>?> getCalendar() async {
+  Future<List<Event>?> getCalendar() async {
     var uri = Uri.parse("${await getApiAddress()}event/all-events");
     var response = await client.get(uri);
     if (response.statusCode == 200) {
@@ -164,7 +164,7 @@ class ApiService {
     }
   }
 
-  Future<Events?> createEvent(String name, double? price, String? description,
+  Future<Event?> createEvent(String name, double? price, String? description,
       String? localization, String? ticketsLink, DateTime eventTime) async {
     try {
       var uri = Uri.parse("${await getApiAddress()}event/simple-event");

@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import '../constants/language_constants.dart';
 import '../models/calendar.dart';
 import '../models/calendarList.dart';
-import '../models/events.dart';
+import '../models/event.dart';
 import '../models/userWithToken.dart';
 import '../screens/event_detail_screen.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
@@ -74,7 +74,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         GlobalSnackbar.successSnackbar(
             context, translation(context).added_to_favorites.capitalize());
         setState(() {
-          widget.calendarList[index].events?.favorite = true;
+          widget.calendarList[index].event?.favorite = true;
         });
       }
     } on FormatException {
@@ -93,7 +93,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             context, translation(context).removed_from_favorites.capitalize());
         if (widget.calendarList.length >= index) {
           setState(() {
-            widget.calendarList[index].events?.favorite = false;
+            widget.calendarList[index].event?.favorite = false;
           });
         }
       }
@@ -126,7 +126,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     });
   }
 
-  void showAlertDialog(BuildContext context, Events event) {
+  void showAlertDialog(BuildContext context, Event event) {
     Widget cancelButton = TextButton(
       child: Text(translation(context).cancel.capitalize()),
       onPressed: () {
@@ -272,7 +272,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             if (calendar.time != null) {
               return buildDate(calendar.time ?? "");
             } else {
-              return buildCard(calendar.events!, index);
+              return buildCard(calendar.event!, index);
             }
           }()),
         ],
@@ -289,7 +289,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 fontSize: 20, color: _isExpiredDate(time) ? grayColor : null)),
       );
 
-  Widget buildCard(Events event, int index) => Container(
+  Widget buildCard(Event event, int index) => Container(
       margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 7),
       child: ClipRRect(
           borderRadius: const BorderRadius.all(Radius.circular(10.0)),
@@ -297,7 +297,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             direction: widget.user != null
                 ? widget.delete
                     ? DismissDirection.endToStart
-                    : widget.calendarList[index].events?.favorite == false
+                    : widget.calendarList[index].event?.favorite == false
                         ? DismissDirection.startToEnd
                         : DismissDirection.none
                 : DismissDirection.none,

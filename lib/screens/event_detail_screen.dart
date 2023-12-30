@@ -14,10 +14,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../classes/currency.dart';
 import '../constants/language_constants.dart';
-import '../models/events.dart';
+import '../models/event.dart';
 
 class EventDetails extends StatefulWidget {
-  final Events event;
+  final Event event;
   final UserWithToken? user;
   final bool isExpired;
   const EventDetails(

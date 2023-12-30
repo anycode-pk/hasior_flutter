@@ -2,16 +2,16 @@ import 'dart:convert';
 
 import 'package:hasior_flutter/models/thumbnail.dart';
 
-List<Events> eventsFromJson(String str) =>
-    List<Events>.from(json.decode(str).map((x) => Events.fromJson(x)));
+List<Event> eventsFromJson(String str) =>
+    List<Event>.from(json.decode(str).map((x) => Event.fromJson(x)));
 
-Events eventFromJson(String str) => Events.fromJson(json.decode(str));
+Event eventFromJson(String str) => Event.fromJson(json.decode(str));
 
-String eventsToJson(List<Events> data) =>
+String eventsToJson(List<Event> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class Events {
-  Events(
+class Event {
+  Event(
       {required this.id,
       required this.name,
       this.price,
@@ -32,7 +32,7 @@ class Events {
   Thumbnail? thumbnail;
   bool favorite;
 
-  factory Events.fromJson(Map<String, dynamic> json) => Events(
+  factory Event.fromJson(Map<String, dynamic> json) => Event(
         id: json["id"],
         name: json["name"],
         price: json["thumbnail"] == null

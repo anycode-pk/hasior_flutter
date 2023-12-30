@@ -56,9 +56,9 @@ class _HomeState extends State<Home> {
       if (dataEvents != null) {
         calendarList = [];
         dataEvents?.forEach((element) {
-          calendarList.add(CalendarList(time: element.time, events: null));
+          calendarList.add(CalendarList(time: element.time, event: null));
           for (var element in element.events) {
-            calendarList.add(CalendarList(time: null, events: element));
+            calendarList.add(CalendarList(time: null, event: element));
           }
         });
         setState(() {
@@ -80,10 +80,10 @@ class _HomeState extends State<Home> {
           calendarListFavourite = [];
           favouriteEvents?.forEach((element) {
             calendarListFavourite
-                .add(CalendarList(time: element.time, events: null));
+                .add(CalendarList(time: element.time, event: null));
             for (var element in element.events) {
               calendarListFavourite
-                  .add(CalendarList(time: null, events: element));
+                  .add(CalendarList(time: null, event: element));
             }
           });
           setState(() {
