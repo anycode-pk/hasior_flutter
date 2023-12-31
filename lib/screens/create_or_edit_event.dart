@@ -46,7 +46,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
     _setForm();
   }
 
-  Future _setForm() async {
+  Future<void> _setForm() async {
     if (widget.event != null) {
       nameController.text = widget.event!.name;
       priceController.text =
@@ -75,7 +75,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
     return Image.network(widget.event!.thumbnail!.path);
   }
 
-  Future _createNewEvent() async {
+  Future<void> _createNewEvent() async {
     try {
       setState(() {
         _isLoading = true;
@@ -123,7 +123,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
     }
   }
 
-  Future _editEvent() async {
+  Future<void> _editEvent() async {
     try {
       setState(() {
         _isLoading = true;
@@ -215,7 +215,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
           );
         },
       );
-  Future pickImage() async {
+  Future<void> pickImage() async {
     try {
       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (image == null) return;

@@ -67,7 +67,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     return date.isBefore(dateOnly);
   }
 
-  Future _addFavouriteEvent(int id, int index) async {
+  Future<void> _addFavouriteEvent(int id, int index) async {
     try {
       bool result = await ApiService().addFavouriteEvent(id);
       if (result && context.mounted) {
@@ -85,7 +85,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     }
   }
 
-  Future _removeFavouriteEvent(int id, int index) async {
+  Future<void> _removeFavouriteEvent(int id, int index) async {
     try {
       bool result = await ApiService().deleteFavouriteEvent(id);
       if (result && context.mounted) {

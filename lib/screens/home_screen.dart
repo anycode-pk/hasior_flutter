@@ -40,14 +40,14 @@ class _HomeState extends State<Home> {
     _getFavouriteEvents();
   }
 
-  Future _getUser() async {
+  Future<bool> _getUser() async {
     user = await ApiService().userFromSharedPreferences();
+    return user != null;
   }
 
-  Future _getEvents([String? name]) async {
+  Future<void> _getEvents([String? name]) async {
     try {
-      var checkUser = await ApiService().userFromSharedPreferences();
-      if (checkUser != null) {
+      if (user != null) {
         dataEvents = await ApiService().getAllUpcomingEventsForUser(name);
       } else {
         dataEvents = await ApiService().getAllUpcomingEvents(name);
@@ -70,10 +70,9 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future _getFavouriteEvents([String? name]) async {
+  Future<void> _getFavouriteEvents([String? name]) async {
     try {
-      var checkUser = await ApiService().userFromSharedPreferences();
-      if (checkUser != null) {
+      if (user != null) {
         favouriteEvents = await ApiService().getFavouriteEvents(name);
         if (favouriteEvents != null) {
           calendarListFavourite = [];
@@ -116,144 +115,161 @@ class _HomeState extends State<Home> {
         user: user,
       )
     ];
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(translation(context).event_calendar.capitalize()),
-        // title: !isSearching
-        //     ? const Text("Kalendarz wydarzeń")
-        //     : TextField(
-        //         onChanged: (value) {
-        //           _filter(value);
-        //         },
-        //         style: const TextStyle(color: Colors.white),
-        //         decoration: const InputDecoration(
-        //             icon: Icon(
-        //               Icons.search,
-        //               color: Colors.white,
-        //             ),
-        //             hintText: "Wyszukaj...",
-        //             hintStyle: TextStyle(color: Colors.white)),
-        //       ),
-        // actions: !isSearching
-        //     ? [
-        //         // Navigate to the Search Screen
-        //         IconButton(
-        //             onPressed: () => {
-        //                   setState(() {
-        //                     isSearching = true;
-        //                   })
-        //                 },
-        //             icon: const Icon(Icons.search))
-        //       ]
-        //     : [
-        //         IconButton(
-        //             onPressed: () => {
-        //                   setState(() {
-        //                     isSearching = false;
-        //                     filteredCalendarList = calendarList;
-        //                   })
-        //                 },
-        //             icon: const Icon(Icons.clear))
-        //       ],
-      ),
-      drawer: Theme(
-        data: Theme.of(context).copyWith(
-          canvasColor: drawerColor,
-        ),
-        child: MenuNavigationDrawer(
-          user: user,
-        ),
-      ),
-      extendBody: true,
-      body: OfflineBuilder(
-        connectivityBuilder: (
-          BuildContext context,
-          ConnectivityResult connectivity,
-          Widget child,
-        ) {
-          if (connectivity == ConnectivityResult.none) {
-            return OfflineWidget(
-              child: child,
-            );
-          } else {
-            return child;
-          }
-        },
-        builder: (BuildContext context) {
-          return user != null
-              ? PageView(
-                  controller: _pageController,
-                  onPageChanged: (newIndex) {
-                    setState(() {
-                      if (currentIndex != newIndex) {
-                        _getEvents();
-                        _getFavouriteEvents();
-                      }
-                      currentIndex = newIndex;
-                    });
-                  },
-                  children: screens,
-                )
-              : screens[0];
-        },
-      ),
-      floatingActionButton: user != null && user!.isAdmin()
-          ? FloatingActionButton(
-              onPressed: () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const CreateOrEditEvent()),
-                );
-                if (result != null) {
-                  _getEvents();
-                }
-              },
-              backgroundColor: theme.primaryColor,
-              child: const Icon(Icons.add),
-            )
-          : null,
-      bottomNavigationBar: user != null
-          ? Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.transparent, primaryBlack.withOpacity(0.4)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  stops: const [0.0, 1.0],
-                  tileMode: TileMode.clamp,
+    return FutureBuilder(
+        future: _getUser(),
+        builder: (context, AsyncSnapshot<bool> snapshot) {
+          if (snapshot.hasData) {
+            return Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                title: Text(translation(context).event_calendar.capitalize()),
+                // title: !isSearching
+                //     ? const Text("Kalendarz wydarzeń")
+                //     : TextField(
+                //         onChanged: (value) {
+                //           _filter(value);
+                //         },
+                //         style: const TextStyle(color: Colors.white),
+                //         decoration: const InputDecoration(
+                //             icon: Icon(
+                //               Icons.search,
+                //               color: Colors.white,
+                //             ),
+                //             hintText: "Wyszukaj...",
+                //             hintStyle: TextStyle(color: Colors.white)),
+                //       ),
+                // actions: !isSearching
+                //     ? [
+                //         // Navigate to the Search Screen
+                //         IconButton(
+                //             onPressed: () => {
+                //                   setState(() {
+                //                     isSearching = true;
+                //                   })
+                //                 },
+                //             icon: const Icon(Icons.search))
+                //       ]
+                //     : [
+                //         IconButton(
+                //             onPressed: () => {
+                //                   setState(() {
+                //                     isSearching = false;
+                //                     filteredCalendarList = calendarList;
+                //                   })
+                //                 },
+                //             icon: const Icon(Icons.clear))
+                //       ],
+              ),
+              drawer: Theme(
+                data: Theme.of(context).copyWith(
+                  canvasColor: drawerColor,
+                ),
+                child: MenuNavigationDrawer(
+                  user: user,
                 ),
               ),
-              child: Container(
-                  margin:
-                      const EdgeInsets.only(bottom: 10, left: 10, right: 10),
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    color: primaryBlack,
-                  ),
-                  child: BottomNavigationBar(
-                    backgroundColor: Colors.transparent,
-                    currentIndex: currentIndex,
-                    onTap: (index) {
-                      _pageController.animateToPage(index,
-                          duration: const Duration(milliseconds: 500),
-                          curve: Curves.ease);
-                    },
-                    items: [
-                      BottomNavigationBarItem(
-                          icon: const Icon(Icons.calendar_month),
-                          label: translation(context).all_events.capitalize()),
-                      BottomNavigationBarItem(
-                          icon: const Icon(Icons.favorite),
-                          label: translation(context)
-                              .favorite_events
-                              .capitalize()),
-                    ],
-                  )),
-            )
-          : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-    );
+              extendBody: true,
+              body: OfflineBuilder(
+                connectivityBuilder: (
+                  BuildContext context,
+                  ConnectivityResult connectivity,
+                  Widget child,
+                ) {
+                  if (connectivity == ConnectivityResult.none) {
+                    return OfflineWidget(
+                      child: child,
+                    );
+                  } else {
+                    return child;
+                  }
+                },
+                builder: (BuildContext context) {
+                  return user != null
+                      ? PageView(
+                          controller: _pageController,
+                          onPageChanged: (newIndex) {
+                            setState(() {
+                              if (currentIndex != newIndex) {
+                                _getEvents();
+                                _getFavouriteEvents();
+                              }
+                              currentIndex = newIndex;
+                            });
+                          },
+                          children: screens,
+                        )
+                      : screens[0];
+                },
+              ),
+              floatingActionButton: user != null && user!.isAdmin()
+                  ? FloatingActionButton(
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const CreateOrEditEvent()),
+                        );
+                        if (result != null) {
+                          _getEvents();
+                        }
+                      },
+                      backgroundColor: theme.primaryColor,
+                      child: const Icon(Icons.add),
+                    )
+                  : null,
+              bottomNavigationBar: user != null
+                  ? Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            primaryBlack.withOpacity(0.4)
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: const [0.0, 1.0],
+                          tileMode: TileMode.clamp,
+                        ),
+                      ),
+                      child: Container(
+                          margin: const EdgeInsets.only(
+                              bottom: 10, left: 10, right: 10),
+                          decoration: const BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0)),
+                            color: primaryBlack,
+                          ),
+                          child: BottomNavigationBar(
+                            backgroundColor: Colors.transparent,
+                            currentIndex: currentIndex,
+                            onTap: (index) {
+                              _pageController.animateToPage(index,
+                                  duration: const Duration(milliseconds: 500),
+                                  curve: Curves.ease);
+                            },
+                            items: [
+                              BottomNavigationBarItem(
+                                  icon: const Icon(Icons.calendar_month),
+                                  label: translation(context)
+                                      .all_events
+                                      .capitalize()),
+                              BottomNavigationBarItem(
+                                  icon: const Icon(Icons.favorite),
+                                  label: translation(context)
+                                      .favorite_events
+                                      .capitalize()),
+                            ],
+                          )),
+                    )
+                  : null,
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerDocked,
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        });
   }
 }

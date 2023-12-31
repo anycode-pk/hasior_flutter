@@ -22,7 +22,7 @@ class _SettingsState extends State<Settings> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController apiAddress = TextEditingController();
   bool _isLoading = false;
-  bool _isLoaded = false;
+  bool _isLoadingData = false;
 
   @override
   void initState() {
@@ -30,11 +30,11 @@ class _SettingsState extends State<Settings> {
     _getData();
   }
 
-  Future _getData() async {
+  Future<void> _getData() async {
     try {
       apiAddress.text = await ApiService().getApiAddress();
       setState(() {
-        _isLoaded = true;
+        _isLoadingData = true;
       });
     } catch (e) {
       GlobalSnackbar.errorSnackbar(
@@ -69,7 +69,7 @@ class _SettingsState extends State<Settings> {
           },
           builder: (BuildContext context) {
             return Visibility(
-              visible: _isLoaded,
+              visible: _isLoadingData,
               replacement: const Center(
                 child: CircularProgressIndicator(),
               ),

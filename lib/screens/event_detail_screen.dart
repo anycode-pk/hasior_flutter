@@ -35,7 +35,7 @@ class _EventDetailsState extends State<EventDetails> {
   NumberFormat currencyFormat = Currency().getPLN();
   bool isLoaded = true;
 
-  Future _launchURL(String url) async {
+  Future<void> _launchURL(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);

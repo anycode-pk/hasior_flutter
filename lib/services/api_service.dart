@@ -321,7 +321,7 @@ class ApiService {
     throw FormatException(response.body);
   }
 
-  Future logout() async {
+  Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove("user");
   }
