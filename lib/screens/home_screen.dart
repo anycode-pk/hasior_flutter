@@ -1,253 +1,240 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import '../models/events.dart';
+import 'package:flutter_offline/flutter_offline.dart';
+import 'package:hasior_flutter/classes/global_snackbar.dart';
+import 'package:hasior_flutter/extensions/string_capitalize.dart';
+import 'package:hasior_flutter/widgets/calendar_widget.dart';
+import 'package:hasior_flutter/widgets/offline_widget.dart';
+import '../constants/language_constants.dart';
 import '../models/calendarList.dart';
 import '../models/calendar.dart';
+import '../models/userWithToken.dart';
 import '../widgets/navigator_drawer.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
-import 'event_detail_screen.dart';
+import 'create_or_edit_event.dart';
 
 class Home extends StatefulWidget {
-  const Home({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  const Home({Key? key}) : super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  static const grayColor = Color.fromRGBO(105, 105, 105, 1);
-  //List<Calendar>? data;
   List<Calendar>? dataEvents;
+  List<Calendar>? favouriteEvents;
   List<CalendarList> calendarList = [];
-  List<Calendar>? filteredDataEvents;
-  List<CalendarList> filteredCalendarList = [];
-  bool isSearching = false;
-  var isLoaded = false;
+  List<CalendarList> calendarListFavourite = [];
+  int currentIndex = 0;
+  bool isLoading = false;
+  bool isLoadingFavourite = false;
+  UserWithToken? user;
+  final PageController _pageController = PageController(initialPage: 0);
 
   @override
   void initState() {
     super.initState();
-    _getData();
+    _getUser();
+    _getEvents();
+    _getFavouriteEvents();
   }
 
-  Future _getData() async {
-    //data = await ApiService().getCalendar();
-    dataEvents = await ApiService().getCalendarEvents();
-    calendarList = [];
-    if (/*data != null &&*/ dataEvents != null) {
-      //filteredDataEvents = dataEvents;
-      dataEvents?.forEach((element) {
-        calendarList.add(CalendarList(time: element.time, events: null));
-        for (var element in element.events) {
-          calendarList.add(CalendarList(time: null, events: element));
-        }
-      });
-      filteredCalendarList = calendarList;
-      setState(() {
-        isLoaded = true;
-      });
+  Future<bool> _getUser() async {
+    user = await ApiService().userFromSharedPreferences();
+    return user != null;
+  }
+
+  Future<void> _getEvents([String? name]) async {
+    try {
+      UserWithToken? checkUser = await ApiService().userFromSharedPreferences();
+      if (checkUser != null) {
+        dataEvents = await ApiService().getAllUpcomingEventsForUser(name);
+      } else {
+        dataEvents = await ApiService().getAllUpcomingEvents(name);
+      }
+      if (dataEvents != null) {
+        calendarList = [];
+        dataEvents?.forEach((element) {
+          calendarList.add(CalendarList(time: element.time, event: null));
+          for (var element in element.events) {
+            calendarList.add(CalendarList(time: null, event: element));
+          }
+        });
+        setState(() {
+          isLoading = true;
+        });
+      }
+    } catch (e) {
+      GlobalSnackbar.errorSnackbar(
+          context, translation(context).error_while_loading.capitalize());
     }
   }
 
-  void _filter(value) {
-    setState(() {
-      // tutaj nie działa filtrowanie
-      filteredDataEvents = dataEvents!
-          .where((event) => event.events.any((element) => element.name
-              .toLowerCase()
-              .contains(value.toString().toLowerCase())))
-          .toList();
-      filteredCalendarList = [];
-      filteredDataEvents?.forEach((element) {
-        filteredCalendarList
-            .add(CalendarList(time: element.time, events: null));
-        for (var element in element.events) {
-          filteredCalendarList.add(CalendarList(time: null, events: element));
+  Future<void> _getFavouriteEvents([String? name]) async {
+    try {
+      UserWithToken? checkUser = await ApiService().userFromSharedPreferences();
+      if (checkUser != null) {
+        favouriteEvents = await ApiService().getFavouriteEvents(name);
+        if (favouriteEvents != null) {
+          calendarListFavourite = [];
+          favouriteEvents?.forEach((element) {
+            calendarListFavourite
+                .add(CalendarList(time: element.time, event: null));
+            for (var element in element.events) {
+              calendarListFavourite
+                  .add(CalendarList(time: null, event: element));
+            }
+          });
+          setState(() {
+            isLoadingFavourite = true;
+          });
         }
-      });
-    });
+      }
+    } catch (e) {
+      GlobalSnackbar.errorSnackbar(
+          context, translation(context).error_while_loading.capitalize());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: !isSearching
-              ? Text(widget.title)
-              : TextField(
-                  onChanged: (value) {
-                    _filter(value);
-                  },
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                      icon: Icon(
-                        Icons.search,
-                        color: Colors.white,
-                      ),
-                      hintText: "Wyszukaj...",
-                      hintStyle: TextStyle(color: Colors.white)),
+    List<Widget> screens = [
+      CalendarWidget(
+        isLoading: isLoading,
+        calendarList: calendarList,
+        dataEvents: dataEvents,
+        getData: _getEvents,
+        delete: false,
+        user: user,
+      ),
+      CalendarWidget(
+        isLoading: isLoadingFavourite,
+        calendarList: calendarListFavourite,
+        dataEvents: favouriteEvents,
+        getData: _getFavouriteEvents,
+        delete: true,
+        user: user,
+      )
+    ];
+    return FutureBuilder(
+        future: _getUser(),
+        builder: (context, AsyncSnapshot<bool> snapshot) {
+          if (snapshot.hasData) {
+            return Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                title: Text(translation(context).event_calendar.capitalize()),
+              ),
+              drawer: Theme(
+                data: Theme.of(context).copyWith(
+                  canvasColor: drawerColor,
                 ),
-          actions: !isSearching
-              ? [
-                  // Navigate to the Search Screen
-                  IconButton(
-                      onPressed: () => {
-                            setState(() {
-                              isSearching = true;
-                            })
-                          },
-                      icon: const Icon(Icons.search))
-                ]
-              : [
-                  IconButton(
-                      onPressed: () => {
-                            setState(() {
-                              isSearching = false;
-                              filteredCalendarList = calendarList;
-                            })
-                          },
-                      icon: const Icon(Icons.clear))
-                ],
-        ),
-        drawer: Theme(
-          data: Theme.of(context).copyWith(
-            canvasColor: drawerColor,
-          ),
-          child: const MenuNavigationDrawer(),
-        ),
-        body: Visibility(
-          visible: isLoaded,
-          replacement: const Center(
-            child: CircularProgressIndicator(),
-          ),
-          child: Center(
-              child: RefreshIndicator(
-            onRefresh: _getData,
-            child: ListView.separated(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                itemCount: filteredCalendarList.length,
-                separatorBuilder: (context, index) {
-                  return const SizedBox(height: 12);
+                child: MenuNavigationDrawer(
+                  user: user,
+                ),
+              ),
+              extendBody: true,
+              body: OfflineBuilder(
+                connectivityBuilder: (
+                  BuildContext context,
+                  ConnectivityResult connectivity,
+                  Widget child,
+                ) {
+                  if (connectivity == ConnectivityResult.none) {
+                    return OfflineWidget(
+                      child: child,
+                    );
+                  } else {
+                    return child;
+                  }
                 },
-                itemBuilder: (context, index) {
-                  calendarList;
-                  dataEvents;
-                  return buildList(index, filteredCalendarList[index]);
-                }),
-          )),
-        ));
-  }
-
-  Widget buildList(int index, CalendarList calendar) => Column(
-        children: [
-          (() {
-            if (calendar.time != null) {
-              return buildDate(calendar.time ?? "");
-            } else {
-              return buildCard(calendar.events!);
-            }
-          }()),
-        ],
-      );
-
-  Widget buildDate(String time) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        width: double.infinity,
-        child: Text(
-            DateFormat.yMMMMEEEEd("pl_PL")
-                .format(DateTime.parse(time))
-                .toUpperCase(),
-            style: const TextStyle(fontSize: 20)),
-      );
-
-  Widget buildCard(Events event) => InkWell(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return EventDetails(
-            event: event,
-          );
-        }));
-      },
-      child: Container(
-          color: const Color.fromRGBO(49, 52, 57, 1),
-          width: double.infinity,
-          height: 90,
-          child: Container(
-            decoration: const BoxDecoration(
-                border: Border(
-                    left: BorderSide(
-              color: grayColor,
-              width: 7.0,
-            ))),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        event.name,
-                        style: const TextStyle(fontSize: 20),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    Text(
-                      DateFormat.Hm("pl_PL").format(
-                          DateFormat("yyyy-MM-ddTHH:mm:ssZ")
-                              .parseUTC(event.eventTime)
-                              .toLocal()),
-                      style: const TextStyle(
-                          color: grayColor, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Container(
-                            transform:
-                                Matrix4.translationValues(-4.0, 0.0, 0.0),
-                            child: const Icon(
-                              Icons.location_pin,
-                              color: grayColor,
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(event.localization,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                    color: grayColor,
-                                    fontWeight: FontWeight.bold)),
-                          )
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    Row(
-                      children: const [
-                        Text("Uczestniczysz",
-                            style: TextStyle(
-                                color: Color.fromRGBO(0, 150, 136, 1),
-                                fontWeight: FontWeight.bold)),
-                        SizedBox(width: 5),
-                        Icon(
-                          Icons.check_circle_outline,
-                          color: Color.fromRGBO(0, 150, 136, 1),
+                builder: (BuildContext context) {
+                  return user != null
+                      ? PageView(
+                          controller: _pageController,
+                          onPageChanged: (newIndex) {
+                            setState(() {
+                              if (currentIndex != newIndex) {
+                                _getEvents();
+                                _getFavouriteEvents();
+                              }
+                              currentIndex = newIndex;
+                            });
+                          },
+                          children: screens,
                         )
-                      ],
+                      : screens[0];
+                },
+              ),
+              floatingActionButton: user != null && user!.isAdmin()
+                  ? FloatingActionButton(
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const CreateOrEditEvent()),
+                        );
+                        if (result != null) {
+                          _getEvents();
+                        }
+                      },
+                      backgroundColor: theme.primaryColor,
+                      child: const Icon(Icons.add),
                     )
-                  ],
-                ),
-              ],
-            ),
-          )));
+                  : null,
+              bottomNavigationBar: user != null
+                  ? Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            primaryBlack.withOpacity(0.4)
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: const [0.0, 1.0],
+                          tileMode: TileMode.clamp,
+                        ),
+                      ),
+                      child: Container(
+                          margin: const EdgeInsets.only(
+                              bottom: 10, left: 10, right: 10),
+                          decoration: const BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0)),
+                            color: primaryBlack,
+                          ),
+                          child: BottomNavigationBar(
+                            backgroundColor: Colors.transparent,
+                            currentIndex: currentIndex,
+                            onTap: (index) {
+                              _pageController.animateToPage(index,
+                                  duration: const Duration(milliseconds: 500),
+                                  curve: Curves.ease);
+                            },
+                            items: [
+                              BottomNavigationBarItem(
+                                  icon: const Icon(Icons.calendar_month),
+                                  label: translation(context)
+                                      .all_events
+                                      .capitalize()),
+                              BottomNavigationBarItem(
+                                  icon: const Icon(Icons.favorite),
+                                  label: translation(context)
+                                      .favorite_events
+                                      .capitalize()),
+                            ],
+                          )),
+                    )
+                  : null,
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerDocked,
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        });
+  }
 }
