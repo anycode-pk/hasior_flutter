@@ -75,5 +75,6 @@
     "event_successfully_deleted": "event successfully deleted",
     "free": "free",
     "deadline_for_this_event_has_passed": "deadline for this event has passed",
-    "you_are_offline": "you are offline"
+    "you_are_offline": "you are offline",
+    "event_has_been_canceled": "event has been canceled"
 }

@@ -26,21 +26,7 @@ class _OfflineWidgetState extends State<OfflineWidget> {
             color: Colors.red,
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 350),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(translation(context).you_are_offline.capitalize()),
-                  const SizedBox(width: 8.0),
-                  const SizedBox(
-                    width: 12.0,
-                    height: 12.0,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.0,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  ),
-                ],
-              ),
+              child: Text(translation(context).you_are_offline.capitalize()),
             ),
           ),
         ),

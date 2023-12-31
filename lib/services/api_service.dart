@@ -250,17 +250,13 @@ class ApiService {
     }
   }
 
-  Future<bool> deleteEvent(int id) async {
-    var uri = Uri.parse("${await getApiAddress()}event");
+  Future<bool> cancelEvent(int id) async {
+    var uri = Uri.parse("${await getApiAddress()}event/$id/cancel");
     UserWithToken? user = await userFromSharedPreferences();
-    var response = await client.delete(uri,
-        headers: {
-          "content-type": "application/json",
-          "Authorization": "Bearer ${user?.token}"
-        },
-        body: jsonEncode({
-          "id": id,
-        }));
+    var response = await client.put(uri, headers: {
+      "content-type": "application/json",
+      "Authorization": "Bearer ${user?.token}"
+    });
     if (response.statusCode == 200) {
       return true;
     }

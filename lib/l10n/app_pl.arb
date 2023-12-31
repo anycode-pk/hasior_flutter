@@ -75,5 +75,6 @@
     "event_successfully_deleted": "pomyślnie usunięto wydarzenie",
     "free": "za darmo",
     "deadline_for_this_event_has_passed": "termin tego wydarzenia już minął",
-    "you_are_offline": "jesteś offline"
+    "you_are_offline": "jesteś offline",
+    "event_has_been_canceled": "wydarzenie zostało anulowane"
 }

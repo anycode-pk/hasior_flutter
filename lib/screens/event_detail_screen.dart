@@ -61,7 +61,7 @@ class _EventDetailsState extends State<EventDetails> {
     Widget continueButton = ElevatedButton(
         onPressed: () async {
           try {
-            await ApiService().deleteEvent(widget.event.id).then((value) {
+            await ApiService().cancelEvent(widget.event.id).then((value) {
               GlobalSnackbar.infoSnackbar(context,
                   translation(context).event_successfully_deleted.capitalize());
               Navigator.of(context).popUntil((route) => route.isFirst);
@@ -94,6 +94,27 @@ class _EventDetailsState extends State<EventDetails> {
         return alert;
       },
     );
+  }
+
+  Widget _showEventStatus() {
+    String text = "";
+    if (widget.isExpired) {
+      text =
+          translation(context).deadline_for_this_event_has_passed.capitalize();
+    } else if (widget.event.isCanceled) {
+      text = translation(context).event_has_been_canceled.capitalize();
+    }
+    return text.isNotEmpty
+        ? Row(
+            children: [
+              Expanded(
+                  child: Text(text,
+                      style: const TextStyle(
+                          color: grayColor, fontStyle: FontStyle.italic),
+                      overflow: TextOverflow.ellipsis)),
+            ],
+          )
+        : Container();
   }
 
   @override
@@ -183,35 +204,21 @@ class _EventDetailsState extends State<EventDetails> {
                                                     Expanded(
                                                       child: Text(
                                                         widget.event.name,
-                                                        style: const TextStyle(
-                                                            fontSize: 20),
+                                                        style: TextStyle(
+                                                            fontSize: 20,
+                                                            decoration: widget
+                                                                    .event
+                                                                    .isCanceled
+                                                                ? TextDecoration
+                                                                    .lineThrough
+                                                                : null),
                                                         overflow: TextOverflow
                                                             .ellipsis,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                                widget.isExpired
-                                                    ? Row(
-                                                        children: [
-                                                          Expanded(
-                                                              child: Text(
-                                                                  translation(
-                                                                          context)
-                                                                      .deadline_for_this_event_has_passed
-                                                                      .capitalize(),
-                                                                  style: const TextStyle(
-                                                                      color:
-                                                                          grayColor,
-                                                                      fontStyle:
-                                                                          FontStyle
-                                                                              .italic),
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis)),
-                                                        ],
-                                                      )
-                                                    : Container(),
+                                                _showEventStatus(),
                                               ],
                                             ),
                                             Column(

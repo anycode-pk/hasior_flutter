@@ -137,7 +137,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     Widget continueButton = ElevatedButton(
         onPressed: () async {
           try {
-            await ApiService().deleteEvent(event.id).then((value) {
+            await ApiService().cancelEvent(event.id).then((value) {
               GlobalSnackbar.infoSnackbar(context,
                   translation(context).event_successfully_deleted.capitalize());
               Navigator.of(context).popUntil((route) => route.isFirst);
@@ -188,7 +188,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 child: CustomScrollView(
                   slivers: [
                     SliverAppBar(
-                      //TODO: albo dodać czyszczenie, albo zmienić wyszukiwanie
                       title: TextField(
                         textInputAction: TextInputAction.search,
                         controller: _searchController,
@@ -211,7 +210,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                 widget.getData();
                               }
                             },
-                            icon: Icon(Icons.clear),
+                            icon: const Icon(Icons.clear),
                           ),
                         ),
                       ),
@@ -450,8 +449,12 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                   event.name,
                                   style: TextStyle(
                                       fontSize: 20,
-                                      color: _isExpired(event.eventTime)
+                                      color: _isExpired(event.eventTime) ||
+                                              event.isCanceled
                                           ? grayColor
+                                          : null,
+                                      decoration: event.isCanceled
+                                          ? TextDecoration.lineThrough
                                           : null),
                                   overflow: TextOverflow.ellipsis,
                                 ),
