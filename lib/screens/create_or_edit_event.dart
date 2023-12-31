@@ -328,12 +328,6 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
                             cursorColor: Colors.white,
                             controller: descriptionController,
                             maxLines: 5,
-                            // validator: (value) {
-                            //   if (value == null || value.isEmpty) {
-                            //     return "Wprowadź opis";
-                            //   }
-                            //   return null;
-                            // },
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
                               hintText:
@@ -350,12 +344,6 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
                           TextFormField(
                             cursorColor: Colors.white,
                             controller: localizationController,
-                            // validator: (value) {
-                            //   if (value == null || value.isEmpty) {
-                            //     return "Wprowadź lokalizację";
-                            //   }
-                            //   return null;
-                            // },
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
                               hintText:

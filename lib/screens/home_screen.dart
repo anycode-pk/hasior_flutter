@@ -25,7 +25,6 @@ class _HomeState extends State<Home> {
   List<Calendar>? favouriteEvents;
   List<CalendarList> calendarList = [];
   List<CalendarList> calendarListFavourite = [];
-  // bool isSearching = false;
   int currentIndex = 0;
   bool isLoading = false;
   bool isLoadingFavourite = false;
@@ -47,7 +46,8 @@ class _HomeState extends State<Home> {
 
   Future<void> _getEvents([String? name]) async {
     try {
-      if (user != null) {
+      UserWithToken? checkUser = await ApiService().userFromSharedPreferences();
+      if (checkUser != null) {
         dataEvents = await ApiService().getAllUpcomingEventsForUser(name);
       } else {
         dataEvents = await ApiService().getAllUpcomingEvents(name);
@@ -72,7 +72,8 @@ class _HomeState extends State<Home> {
 
   Future<void> _getFavouriteEvents([String? name]) async {
     try {
-      if (user != null) {
+      UserWithToken? checkUser = await ApiService().userFromSharedPreferences();
+      if (checkUser != null) {
         favouriteEvents = await ApiService().getFavouriteEvents(name);
         if (favouriteEvents != null) {
           calendarListFavourite = [];
@@ -123,42 +124,6 @@ class _HomeState extends State<Home> {
               appBar: AppBar(
                 centerTitle: true,
                 title: Text(translation(context).event_calendar.capitalize()),
-                // title: !isSearching
-                //     ? const Text("Kalendarz wydarzeń")
-                //     : TextField(
-                //         onChanged: (value) {
-                //           _filter(value);
-                //         },
-                //         style: const TextStyle(color: Colors.white),
-                //         decoration: const InputDecoration(
-                //             icon: Icon(
-                //               Icons.search,
-                //               color: Colors.white,
-                //             ),
-                //             hintText: "Wyszukaj...",
-                //             hintStyle: TextStyle(color: Colors.white)),
-                //       ),
-                // actions: !isSearching
-                //     ? [
-                //         // Navigate to the Search Screen
-                //         IconButton(
-                //             onPressed: () => {
-                //                   setState(() {
-                //                     isSearching = true;
-                //                   })
-                //                 },
-                //             icon: const Icon(Icons.search))
-                //       ]
-                //     : [
-                //         IconButton(
-                //             onPressed: () => {
-                //                   setState(() {
-                //                     isSearching = false;
-                //                     filteredCalendarList = calendarList;
-                //                   })
-                //                 },
-                //             icon: const Icon(Icons.clear))
-                //       ],
               ),
               drawer: Theme(
                 data: Theme.of(context).copyWith(

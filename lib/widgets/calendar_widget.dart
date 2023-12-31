@@ -37,22 +37,7 @@ class CalendarWidget extends StatefulWidget {
 
 class _CalendarWidgetState extends State<CalendarWidget> {
   static const grayColor = Color.fromRGBO(105, 105, 105, 1);
-  TextEditingController _searchController = TextEditingController();
-  // Future _getData() async {
-  //   widget.dataEvents = await ApiService().getFavouriteEvents();
-  //   widget.calendarList = [];
-  //   if (widget.dataEvents != null) {
-  //     widget.dataEvents?.forEach((element) {
-  //       widget.calendarList.add(CalendarList(time: element.time, events: null));
-  //       for (var element in element.events) {
-  //         widget.calendarList.add(CalendarList(time: null, events: element));
-  //       }
-  //     });
-  //     setState(() {
-  //       widget.isLoaded = true;
-  //     });
-  //   }
-  // }
+  final TextEditingController _searchController = TextEditingController();
 
   bool _isExpired(String eventTime) {
     DateTime date = DateTime.parse(eventTime);
@@ -259,19 +244,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                     )
                   ],
                 ),
-              )
-              // ListView.separated(
-              //     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-              //     itemCount: widget.filteredCalendarList.length,
-              //     separatorBuilder: (context, index) {
-              //       return const SizedBox(height: 12);
-              //     },
-              //     itemBuilder: (context, index) {
-              //       widget.calendarList;
-              //       widget.dataEvents;
-              //       return buildList(index, widget.filteredCalendarList[index]);
-              //     }),
-              )
+              ))
         ],
       ),
     );
@@ -336,7 +309,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             onDismissed: widget.delete
                 ? (direction) async {
                     if (direction == DismissDirection.endToStart) {
-                      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       _removeFavouriteEventFromList(index);
                       await _removeFavouriteEvent(event.id, index);
                     }
@@ -346,9 +318,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 ? (direction) async {
                     if (direction == DismissDirection.startToEnd) {
                       await _addFavouriteEvent(event.id, index);
-                      // setState(() {
-                      //   widget.calendarList[index] = widget.calendarList[index];
-                      // });
                       return false;
                     }
                     return null;

@@ -99,13 +99,6 @@ class _LoginState extends State<Login> {
                                       borderSide:
                                           BorderSide(color: Colors.white),
                                     ),
-                                    // errorStyle: TextStyle(
-                                    //     color: Color.fromARGB(255, 228, 42, 92)),
-                                    // errorBorder: OutlineInputBorder(
-                                    //   borderSide: BorderSide(
-                                    //       color: Color.fromARGB(255, 228, 42, 92),
-                                    //       width: 0.0),
-                                    // ),
                                   ),
                                 ),
                                 const SizedBox(height: 15),

@@ -33,8 +33,6 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
                 indent: 18,
                 endIndent: 18,
               ),
-              buildMenuItems(context),
-              const Spacer(),
               buildMenuItemsBottom(context),
             ],
           ),
@@ -46,26 +44,6 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
           top: 24 + MediaQuery.of(context).padding.top,
         ),
         child: userInfo(context),
-      );
-
-  Widget buildMenuItems(BuildContext context) => Column(
-        children: const [
-          ListTile(
-            leading: Icon(Icons.home_outlined),
-            title: Text("Wydziały PK"),
-            onTap: null,
-          ),
-          ListTile(
-            leading: Icon(Icons.calendar_today),
-            title: Text("Kalendarz wydarzeń"),
-            onTap: null,
-          ),
-          ListTile(
-            leading: Icon(Icons.book),
-            title: Text("Zarząd"),
-            onTap: null,
-          ),
-        ],
       );
 
   Widget buildMenuItemsBottom(BuildContext context) => Column(
