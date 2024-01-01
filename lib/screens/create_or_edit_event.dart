@@ -80,7 +80,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
       setState(() {
         _isLoading = true;
       });
-      var response = await ApiService().createEvent(
+      Event? response = await ApiService().createEvent(
           nameController.text,
           double.tryParse(priceController.text.replaceAll(",", "")),
           descriptionController.text.isEmpty
@@ -99,7 +99,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
         });
         return;
       }
-      var responseImage = await uploadImage(response!.id);
+      bool responseImage = await uploadImage(response!.id);
       if (responseImage && context.mounted) {
         GlobalSnackbar.successSnackbar(
             context,
@@ -128,7 +128,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
       setState(() {
         _isLoading = true;
       });
-      var response = await ApiService().editEvent(
+      bool response = await ApiService().editEvent(
           widget.event!.id,
           nameController.text,
           priceController.text.isEmpty
@@ -150,7 +150,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
         });
         return;
       }
-      var responseImage = await uploadImage(widget.event!.id);
+      bool responseImage = await uploadImage(widget.event!.id);
       if (responseImage && context.mounted) {
         GlobalSnackbar.successSnackbar(
             context,
@@ -182,7 +182,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
 
   Future<bool> uploadImage(int id) async {
     if (imageFile == null && image == null) {
-      var response = await ApiService().putNullImageToEvent(id);
+      bool response = await ApiService().putNullImageToEvent(id);
       if (!response) {
         return false;
       }
@@ -191,7 +191,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
     if (imageFile == null) {
       return true;
     }
-    var responseImage = await ApiService().putImageToEvent(id, imageFile!);
+    bool responseImage = await ApiService().putImageToEvent(id, imageFile!);
     if (!responseImage) {
       return false;
     }

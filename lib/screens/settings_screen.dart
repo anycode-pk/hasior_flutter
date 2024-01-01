@@ -21,8 +21,8 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController apiAddress = TextEditingController();
-  bool _isLoading = false;
-  bool _isLoadingData = false;
+  bool _isLoaded = false;
+  bool _isLoadedData = false;
 
   @override
   void initState() {
@@ -34,7 +34,7 @@ class _SettingsState extends State<Settings> {
     try {
       apiAddress.text = await ApiService().getApiAddress();
       setState(() {
-        _isLoadingData = true;
+        _isLoadedData = true;
       });
     } catch (e) {
       GlobalSnackbar.errorSnackbar(
@@ -69,7 +69,7 @@ class _SettingsState extends State<Settings> {
           },
           builder: (BuildContext context) {
             return Visibility(
-              visible: _isLoadingData,
+              visible: _isLoadedData,
               replacement: const Center(
                 child: CircularProgressIndicator(),
               ),
@@ -140,7 +140,7 @@ class _SettingsState extends State<Settings> {
                                 style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.all(20),
                                     textStyle: const TextStyle(fontSize: 15)),
-                                icon: _isLoading
+                                icon: _isLoaded
                                     ? Container(
                                         width: 24,
                                         height: 24,
@@ -151,13 +151,13 @@ class _SettingsState extends State<Settings> {
                                         ),
                                       )
                                     : Container(),
-                                onPressed: _isLoading
+                                onPressed: _isLoaded
                                     ? null
                                     : () async {
                                         if (_formKey.currentState!.validate()) {
                                           try {
                                             setState(() {
-                                              _isLoading = true;
+                                              _isLoaded = true;
                                             });
                                             SharedPreferences prefs =
                                                 await SharedPreferences
@@ -171,7 +171,7 @@ class _SettingsState extends State<Settings> {
                                                       .settings_saved
                                                       .capitalize());
                                               setState(() {
-                                                _isLoading = false;
+                                                _isLoaded = false;
                                               });
                                             }
                                           } on FormatException catch (e) {
@@ -179,12 +179,12 @@ class _SettingsState extends State<Settings> {
                                                 context,
                                                 "${translation(context).error_while_saving_settings.capitalize()}: ${e.message}");
                                             setState(() {
-                                              _isLoading = false;
+                                              _isLoaded = false;
                                             });
                                           }
                                         }
                                       },
-                                label: _isLoading
+                                label: _isLoaded
                                     ? const Text("")
                                     : Text(
                                         translation(context).save.capitalize()),

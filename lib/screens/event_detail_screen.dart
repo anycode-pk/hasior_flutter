@@ -10,6 +10,7 @@ import 'package:hasior_flutter/screens/home_screen.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 import 'package:hasior_flutter/widgets/offline_widget.dart';
 import 'package:intl/intl.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../classes/currency.dart';
@@ -34,6 +35,7 @@ class _EventDetailsState extends State<EventDetails> {
   static const grayColor = Color.fromRGBO(105, 105, 105, 1);
   NumberFormat currencyFormat = Currency().getPLN();
   bool isLoaded = true;
+  bool isLoading = false;
 
   Future<void> _launchURL(String url) async {
     final uri = Uri.parse(url);
@@ -41,6 +43,31 @@ class _EventDetailsState extends State<EventDetails> {
       await launchUrl(uri);
     } else {
       throw 'Could not launch $url';
+    }
+  }
+
+  Future<void> _sendRequestForTicket(int id) async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      bool response = await ApiService().sendRequestForTicket(id);
+      if (response && context.mounted) {
+        GlobalSnackbar.successSnackbar(
+            context,
+            translation(context)
+                .your_ticket_request_has_been_successfully_submitted
+                .capitalize());
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      GlobalSnackbar.errorSnackbar(context,
+          translation(context).failed_to_send_ticket_request.capitalize());
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -52,46 +79,17 @@ class _EventDetailsState extends State<EventDetails> {
   }
 
   void showAlertDialog(BuildContext context) {
-    Widget cancelButton = TextButton(
-      child: Text(translation(context).cancel.capitalize()),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-    Widget continueButton = ElevatedButton(
-        onPressed: () async {
-          try {
-            await ApiService().cancelEvent(widget.event.id).then((value) {
-              GlobalSnackbar.infoSnackbar(context,
-                  translation(context).event_successfully_deleted.capitalize());
-              Navigator.of(context).popUntil((route) => route.isFirst);
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const Home(),
-                ),
-              );
-            });
-          } catch (e) {
-            Navigator.pop(context);
-            GlobalSnackbar.errorSnackbar(context,
-                translation(context).error_while_deleting_event.capitalize());
-          }
-        },
-        style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-        child: Text(translation(context).delete.capitalize()));
-    AlertDialog alert = AlertDialog(
-      title: Text(translation(context).delete_event_question.capitalize()),
-      content: Text(translation(context).confirm_deletion.capitalize()),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-    showDialog(
+    showModalBottomSheet<void>(
       context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
       builder: (BuildContext context) {
-        return alert;
+        return Expanded(
+            child: QrImage(
+          data: "1234567980",
+          size: 200,
+        ));
       },
     );
   }
@@ -445,20 +443,51 @@ class _EventDetailsState extends State<EventDetails> {
                         widget.event.ticketsLink != null
                             ? Container(
                                 padding: const EdgeInsets.all(20),
-                                child: ElevatedButton(
+                                child: TextButton(
                                     onPressed: () {
                                       if (widget.event.ticketsLink != null) {
                                         _launchURL(
                                             widget.event.ticketsLink ?? "");
                                       }
                                     },
-                                    style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.all(20)),
+                                    style: TextButton.styleFrom(
+                                        padding: const EdgeInsets.all(20),
+                                        foregroundColor: Colors.white,
+                                        side: const BorderSide(
+                                            color: Colors.white)),
                                     child: Text(translation(context)
                                         .go_to_event_page
                                         .capitalize())),
                               )
                             : Container(),
+                        Container(
+                            padding: const EdgeInsets.all(20),
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton.icon(
+                                  onPressed: () =>
+                                      _sendRequestForTicket(widget.event.id),
+                                  style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.all(20)),
+                                  icon: isLoading
+                                      ? Container(
+                                          width: 24,
+                                          height: 24,
+                                          padding: const EdgeInsets.all(2.0),
+                                          child:
+                                              const CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 3,
+                                          ),
+                                        )
+                                      : Container(),
+                                  label: isLoading
+                                      ? const Text("")
+                                      : Text(translation(context)
+                                          .ask_for_a_ticket
+                                          .capitalize())),
+                            ))
                       ],
                     ),
                   ),

@@ -76,5 +76,11 @@
     "free": "za darmo",
     "deadline_for_this_event_has_passed": "termin tego wydarzenia już minął",
     "you_are_offline": "jesteś offline",
-    "event_has_been_canceled": "wydarzenie zostało anulowane"
+    "event_has_been_canceled": "wydarzenie zostało anulowane",
+    "my_tickets": "moje bilety",
+    "no_tickets_available": "brak dostępnych biletów",
+    "ask_for_a_ticket": "poproś o bilet",
+    "your_ticket_request_has_been_successfully_submitted": "pomyślnie wysłano prośbę o bilet",
+    "failed_to_send_ticket_request": "nie udało się wysłać prośby o bilet",
+    "ticket_details": "szczegóły biletu"
 }
