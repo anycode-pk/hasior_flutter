@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:hasior_flutter/models/ticket.dart';
+import 'package:hasior_flutter/models/ticketRequest.dart';
 import 'package:hasior_flutter/models/validateTicket.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:hasior_flutter/models/event.dart';
@@ -214,6 +215,20 @@ class ApiService {
     });
     if (response.statusCode == 200) {
       return true;
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<List<TicketRequest>> getTicketRequests() async {
+    Uri uri = Uri.parse("${await getApiAddress()}ticket/requests/user");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.get(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return ticketRequestsFromJson(json);
     }
     throw FormatException(response.body);
   }

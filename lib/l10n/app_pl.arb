@@ -81,6 +81,7 @@
     "my_tickets": "moje bilety",
     "no_tickets_available": "brak dostępnych biletów",
     "ask_for_a_ticket": "poproś o bilecik",
+    "ticket_request_has_been_sent": "wysłano prośbę o bilet",
     "your_ticket_request_has_been_successfully_submitted": "pomyślnie wysłano prośbę o bilet",
     "failed_to_send_ticket_request": "nie udało się wysłać prośby o bilet",
     "ticket_details": "szczegóły biletu",

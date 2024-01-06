@@ -81,6 +81,7 @@
     "my_tickets": "my tickets",
     "no_tickets_available": "no tickets available",
     "ask_for_a_ticket": "ask for a ticket",
+    "ticket_request_has_been_sent": "ticket request has been sent",
     "your_ticket_request_has_been_successfully_submitted": "your ticket request has been successfully submitted",
     "failed_to_send_ticket_request": "failed to send ticket request",
     "ticket_details": "ticket details",

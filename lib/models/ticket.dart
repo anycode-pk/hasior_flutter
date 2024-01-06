@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:hasior_flutter/models/ticketEvent.dart';
+import 'package:hasior_flutter/models/ticketOwner.dart';
+
 List<Ticket> ticketsFromJson(String str) =>
     List<Ticket>.from(json.decode(str).map((x) => Ticket.fromJson(x)));
 
@@ -49,49 +52,5 @@ class Ticket {
         "createdAt": createdAt,
         "description": description,
         "isCanceled": isCanceled,
-      };
-}
-
-class TicketEvent {
-  int id;
-  String name;
-  String eventTime;
-
-  TicketEvent({
-    required this.id,
-    required this.name,
-    required this.eventTime,
-  });
-
-  factory TicketEvent.fromJson(Map<String, dynamic> json) => TicketEvent(
-        id: json["id"],
-        name: json["name"],
-        eventTime: json["eventTime"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "eventTime": eventTime,
-      };
-}
-
-class TicketOwner {
-  String id;
-  String email;
-
-  TicketOwner({
-    required this.id,
-    required this.email,
-  });
-
-  factory TicketOwner.fromJson(Map<String, dynamic> json) => TicketOwner(
-        id: json["id"],
-        email: json["email"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "email": email,
       };
 }
