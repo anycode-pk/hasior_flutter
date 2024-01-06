@@ -17,7 +17,6 @@ class Tickets extends StatefulWidget {
 
 class _TicketsState extends State<Tickets> {
   List<Ticket> data = [];
-  bool isLoaded = false;
   static const grayColor = Color.fromRGBO(105, 105, 105, 1);
   final TextEditingController _searchController = TextEditingController();
 
@@ -27,15 +26,14 @@ class _TicketsState extends State<Tickets> {
     _getData();
   }
 
-  Future<void> _getData() async {
+  Future<bool> _getData() async {
     try {
       data = await ApiService().getTickets() ?? [];
-      setState(() {
-        isLoaded = true;
-      });
+      return true;
     } catch (e) {
       GlobalSnackbar.errorSnackbar(
           context, translation(context).error_while_loading.capitalize());
+      return false;
     }
   }
 
@@ -139,70 +137,75 @@ class _TicketsState extends State<Tickets> {
         child: Stack(
           children: <Widget>[
             ListView(),
-            Visibility(
-                visible: isLoaded,
-                replacement: const Center(
-                  child: CircularProgressIndicator(),
-                ),
-                child: Center(
-                  child: CustomScrollView(
-                    slivers: [
-                      SliverAppBar(
-                        title: TextField(
-                          textInputAction: TextInputAction.search,
-                          controller: _searchController,
-                          onSubmitted: (value) {},
-                          style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(
-                              Icons.search,
-                              color: Colors.white,
+            FutureBuilder(
+                future: _getData(),
+                builder: (context, AsyncSnapshot<bool> snapshot) {
+                  if (snapshot.hasData) {
+                    return Center(
+                      child: CustomScrollView(
+                        slivers: [
+                          SliverAppBar(
+                            title: TextField(
+                              textInputAction: TextInputAction.search,
+                              controller: _searchController,
+                              onSubmitted: (value) {},
+                              style: const TextStyle(color: Colors.white),
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(
+                                  Icons.search,
+                                  color: Colors.white,
+                                ),
+                                hintText:
+                                    "${translation(context).search.capitalize()}...",
+                                hintStyle: const TextStyle(color: Colors.white),
+                                suffixIcon: IconButton(
+                                  onPressed: () {
+                                    if (_searchController.text.isNotEmpty) {
+                                      _searchController.clear();
+                                    }
+                                  },
+                                  icon: const Icon(Icons.clear),
+                                ),
+                              ),
                             ),
-                            hintText:
-                                "${translation(context).search.capitalize()}...",
-                            hintStyle: const TextStyle(color: Colors.white),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                if (_searchController.text.isNotEmpty) {
-                                  _searchController.clear();
-                                }
-                              },
-                              icon: const Icon(Icons.clear),
-                            ),
+                            floating: true,
+                            automaticallyImplyLeading: false,
                           ),
-                        ),
-                        floating: true,
-                        automaticallyImplyLeading: false,
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (BuildContext context, int index) {
+                                if (index == data.length) {
+                                  if (data.isEmpty) {
+                                    return Container(
+                                        padding: const EdgeInsets.all(20),
+                                        child: Text(
+                                          translation(context)
+                                              .no_tickets_available
+                                              .capitalize(),
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                              color: grayColor,
+                                              fontSize: 20,
+                                              fontStyle: FontStyle.italic),
+                                        ));
+                                  }
+                                  return const SizedBox(
+                                      height: kBottomNavigationBarHeight + 20);
+                                }
+                                return buildCard(data[index], index);
+                              },
+                              childCount: data.length + 1,
+                            ),
+                          )
+                        ],
                       ),
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (BuildContext context, int index) {
-                            if (index == data.length) {
-                              if (data.isEmpty) {
-                                return Container(
-                                    padding: const EdgeInsets.all(20),
-                                    child: Text(
-                                      translation(context)
-                                          .no_tickets_available
-                                          .capitalize(),
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                          color: grayColor,
-                                          fontSize: 20,
-                                          fontStyle: FontStyle.italic),
-                                    ));
-                              }
-                              return const SizedBox(
-                                  height: kBottomNavigationBarHeight + 20);
-                            }
-                            return buildCard(data[index], index);
-                          },
-                          childCount: data.length + 1,
-                        ),
-                      )
-                    ],
-                  ),
-                ))
+                    );
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                })
           ],
         ),
       ),
