@@ -6,7 +6,6 @@ import 'package:hasior_flutter/classes/global_snackbar.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/models/userWithToken.dart';
 import 'package:hasior_flutter/screens/create_or_edit_event.dart';
-import 'package:hasior_flutter/screens/home_screen.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 import 'package:hasior_flutter/widgets/offline_widget.dart';
 import 'package:intl/intl.dart';
@@ -468,8 +467,6 @@ class _EventDetailsState extends State<EventDetails> {
                               child: ElevatedButton.icon(
                                   onPressed: () =>
                                       _sendRequestForTicket(widget.event.id),
-                                  style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.all(20)),
                                   icon: isLoading
                                       ? Container(
                                           width: 24,

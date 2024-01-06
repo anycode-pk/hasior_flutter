@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/screens/login_screen.dart';
+import 'package:hasior_flutter/screens/qr_scanner_screen.dart';
 import 'package:hasior_flutter/screens/settings_screen.dart';
 import 'package:hasior_flutter/screens/tickets_screen.dart';
 import '../constants/language_constants.dart';
@@ -35,6 +36,9 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
                 endIndent: 18,
               ),
               widget.user != null ? buildMenuItems(context) : Container(),
+              widget.user != null && widget.user!.isAdmin()
+                  ? buildAdminMenuItems(context)
+                  : Container(),
               const Spacer(),
               buildMenuItemsBottom(context),
             ],
@@ -57,6 +61,24 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return const Tickets();
+              }));
+            },
+          ),
+        ],
+      );
+  Widget buildAdminMenuItems(BuildContext context) => Column(
+        children: [
+          const Divider(
+            color: grayColor,
+            thickness: 0.1,
+            indent: 18,
+            endIndent: 18,
+          ),
+          ListTile(
+            title: Text(translation(context).ticket_check.capitalize()),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const QrScanner();
               }));
             },
           ),

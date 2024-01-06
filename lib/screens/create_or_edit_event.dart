@@ -99,7 +99,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
         });
         return;
       }
-      bool responseImage = await uploadImage(response!.id);
+      bool responseImage = await uploadImage(response!.id, true);
       if (responseImage && context.mounted) {
         GlobalSnackbar.successSnackbar(
             context,
@@ -150,7 +150,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
         });
         return;
       }
-      bool responseImage = await uploadImage(widget.event!.id);
+      bool responseImage = await uploadImage(widget.event!.id, false);
       if (responseImage && context.mounted) {
         GlobalSnackbar.successSnackbar(
             context,
@@ -180,8 +180,8 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
     }
   }
 
-  Future<bool> uploadImage(int id) async {
-    if (imageFile == null && image == null) {
+  Future<bool> uploadImage(int id, bool isNew) async {
+    if (imageFile == null && image == null && !isNew) {
       bool response = await ApiService().putNullImageToEvent(id);
       if (!response) {
         return false;

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:hasior_flutter/models/ticket.dart';
+import 'package:hasior_flutter/models/validateTicket.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:hasior_flutter/models/event.dart';
 import 'package:hasior_flutter/models/calendar.dart';
@@ -264,6 +265,28 @@ class ApiService {
     throw FormatException(response.body);
   }
 
+  Future<ValidateTicket?> validateTicket(String token) async {
+    try {
+      Uri uri = Uri.parse("${await getApiAddress()}ticket/validate-token");
+      UserWithToken? user = await userFromSharedPreferences();
+      Response response = await client.put(uri,
+          headers: {
+            "content-type": "application/json",
+            "Authorization": "Bearer ${user?.token}"
+          },
+          body: jsonEncode({
+            "token": token,
+          }));
+      if (response.statusCode == 200) {
+        String json = response.body;
+        return validateTicketFromJson(json);
+      }
+      throw FormatException(response.body);
+    } on SocketException catch (e) {
+      throw FormatException(e.message);
+    }
+  }
+
   Future<User?> getUserData(String token) async {
     Uri uri = Uri.parse("${await getApiAddress()}user/user-data");
     Response response = await client.get(uri,
@@ -306,7 +329,7 @@ class ApiService {
     });
     if (response.statusCode == 200) {
       String json = response.body;
-      return ticketFromJson(json);
+      return ticketsFromJson(json);
     }
     throw FormatException(response.body);
   }

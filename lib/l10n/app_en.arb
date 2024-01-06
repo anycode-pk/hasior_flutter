@@ -47,6 +47,7 @@
     "error_while_selecting_a_photo": "error while selecting a photo",
     "add_new_event": "add new event",
     "name": "name",
+    "event_name": "event name",
     "enter_event_name": "enter event name",
     "price": "price per ticket",
     "enter_valid_price": "enter valid price",
@@ -82,5 +83,17 @@
     "ask_for_a_ticket": "ask for a ticket",
     "your_ticket_request_has_been_successfully_submitted": "your ticket request has been successfully submitted",
     "failed_to_send_ticket_request": "failed to send ticket request",
-    "ticket_details": "ticket details"
+    "ticket_details": "ticket details",
+    "ticket_check": "ticket check",
+    "ticket_scan": "ticket scan",
+    "no_permission": "no permission",
+    "owner": "owner",
+    "created_at": "created at",
+    "has_it_been_cancelled": "has it been cancelled?",
+    "ticket_valid": "ticket valid",
+    "ticket_invalid": "ticket invalid",
+    "ticket_not_found": "ticket not found",
+    "error_occurred_during_validation": "error occurred during validation",
+    "yes": "yes",
+    "no": "no"
 }

@@ -1,7 +1,9 @@
 import 'dart:convert';
 
-List<Ticket> ticketFromJson(String str) =>
+List<Ticket> ticketsFromJson(String str) =>
     List<Ticket>.from(json.decode(str).map((x) => Ticket.fromJson(x)));
+
+Ticket ticketFromJson(String str) => Ticket.fromJson(json.decode(str));
 
 String ticketToJson(List<Ticket> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
