@@ -37,12 +37,6 @@ class _EventDetailsState extends State<EventDetails> {
   bool isLoading = false;
   List<TicketRequest> dataTicketRequest = [];
 
-  @override
-  void initState() {
-    super.initState();
-    _getTicketRequests();
-  }
-
   Future<void> _launchURL(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
@@ -54,6 +48,9 @@ class _EventDetailsState extends State<EventDetails> {
 
   Future<bool> _getTicketRequests() async {
     try {
+      if (widget.user == null) {
+        return true;
+      }
       dataTicketRequest = await ApiService().getTicketRequests();
       return true;
     } catch (e) {
@@ -489,39 +486,41 @@ class _EventDetailsState extends State<EventDetails> {
                                             .capitalize())),
                                   )
                                 : Container(),
-                            Container(
-                                padding: const EdgeInsets.all(20),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  height: 50,
-                                  child: ElevatedButton.icon(
-                                      onPressed: _isTicketRequest()
-                                          ? null
-                                          : () => _sendRequestForTicket(
-                                              widget.event.id),
-                                      icon: isLoading
-                                          ? Container(
-                                              width: 24,
-                                              height: 24,
-                                              padding:
-                                                  const EdgeInsets.all(2.0),
-                                              child:
-                                                  const CircularProgressIndicator(
-                                                color: Colors.white,
-                                                strokeWidth: 3,
-                                              ),
-                                            )
-                                          : Container(),
-                                      label: isLoading
-                                          ? const Text("")
-                                          : Text(_isTicketRequest()
-                                              ? translation(context)
-                                                  .ticket_request_has_been_sent
-                                                  .capitalize()
-                                              : translation(context)
-                                                  .ask_for_a_ticket
-                                                  .capitalize())),
-                                ))
+                            widget.user != null
+                                ? Container(
+                                    padding: const EdgeInsets.all(20),
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      height: 50,
+                                      child: ElevatedButton.icon(
+                                          onPressed: _isTicketRequest()
+                                              ? null
+                                              : () => _sendRequestForTicket(
+                                                  widget.event.id),
+                                          icon: isLoading
+                                              ? Container(
+                                                  width: 24,
+                                                  height: 24,
+                                                  padding:
+                                                      const EdgeInsets.all(2.0),
+                                                  child:
+                                                      const CircularProgressIndicator(
+                                                    color: Colors.white,
+                                                    strokeWidth: 3,
+                                                  ),
+                                                )
+                                              : Container(),
+                                          label: isLoading
+                                              ? const Text("")
+                                              : Text(_isTicketRequest()
+                                                  ? translation(context)
+                                                      .ticket_request_has_been_sent
+                                                      .capitalize()
+                                                  : translation(context)
+                                                      .ask_for_a_ticket
+                                                      .capitalize())),
+                                    ))
+                                : Container()
                           ],
                         ),
                       ),

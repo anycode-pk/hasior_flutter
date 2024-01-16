@@ -144,33 +144,33 @@ class _TicketsState extends State<Tickets> {
                     return Center(
                       child: CustomScrollView(
                         slivers: [
-                          SliverAppBar(
-                            title: TextField(
-                              textInputAction: TextInputAction.search,
-                              controller: _searchController,
-                              onSubmitted: (value) {},
-                              style: const TextStyle(color: Colors.white),
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(
-                                  Icons.search,
-                                  color: Colors.white,
-                                ),
-                                hintText:
-                                    "${translation(context).search.capitalize()}...",
-                                hintStyle: const TextStyle(color: Colors.white),
-                                suffixIcon: IconButton(
-                                  onPressed: () {
-                                    if (_searchController.text.isNotEmpty) {
-                                      _searchController.clear();
-                                    }
-                                  },
-                                  icon: const Icon(Icons.clear),
-                                ),
-                              ),
-                            ),
-                            floating: true,
-                            automaticallyImplyLeading: false,
-                          ),
+                          // SliverAppBar(
+                          //   title: TextField(
+                          //     textInputAction: TextInputAction.search,
+                          //     controller: _searchController,
+                          //     onSubmitted: (value) {},
+                          //     style: const TextStyle(color: Colors.white),
+                          //     decoration: InputDecoration(
+                          //       prefixIcon: const Icon(
+                          //         Icons.search,
+                          //         color: Colors.white,
+                          //       ),
+                          //       hintText:
+                          //           "${translation(context).search.capitalize()}...",
+                          //       hintStyle: const TextStyle(color: Colors.white),
+                          //       suffixIcon: IconButton(
+                          //         onPressed: () {
+                          //           if (_searchController.text.isNotEmpty) {
+                          //             _searchController.clear();
+                          //           }
+                          //         },
+                          //         icon: const Icon(Icons.clear),
+                          //       ),
+                          //     ),
+                          //   ),
+                          //   floating: true,
+                          //   automaticallyImplyLeading: false,
+                          // ),
                           SliverList(
                             delegate: SliverChildBuilderDelegate(
                               (BuildContext context, int index) {
