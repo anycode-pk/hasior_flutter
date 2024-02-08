@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/screens/login_screen.dart';
 import 'package:hasior_flutter/screens/qr_scanner_screen.dart';
+import 'package:hasior_flutter/screens/requests_calendar_screen.dart';
 import 'package:hasior_flutter/screens/settings_screen.dart';
 import 'package:hasior_flutter/screens/tickets_screen.dart';
 import '../constants/language_constants.dart';
@@ -79,6 +80,14 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return const QrScanner();
+              }));
+            },
+          ),
+          ListTile(
+            title: Text(translation(context).ticket_requests.capitalize()),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const RequestsCalendar();
               }));
             },
           ),

@@ -3,14 +3,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
+import 'package:hasior_flutter/enums/decision.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
+import 'package:hasior_flutter/models/ticket.dart';
 import 'package:hasior_flutter/models/ticketRequest.dart';
 import 'package:hasior_flutter/models/userWithToken.dart';
 import 'package:hasior_flutter/screens/create_or_edit_event.dart';
+import 'package:hasior_flutter/screens/home_screen.dart';
+import 'package:hasior_flutter/screens/ticket_details_screen.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 import 'package:hasior_flutter/widgets/offline_widget.dart';
 import 'package:intl/intl.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../classes/currency.dart';
@@ -36,6 +39,9 @@ class _EventDetailsState extends State<EventDetails> {
   NumberFormat currencyFormat = Currency().getPLN();
   bool isLoading = false;
   List<TicketRequest> dataTicketRequest = [];
+  List<Ticket> dataTicket = [];
+  bool isRequestButtonDisabled = false;
+  String requestButtonText = "";
 
   Future<void> _launchURL(String url) async {
     final uri = Uri.parse(url);
@@ -46,12 +52,20 @@ class _EventDetailsState extends State<EventDetails> {
     }
   }
 
-  Future<bool> _getTicketRequests() async {
+  bool _isExpired(String eventTime) {
+    DateTime date = DateTime.parse(eventTime);
+    DateTime now = DateTime.now();
+    return date.isBefore(now);
+  }
+
+  Future<bool> _getData() async {
     try {
       if (widget.user == null) {
         return true;
       }
-      dataTicketRequest = await ApiService().getTicketRequests();
+      dataTicketRequest = await ApiService().getTicketRequests() ?? [];
+      dataTicket = await ApiService().getTicketsFromSharedPreferences() ?? [];
+      _setRequestButtonText();
       return true;
     } catch (e) {
       GlobalSnackbar.errorSnackbar(
@@ -60,9 +74,54 @@ class _EventDetailsState extends State<EventDetails> {
     }
   }
 
-  bool _isTicketRequest() {
+  Future<void> _navigateToTicketDetailsScreen() async {
+    Ticket ticket =
+        dataTicket.firstWhere((ticket) => ticket.event.id == widget.event.id);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => TicketDetails(
+              ticket: ticket, isExpired: _isExpired(ticket.event.eventTime))),
+    );
+  }
+
+  Future<void> _requestButtonAction() async {
+    if (_isTicketRequest(Decision.ACCEPT) && _isTicket()) {
+      await _navigateToTicketDetailsScreen();
+    } else {
+      await _sendRequestForTicket(widget.event.id);
+    }
+  }
+
+  void _setRequestButtonText() {
+    if (_isTicketRequest(Decision.NONE)) {
+      isRequestButtonDisabled = true;
+      requestButtonText =
+          translation(context).ticket_request_has_been_sent.capitalize();
+    } else if (_isTicketRequest(Decision.ACCEPT) && _isTicket()) {
+      isRequestButtonDisabled = false;
+      requestButtonText = translation(context).show_ticket.capitalize();
+    } else if (_isTicketRequest(Decision.REJECT)) {
+      isRequestButtonDisabled = true;
+      requestButtonText =
+          translation(context).ticket_request_denied.capitalize();
+    } else {
+      isRequestButtonDisabled = false;
+      requestButtonText = translation(context).ask_for_a_ticket.capitalize();
+    }
+  }
+
+  bool _isTicketRequest(Decision decision) {
     return dataTicketRequest
-        .where((element) => element.event.id == widget.event.id)
+        .where((ticketRequest) =>
+            ticketRequest.event.id == widget.event.id &&
+            ticketRequest.status == decision)
+        .isNotEmpty;
+  }
+
+  bool _isTicket() {
+    return dataTicket
+        .where((ticket) => ticket.event.id == widget.event.id)
         .isNotEmpty;
   }
 
@@ -99,17 +158,46 @@ class _EventDetailsState extends State<EventDetails> {
   }
 
   void showAlertDialog(BuildContext context) {
-    showModalBottomSheet<void>(
+    Widget cancelButton = TextButton(
+      child: Text(translation(context).cancel.capitalize()),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = ElevatedButton(
+        onPressed: () async {
+          try {
+            await ApiService().cancelEvent(widget.event.id).then((value) {
+              GlobalSnackbar.infoSnackbar(context,
+                  translation(context).event_successfully_deleted.capitalize());
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Home(),
+                ),
+              );
+            });
+          } catch (e) {
+            Navigator.pop(context);
+            GlobalSnackbar.errorSnackbar(context,
+                translation(context).error_while_deleting_event.capitalize());
+          }
+        },
+        style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+        child: Text(translation(context).delete.capitalize()));
+    AlertDialog alert = AlertDialog(
+      title: Text(translation(context).delete_event_question.capitalize()),
+      content: Text(translation(context).confirm_deletion.capitalize()),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    showDialog(
       context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
       builder: (BuildContext context) {
-        return Expanded(
-            child: QrImage(
-          data: "1234567980",
-          size: 200,
-        ));
+        return alert;
       },
     );
   }
@@ -180,7 +268,7 @@ class _EventDetailsState extends State<EventDetails> {
           },
           builder: (BuildContext context) {
             return FutureBuilder(
-                future: _getTicketRequests(),
+                future: _getData(),
                 builder: (context, AsyncSnapshot<bool> snapshot) {
                   if (snapshot.hasData) {
                     return CustomScrollView(slivers: [
@@ -493,10 +581,9 @@ class _EventDetailsState extends State<EventDetails> {
                                       width: double.infinity,
                                       height: 50,
                                       child: ElevatedButton.icon(
-                                          onPressed: _isTicketRequest()
+                                          onPressed: isRequestButtonDisabled
                                               ? null
-                                              : () => _sendRequestForTicket(
-                                                  widget.event.id),
+                                              : _requestButtonAction,
                                           icon: isLoading
                                               ? Container(
                                                   width: 24,
@@ -512,13 +599,7 @@ class _EventDetailsState extends State<EventDetails> {
                                               : Container(),
                                           label: isLoading
                                               ? const Text("")
-                                              : Text(_isTicketRequest()
-                                                  ? translation(context)
-                                                      .ticket_request_has_been_sent
-                                                      .capitalize()
-                                                  : translation(context)
-                                                      .ask_for_a_ticket
-                                                      .capitalize())),
+                                              : Text(requestButtonText)),
                                     ))
                                 : Container()
                           ],

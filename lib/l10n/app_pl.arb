@@ -96,5 +96,15 @@
     "ticket_not_found": "nie odnaleziono biletu",
     "error_occurred_during_validation": "wystąpił błąd podczas walidacji",
     "yes": "tak",
-    "no": "nie"
+    "no": "nie",
+    "ticket_requests": "prośby o bilet",
+    "events_with_requests": "wydarzenia z prośbami",
+    "no_requests": "brak próśb",
+    "error_while_accepting_requests": "błąd podczas akceptowania próśb",
+    "requests_successfully_accepted": "pomyślnie zaakceptowano prośby",
+    "accepting_requests": "akceptowanie próśb",
+    "accept": "akceptuj",
+    "reject": "odrzuć",
+    "show_ticket": "pokaż bilet",
+    "ticket_request_denied": "odrzucono prośbę o bilet"
 }

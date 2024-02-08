@@ -23,12 +23,6 @@ class _SettingsState extends State<Settings> {
   TextEditingController apiAddress = TextEditingController();
   bool _isLoaded = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _getData();
-  }
-
   Future<bool> _getData() async {
     try {
       apiAddress.text = await ApiService().getApiAddress();

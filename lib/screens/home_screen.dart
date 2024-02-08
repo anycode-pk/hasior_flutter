@@ -55,10 +55,11 @@ class _HomeState extends State<Home> {
       }
       if (dataEvents != null) {
         calendarList = [];
-        dataEvents?.forEach((element) {
-          calendarList.add(CalendarList(time: element.time, event: null));
-          for (Event element in element.events) {
-            calendarList.add(CalendarList(time: null, event: element));
+        dataEvents?.forEach((Calendar calendarElement) {
+          calendarList
+              .add(CalendarList(time: calendarElement.time, event: null));
+          for (Event event in calendarElement.events) {
+            calendarList.add(CalendarList(time: null, event: event));
           }
         });
         setState(() {
@@ -78,12 +79,11 @@ class _HomeState extends State<Home> {
         favouriteEvents = await ApiService().getFavouriteEvents(name);
         if (favouriteEvents != null) {
           calendarListFavourite = [];
-          favouriteEvents?.forEach((element) {
+          favouriteEvents?.forEach((Calendar calendarElement) {
             calendarListFavourite
-                .add(CalendarList(time: element.time, event: null));
-            for (Event element in element.events) {
-              calendarListFavourite
-                  .add(CalendarList(time: null, event: element));
+                .add(CalendarList(time: calendarElement.time, event: null));
+            for (Event event in calendarElement.events) {
+              calendarListFavourite.add(CalendarList(time: null, event: event));
             }
           });
           setState(() {

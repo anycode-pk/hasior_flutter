@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:hasior_flutter/enums/decision.dart';
 import 'package:hasior_flutter/models/ticketEvent.dart';
 import 'package:hasior_flutter/models/ticketOwner.dart';
 
@@ -15,7 +16,7 @@ String ticketRequestToJson(TicketRequest data) => json.encode(data.toJson());
 class TicketRequest {
   TicketEvent event;
   TicketOwner owner;
-  int status;
+  Decision status;
   int id;
 
   TicketRequest({
@@ -28,14 +29,14 @@ class TicketRequest {
   factory TicketRequest.fromJson(Map<String, dynamic> json) => TicketRequest(
         event: TicketEvent.fromJson(json["event"]),
         owner: TicketOwner.fromJson(json["owner"]),
-        status: json["status"],
+        status: Decision.values[json["status"]],
         id: json["id"],
       );
 
   Map<String, dynamic> toJson() => {
         "event": event.toJson(),
         "owner": owner.toJson(),
-        "status": status,
+        "status": status.index,
         "id": id,
       };
 }

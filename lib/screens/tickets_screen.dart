@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
 import 'package:hasior_flutter/constants/language_constants.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/models/ticket.dart';
 import 'package:hasior_flutter/screens/ticket_details_screen.dart';
 import 'package:hasior_flutter/services/api_service.dart';
+import 'package:hasior_flutter/widgets/offline_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -19,12 +21,6 @@ class _TicketsState extends State<Tickets> {
   List<Ticket> data = [];
   static const grayColor = Color.fromRGBO(105, 105, 105, 1);
   final TextEditingController _searchController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _getData();
-  }
 
   Future<bool> _getData() async {
     try {
@@ -114,6 +110,7 @@ class _TicketsState extends State<Tickets> {
                                       style: const TextStyle(
                                           color: grayColor,
                                           fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   )
                                 ],
@@ -132,83 +129,98 @@ class _TicketsState extends State<Tickets> {
         title: Text(translation(context).my_tickets.capitalize()),
         centerTitle: true,
       ),
-      body: RefreshIndicator(
-        onRefresh: _getData,
-        child: Stack(
-          children: <Widget>[
-            ListView(),
-            FutureBuilder(
-                future: _getData(),
-                builder: (context, AsyncSnapshot<bool> snapshot) {
-                  if (snapshot.hasData) {
-                    return Center(
-                      child: CustomScrollView(
-                        slivers: [
-                          // SliverAppBar(
-                          //   title: TextField(
-                          //     textInputAction: TextInputAction.search,
-                          //     controller: _searchController,
-                          //     onSubmitted: (value) {},
-                          //     style: const TextStyle(color: Colors.white),
-                          //     decoration: InputDecoration(
-                          //       prefixIcon: const Icon(
-                          //         Icons.search,
-                          //         color: Colors.white,
-                          //       ),
-                          //       hintText:
-                          //           "${translation(context).search.capitalize()}...",
-                          //       hintStyle: const TextStyle(color: Colors.white),
-                          //       suffixIcon: IconButton(
-                          //         onPressed: () {
-                          //           if (_searchController.text.isNotEmpty) {
-                          //             _searchController.clear();
-                          //           }
-                          //         },
-                          //         icon: const Icon(Icons.clear),
-                          //       ),
-                          //     ),
-                          //   ),
-                          //   floating: true,
-                          //   automaticallyImplyLeading: false,
-                          // ),
-                          SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (BuildContext context, int index) {
-                                if (index == data.length) {
-                                  if (data.isEmpty) {
-                                    return Container(
-                                        padding: const EdgeInsets.all(20),
-                                        child: Text(
-                                          translation(context)
-                                              .no_tickets_available
-                                              .capitalize(),
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                              color: grayColor,
-                                              fontSize: 20,
-                                              fontStyle: FontStyle.italic),
-                                        ));
+      body: OfflineBuilder(connectivityBuilder: (
+        BuildContext context,
+        ConnectivityResult connectivity,
+        Widget child,
+      ) {
+        if (connectivity == ConnectivityResult.none) {
+          return OfflineWidget(
+            child: child,
+          );
+        } else {
+          return child;
+        }
+      }, builder: (BuildContext context) {
+        return RefreshIndicator(
+          onRefresh: _getData,
+          child: Stack(
+            children: <Widget>[
+              ListView(),
+              FutureBuilder(
+                  future: _getData(),
+                  builder: (context, AsyncSnapshot<bool> snapshot) {
+                    if (snapshot.hasData) {
+                      return Center(
+                        child: CustomScrollView(
+                          slivers: [
+                            // SliverAppBar(
+                            //   title: TextField(
+                            //     textInputAction: TextInputAction.search,
+                            //     controller: _searchController,
+                            //     onSubmitted: (value) {},
+                            //     style: const TextStyle(color: Colors.white),
+                            //     decoration: InputDecoration(
+                            //       prefixIcon: const Icon(
+                            //         Icons.search,
+                            //         color: Colors.white,
+                            //       ),
+                            //       hintText:
+                            //           "${translation(context).search.capitalize()}...",
+                            //       hintStyle: const TextStyle(color: Colors.white),
+                            //       suffixIcon: IconButton(
+                            //         onPressed: () {
+                            //           if (_searchController.text.isNotEmpty) {
+                            //             _searchController.clear();
+                            //           }
+                            //         },
+                            //         icon: const Icon(Icons.clear),
+                            //       ),
+                            //     ),
+                            //   ),
+                            //   floating: true,
+                            //   automaticallyImplyLeading: false,
+                            // ),
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (BuildContext context, int index) {
+                                  if (index == data.length) {
+                                    if (data.isEmpty) {
+                                      return Container(
+                                          padding: const EdgeInsets.all(20),
+                                          child: Text(
+                                            translation(context)
+                                                .no_tickets_available
+                                                .capitalize(),
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                                color: grayColor,
+                                                fontSize: 20,
+                                                fontStyle: FontStyle.italic),
+                                          ));
+                                    }
+                                    return const SizedBox(
+                                        height:
+                                            kBottomNavigationBarHeight + 20);
                                   }
-                                  return const SizedBox(
-                                      height: kBottomNavigationBarHeight + 20);
-                                }
-                                return buildCard(data[index], index);
-                              },
-                              childCount: data.length + 1,
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                })
-          ],
-        ),
-      ),
+                                  return buildCard(data[index], index);
+                                },
+                                childCount: data.length + 1,
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    } else {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  })
+            ],
+          ),
+        );
+      }),
     );
   }
 }

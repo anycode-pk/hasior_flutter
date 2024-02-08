@@ -96,5 +96,15 @@
     "ticket_not_found": "ticket not found",
     "error_occurred_during_validation": "error occurred during validation",
     "yes": "yes",
-    "no": "no"
+    "no": "no",
+    "ticket_requests": "ticket requests",
+    "events_with_requests": "events with requests",
+    "no_requests": "no requests",
+    "error_while_accepting_requests": "error while accepting requests",
+    "requests_successfully_accepted": "requests successfully accepted",
+    "accepting_requests": "accepting requests",
+    "accept": "accept",
+    "reject": "reject",
+    "show_ticket": "show ticket",
+    "ticket_request_denied": "ticket request denied"
 }

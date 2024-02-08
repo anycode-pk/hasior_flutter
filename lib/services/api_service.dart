@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:hasior_flutter/enums/decision.dart';
+import 'package:hasior_flutter/models/calendarRequests.dart';
 import 'package:hasior_flutter/models/ticket.dart';
 import 'package:hasior_flutter/models/ticketRequest.dart';
+import 'package:hasior_flutter/models/ticketRequestDecision.dart';
 import 'package:hasior_flutter/models/validateTicket.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:hasior_flutter/models/event.dart';
@@ -53,6 +56,36 @@ class ApiService {
     if (response.statusCode == 200) {
       String json = response.body;
       return calendarFromJson(json);
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<List<CalendarRequests>?> getAllUpcomingEventsForTicketRequest(
+      [String? name, Decision? status]) async {
+    Uri uri = Uri.parse(
+        "${await getApiAddress()}event/all-upcoming-events/ticket-request${name != null ? "?EventName=$name" : ""}${status != null ? "?TicketStatuses=${status.index}" : ""}");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.get(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return calendarRequestFromJson(json);
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<List<TicketRequest>?> getAllEventTicketRequests(int id) async {
+    Uri uri = Uri.parse("${await getApiAddress()}ticket/requests/event/$id");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.get(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return ticketRequestsFromJson(json);
     }
     throw FormatException(response.body);
   }
@@ -219,7 +252,7 @@ class ApiService {
     throw FormatException(response.body);
   }
 
-  Future<List<TicketRequest>> getTicketRequests() async {
+  Future<List<TicketRequest>?> getTicketRequests() async {
     Uri uri = Uri.parse("${await getApiAddress()}ticket/requests/user");
     UserWithToken? user = await userFromSharedPreferences();
     Response response = await client.get(uri, headers: {
@@ -344,9 +377,27 @@ class ApiService {
     });
     if (response.statusCode == 200) {
       String json = response.body;
-      return ticketsFromJson(json);
+      List<Ticket> result = ticketsFromJson(json);
+      await saveTicketsToSharedPreferences(result);
+      return result;
     }
     throw FormatException(response.body);
+  }
+
+  Future<void> saveTicketsToSharedPreferences(List<Ticket> tickets) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String ticketsJson = jsonEncode(tickets);
+    prefs.setString("tickets", ticketsJson);
+  }
+
+  Future<List<Ticket>?> getTicketsFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? ticketsString = prefs.getString("tickets");
+    if (ticketsString != null) {
+      List<Ticket> tickets = ticketsFromJson(ticketsString);
+      return tickets;
+    }
+    return null;
   }
 
   Future<bool> sendRequestForTicket(int id) async {
@@ -358,6 +409,26 @@ class ApiService {
     });
     if (response.statusCode == 200) {
       return true;
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<List<TicketRequest>?> ticketRequestDecision(
+      List<TicketRequestDecision> ticketRequestDecision) async {
+    Uri uri = Uri.parse("${await getApiAddress()}ticket/requests");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.put(uri,
+        headers: {
+          "content-type": "application/json",
+          "Authorization": "Bearer ${user?.token}"
+        },
+        body: jsonEncode({
+          "ticketRequests":
+              List<dynamic>.from(ticketRequestDecision.map((x) => x.toJson()))
+        }));
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return ticketRequestsFromJson(json);
     }
     throw FormatException(response.body);
   }
