@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "140549870532",
+    "project_id": "hasior-mess",
+    "storage_bucket": "hasior-mess.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:140549870532:android:3a66058c3fb0d866b28a91",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_b_JC-zVnlfwib0Wlafs6cnU4A_I4gwA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:140549870532:android:e107f3828b0d488ab28a91",
+        "android_client_info": {
+          "package_name": "com.example.hasior_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_b_JC-zVnlfwib0Wlafs6cnU4A_I4gwA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
