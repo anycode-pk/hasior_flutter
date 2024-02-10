@@ -348,24 +348,32 @@ class ApiService {
   Future<UserWithToken?> userFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userString = prefs.getString("user");
-    if (userString != null) {
-      Map userMap = jsonDecode(userString);
-      UserWithToken user =
-          UserWithToken.fromJson(userMap as Map<String, dynamic>);
-      bool hasExpired = JwtDecoder.isExpired(user.token);
-      if (hasExpired) {
-        bool isExpired = user.refreshTokenExpiryTime.isBefore(DateTime.now());
-        if (!isExpired) {
-          Token token = await refreshToken(user.refreshToken, user.token);
-          user.token = token.token;
-        } else {
-          await prefs.remove("user");
-          return null;
-        }
-      }
+    if (userString == null) {
+      return null;
+    }
+
+    Map userMap = jsonDecode(userString);
+    UserWithToken user =
+        UserWithToken.fromJson(userMap as Map<String, dynamic>);
+    bool isUserTokenExpired = JwtDecoder.isExpired(user.token);
+    if (!isUserTokenExpired) {
       return user;
     }
-    return null;
+
+    bool isRefreshTokenExpired =
+        user.refreshTokenExpiryTime.isBefore(DateTime.now());
+    if (isRefreshTokenExpired) {
+      await prefs.remove("user");
+      return null;
+    }
+
+    Token? token = await _refreshToken(user.refreshToken, user.token);
+    if (token == null) {
+      return null;
+    }
+
+    user.token = token.token;
+    return user;
   }
 
   Future<List<Ticket>?> getTickets() async {
@@ -433,7 +441,7 @@ class ApiService {
     throw FormatException(response.body);
   }
 
-  Future<Token> refreshToken(String refreshToken, String accesToken) async {
+  Future<Token?> _refreshToken(String refreshToken, String accesToken) async {
     Uri uri = Uri.parse("${await getApiAddress()}user/refresh-token");
     Response response = await client.post(uri,
         headers: {
@@ -447,9 +455,12 @@ class ApiService {
     if (response.statusCode == 200) {
       return tokenFromJson(response.body);
     }
-    if (response.statusCode == 400) {
+    if (response.statusCode == 400 && response.statusCode == 401) {
       await logout();
       await userFromSharedPreferences();
+    }
+    if (response.statusCode == 502) {
+      return null;
     }
     throw FormatException(response.body);
   }
