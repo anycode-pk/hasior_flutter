@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
+import 'package:hasior_flutter/models/event.dart';
 import 'package:hasior_flutter/widgets/calendar_widget.dart';
 import 'package:hasior_flutter/widgets/offline_widget.dart';
 import '../constants/language_constants.dart';
@@ -26,8 +27,8 @@ class _HomeState extends State<Home> {
   List<CalendarList> calendarList = [];
   List<CalendarList> calendarListFavourite = [];
   int currentIndex = 0;
-  bool isLoading = false;
-  bool isLoadingFavourite = false;
+  bool isLoaded = false;
+  bool isLoadedFavourite = false;
   UserWithToken? user;
   final PageController _pageController = PageController(initialPage: 0);
 
@@ -54,14 +55,15 @@ class _HomeState extends State<Home> {
       }
       if (dataEvents != null) {
         calendarList = [];
-        dataEvents?.forEach((element) {
-          calendarList.add(CalendarList(time: element.time, event: null));
-          for (var element in element.events) {
-            calendarList.add(CalendarList(time: null, event: element));
+        dataEvents?.forEach((Calendar calendarElement) {
+          calendarList
+              .add(CalendarList(time: calendarElement.time, event: null));
+          for (Event event in calendarElement.events) {
+            calendarList.add(CalendarList(time: null, event: event));
           }
         });
         setState(() {
-          isLoading = true;
+          isLoaded = true;
         });
       }
     } catch (e) {
@@ -77,16 +79,15 @@ class _HomeState extends State<Home> {
         favouriteEvents = await ApiService().getFavouriteEvents(name);
         if (favouriteEvents != null) {
           calendarListFavourite = [];
-          favouriteEvents?.forEach((element) {
+          favouriteEvents?.forEach((Calendar calendarElement) {
             calendarListFavourite
-                .add(CalendarList(time: element.time, event: null));
-            for (var element in element.events) {
-              calendarListFavourite
-                  .add(CalendarList(time: null, event: element));
+                .add(CalendarList(time: calendarElement.time, event: null));
+            for (Event event in calendarElement.events) {
+              calendarListFavourite.add(CalendarList(time: null, event: event));
             }
           });
           setState(() {
-            isLoadingFavourite = true;
+            isLoadedFavourite = true;
           });
         }
       }
@@ -100,7 +101,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     List<Widget> screens = [
       CalendarWidget(
-        isLoading: isLoading,
+        isLoaded: isLoaded,
         calendarList: calendarList,
         dataEvents: dataEvents,
         getData: _getEvents,
@@ -108,7 +109,7 @@ class _HomeState extends State<Home> {
         user: user,
       ),
       CalendarWidget(
-        isLoading: isLoadingFavourite,
+        isLoaded: isLoadedFavourite,
         calendarList: calendarListFavourite,
         dataEvents: favouriteEvents,
         getData: _getFavouriteEvents,

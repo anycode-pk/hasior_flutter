@@ -44,6 +44,8 @@ dependencies:
   intl: any
   image_picker: ^1.0.4
   flutter_offline: ^2.1.0
+  qr_flutter: ^4.0.0
+  qr_code_scanner: ^1.0.1
 
 dependency_overrides:
   intl: ^0.18.0

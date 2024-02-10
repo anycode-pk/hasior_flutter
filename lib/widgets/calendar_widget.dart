@@ -18,13 +18,13 @@ import '../theme.dart';
 class CalendarWidget extends StatefulWidget {
   const CalendarWidget(
       {super.key,
-      required this.isLoading,
+      required this.isLoaded,
       required this.calendarList,
       required this.dataEvents,
       required this.getData,
       required this.delete,
       required this.user});
-  final bool isLoading;
+  final bool isLoaded;
   final List<CalendarList> calendarList;
   final List<Calendar>? dataEvents;
   final Future<void> Function([String? name]) getData;
@@ -96,7 +96,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   void _removeFavouriteEventFromList(int index) {
     setState(() {
       widget.calendarList.removeAt(index);
-      for (var i = 0; i < widget.calendarList.length; i++) {
+      for (int i = 0; i < widget.calendarList.length; i++) {
         if (widget.calendarList.length < 2 &&
             widget.calendarList[i].time != null) {
           widget.calendarList.removeAt(i);
@@ -105,7 +105,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           widget.calendarList.removeAt(i);
         } else if (widget.calendarList[i].time != null &&
             widget.calendarList[i + 1].time != null) {
-          var time = widget.calendarList[index - 1].time ?? "";
+          String time = widget.calendarList[index - 1].time ?? "";
           widget.calendarList.removeWhere((e) => e.time == time);
         }
       }
@@ -165,7 +165,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         children: <Widget>[
           ListView(),
           Visibility(
-              visible: widget.isLoading,
+              visible: widget.isLoaded,
               replacement: const Center(
                 child: CircularProgressIndicator(),
               ),

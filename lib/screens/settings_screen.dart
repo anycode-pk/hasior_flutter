@@ -21,24 +21,16 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController apiAddress = TextEditingController();
-  bool _isLoading = false;
-  bool _isLoadingData = false;
+  bool _isLoaded = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _getData();
-  }
-
-  Future<void> _getData() async {
+  Future<bool> _getData() async {
     try {
       apiAddress.text = await ApiService().getApiAddress();
-      setState(() {
-        _isLoadingData = true;
-      });
+      return true;
     } catch (e) {
       GlobalSnackbar.errorSnackbar(
           context, translation(context).error_while_loading.capitalize());
+      return false;
     }
   }
 
@@ -68,152 +60,169 @@ class _SettingsState extends State<Settings> {
             }
           },
           builder: (BuildContext context) {
-            return Visibility(
-              visible: _isLoadingData,
-              replacement: const Center(
-                child: CircularProgressIndicator(),
-              ),
-              child: CustomScrollView(slivers: [
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Form(
-                      key: _formKey,
-                      child: Container(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(children: [
-                            Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  translation(context).language.capitalize(),
-                                  style: const TextStyle(fontSize: 20),
-                                )),
-                            const SizedBox(height: 20),
-                            DropdownButtonFormField(
-                                isExpanded: true,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                ),
-                                value: Language.languageList()
-                                    .firstWhere((language) =>
-                                        language.languageCode ==
-                                        AppLocalizations.of(context)!
-                                            .localeName)
-                                    .languageCode,
-                                items: Language.languageList()
-                                    .map((item) => DropdownMenuItem<String>(
-                                        value: item.languageCode,
-                                        child: Text(item.name)))
-                                    .toList(),
-                                onChanged: (String? language) async {
-                                  if (language != null) {
-                                    Locale? locale = await setLocale(language);
-                                    _setAppLocale(locale);
-                                  }
-                                }),
-                            const SizedBox(height: 20),
-                            const Divider(
-                              color: Color.fromRGBO(105, 105, 105, 1),
-                            ),
-                            const SizedBox(height: 20),
-                            Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  translation(context).api_address,
-                                  style: const TextStyle(fontSize: 20),
-                                )),
-                            const SizedBox(height: 20),
-                            TextFormField(
-                              cursorColor: Colors.white,
-                              controller: apiAddress,
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                hintText: translation(context).api_address,
-                                focusedBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.all(20),
-                                    textStyle: const TextStyle(fontSize: 15)),
-                                icon: _isLoading
-                                    ? Container(
-                                        width: 24,
-                                        height: 24,
-                                        padding: const EdgeInsets.all(2.0),
-                                        child: const CircularProgressIndicator(
-                                          color: Colors.white,
-                                          strokeWidth: 3,
-                                        ),
-                                      )
-                                    : Container(),
-                                onPressed: _isLoading
-                                    ? null
-                                    : () async {
-                                        if (_formKey.currentState!.validate()) {
-                                          try {
-                                            setState(() {
-                                              _isLoading = true;
-                                            });
-                                            SharedPreferences prefs =
-                                                await SharedPreferences
-                                                    .getInstance();
-                                            prefs.setString(
-                                                "apiAddress", apiAddress.text);
-                                            if (context.mounted) {
-                                              GlobalSnackbar.infoSnackbar(
-                                                  context,
-                                                  translation(context)
-                                                      .settings_saved
-                                                      .capitalize());
-                                              setState(() {
-                                                _isLoading = false;
-                                              });
-                                            }
-                                          } on FormatException catch (e) {
-                                            GlobalSnackbar.errorSnackbar(
-                                                context,
-                                                "${translation(context).error_while_saving_settings.capitalize()}: ${e.message}");
-                                            setState(() {
-                                              _isLoading = false;
-                                            });
-                                          }
+            return FutureBuilder(
+                future: _getData(),
+                builder: (context, AsyncSnapshot<bool> snapshot) {
+                  if (snapshot.hasData) {
+                    return CustomScrollView(slivers: [
+                      SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Form(
+                            key: _formKey,
+                            child: Container(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(children: [
+                                  Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        translation(context)
+                                            .language
+                                            .capitalize(),
+                                        style: const TextStyle(fontSize: 20),
+                                      )),
+                                  const SizedBox(height: 20),
+                                  DropdownButtonFormField(
+                                      isExpanded: true,
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      value: Language.languageList()
+                                          .firstWhere((language) =>
+                                              language.languageCode ==
+                                              AppLocalizations.of(context)!
+                                                  .localeName)
+                                          .languageCode,
+                                      items: Language.languageList()
+                                          .map((item) =>
+                                              DropdownMenuItem<String>(
+                                                  value: item.languageCode,
+                                                  child: Text(item.name)))
+                                          .toList(),
+                                      onChanged: (String? language) async {
+                                        if (language != null) {
+                                          Locale? locale =
+                                              await setLocale(language);
+                                          _setAppLocale(locale);
                                         }
-                                      },
-                                label: _isLoading
-                                    ? const Text("")
-                                    : Text(
-                                        translation(context).save.capitalize()),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.all(20),
-                                    textStyle: const TextStyle(fontSize: 15)),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const Home(),
+                                      }),
+                                  const SizedBox(height: 20),
+                                  const Divider(
+                                    color: Color.fromRGBO(105, 105, 105, 1),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        translation(context).api_address,
+                                        style: const TextStyle(fontSize: 20),
+                                      )),
+                                  const SizedBox(height: 20),
+                                  TextFormField(
+                                    cursorColor: Colors.white,
+                                    controller: apiAddress,
+                                    decoration: InputDecoration(
+                                      border: const OutlineInputBorder(),
+                                      hintText:
+                                          translation(context).api_address,
+                                      focusedBorder: const OutlineInputBorder(
+                                        borderSide:
+                                            BorderSide(color: Colors.white),
+                                      ),
                                     ),
-                                  );
-                                },
-                                child: Text(
-                                    translation(context).reload.capitalize()),
-                              ),
-                            ),
-                          ]))),
-                )
-              ]),
-            );
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: ElevatedButton.icon(
+                                      style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.all(20),
+                                          textStyle:
+                                              const TextStyle(fontSize: 15)),
+                                      icon: _isLoaded
+                                          ? Container(
+                                              width: 24,
+                                              height: 24,
+                                              padding:
+                                                  const EdgeInsets.all(2.0),
+                                              child:
+                                                  const CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 3,
+                                              ),
+                                            )
+                                          : Container(),
+                                      onPressed: _isLoaded
+                                          ? null
+                                          : () async {
+                                              if (_formKey.currentState!
+                                                  .validate()) {
+                                                try {
+                                                  setState(() {
+                                                    _isLoaded = true;
+                                                  });
+                                                  SharedPreferences prefs =
+                                                      await SharedPreferences
+                                                          .getInstance();
+                                                  prefs.setString("apiAddress",
+                                                      apiAddress.text);
+                                                  if (context.mounted) {
+                                                    GlobalSnackbar.infoSnackbar(
+                                                        context,
+                                                        translation(context)
+                                                            .settings_saved
+                                                            .capitalize());
+                                                    setState(() {
+                                                      _isLoaded = false;
+                                                    });
+                                                  }
+                                                } on FormatException catch (e) {
+                                                  GlobalSnackbar.errorSnackbar(
+                                                      context,
+                                                      "${translation(context).error_while_saving_settings.capitalize()}: ${e.message}");
+                                                  setState(() {
+                                                    _isLoaded = false;
+                                                  });
+                                                }
+                                              }
+                                            },
+                                      label: _isLoaded
+                                          ? const Text("")
+                                          : Text(translation(context)
+                                              .save
+                                              .capitalize()),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.all(20),
+                                          textStyle:
+                                              const TextStyle(fontSize: 15)),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const Home(),
+                                          ),
+                                        );
+                                      },
+                                      child: Text(translation(context)
+                                          .reload
+                                          .capitalize()),
+                                    ),
+                                  ),
+                                ]))),
+                      )
+                    ]);
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                });
           },
         ));
   }
