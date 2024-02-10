@@ -21,7 +21,7 @@ import 'package:path/path.dart';
 import '../models/token.dart';
 
 class ApiService {
-  final String url = "https://dev.bytebunka.net/api/";
+  final String url = "https://prod.bytebunka.net/api/";
   final Client client = http.Client();
 
   Future<List<Event>?> getCalendar() async {
