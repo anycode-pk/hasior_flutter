@@ -106,5 +106,8 @@
     "accept": "akceptuj",
     "reject": "odrzuć",
     "show_ticket": "pokaż bilet",
-    "ticket_request_denied": "odrzucono prośbę o bilet"
+    "ticket_request_denied": "odrzucono prośbę o bilet",
+    "manage_students": "zarządzaj studentami",
+    "new_moderator": "nowy moderator",
+    "new_moderator_question": "Czy napewno chcesz mianować tego użytkownika na moderatora ?"
 }
