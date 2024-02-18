@@ -455,14 +455,11 @@ class ApiService {
     if (response.statusCode == 200) {
       return tokenFromJson(response.body);
     }
-    if (response.statusCode == 400 && response.statusCode == 401) {
-      await logout();
-      await userFromSharedPreferences();
-    }
     if (response.statusCode == 502) {
       return null;
     }
-    throw FormatException(response.body);
+    await logout();
+    return null;
   }
 
   Future<void> logout() async {
