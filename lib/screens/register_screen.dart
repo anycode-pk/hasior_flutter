@@ -230,7 +230,7 @@ class _RegisterState extends State<Register> {
                                                 setState(() {
                                                   _isLoading = true;
                                                 });
-                                                var response =
+                                                bool response =
                                                     await ApiService()
                                                         .registerUser(
                                                             userNameController

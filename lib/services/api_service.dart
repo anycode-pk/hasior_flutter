@@ -1,5 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:hasior_flutter/enums/decision.dart';
+import 'package:hasior_flutter/models/calendarRequests.dart';
+import 'package:hasior_flutter/models/ticket.dart';
+import 'package:hasior_flutter/models/ticketRequest.dart';
+import 'package:hasior_flutter/models/ticketRequestDecision.dart';
+import 'package:hasior_flutter/models/validateTicket.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:hasior_flutter/models/event.dart';
 import 'package:hasior_flutter/models/calendar.dart';
@@ -19,60 +25,90 @@ class ApiService {
   final Client client = http.Client();
 
   Future<List<Event>?> getCalendar() async {
-    var uri = Uri.parse("${await getApiAddress()}event/all-events");
-    var response = await client.get(uri);
+    Uri uri = Uri.parse("${await getApiAddress()}event/all-events");
+    Response response = await client.get(uri);
     if (response.statusCode == 200) {
-      var json = response.body;
+      String json = response.body;
       return eventsFromJson(json);
     }
     throw FormatException(response.body);
   }
 
   Future<List<Calendar>?> getAllUpcomingEvents([String? name]) async {
-    var uri = Uri.parse(
+    Uri uri = Uri.parse(
         "${await getApiAddress()}event/all-upcoming-events${name != null ? "?EventName=$name" : ""}");
-    var response = await client.get(uri);
+    Response response = await client.get(uri);
     if (response.statusCode == 200) {
-      var json = response.body;
+      String json = response.body;
       return calendarFromJson(json);
     }
     throw FormatException(response.body);
   }
 
   Future<List<Calendar>?> getAllUpcomingEventsForUser([String? name]) async {
-    var uri = Uri.parse(
+    Uri uri = Uri.parse(
         "${await getApiAddress()}event/all-upcoming-events/user${name != null ? "?EventName=$name" : ""}");
     UserWithToken? user = await userFromSharedPreferences();
-    var response = await client.get(uri, headers: {
+    Response response = await client.get(uri, headers: {
       "accept": "text/plain",
       "Authorization": "Bearer ${user?.token}"
     });
     if (response.statusCode == 200) {
-      var json = response.body;
+      String json = response.body;
       return calendarFromJson(json);
     }
     throw FormatException(response.body);
   }
 
-  Future<List<Calendar>?> getFavouriteEvents([String? name]) async {
-    var uri = Uri.parse(
-        "${await getApiAddress()}favourite-event${name != null ? "?EventName=$name" : ""}");
+  Future<List<CalendarRequests>?> getAllUpcomingEventsForTicketRequest(
+      [String? name, Decision? status]) async {
+    Uri uri = Uri.parse(
+        "${await getApiAddress()}event/all-upcoming-events/ticket-request${name != null ? "?EventName=$name" : ""}${status != null ? "?TicketStatuses=${status.index}" : ""}");
     UserWithToken? user = await userFromSharedPreferences();
-    var response = await client.get(uri, headers: {
+    Response response = await client.get(uri, headers: {
       "accept": "text/plain",
       "Authorization": "Bearer ${user?.token}"
     });
     if (response.statusCode == 200) {
-      var json = response.body;
+      String json = response.body;
+      return calendarRequestFromJson(json);
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<List<TicketRequest>?> getAllEventTicketRequests(int id) async {
+    Uri uri = Uri.parse("${await getApiAddress()}ticket/requests/event/$id");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.get(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return ticketRequestsFromJson(json);
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<List<Calendar>?> getFavouriteEvents([String? name]) async {
+    Uri uri = Uri.parse(
+        "${await getApiAddress()}favourite-event${name != null ? "?EventName=$name" : ""}");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.get(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
+    if (response.statusCode == 200) {
+      String json = response.body;
       return calendarFromJson(json);
     }
     throw FormatException(response.body);
   }
 
   Future<bool> addFavouriteEvent(int id) async {
-    var uri = Uri.parse("${await getApiAddress()}favourite-event/$id");
+    Uri uri = Uri.parse("${await getApiAddress()}favourite-event/$id");
     UserWithToken? user = await userFromSharedPreferences();
-    var response = await client.post(uri, headers: {
+    Response response = await client.post(uri, headers: {
       "accept": "text/plain",
       "Authorization": "Bearer ${user?.token}"
     });
@@ -83,9 +119,9 @@ class ApiService {
   }
 
   Future<bool> deleteFavouriteEvent(int id) async {
-    var uri = Uri.parse("${await getApiAddress()}favourite-event/$id");
+    Uri uri = Uri.parse("${await getApiAddress()}favourite-event/$id");
     UserWithToken? user = await userFromSharedPreferences();
-    var response = await client.delete(uri, headers: {
+    Response response = await client.delete(uri, headers: {
       "accept": "text/plain",
       "Authorization": "Bearer ${user?.token}"
     });
@@ -97,8 +133,8 @@ class ApiService {
 
   Future<User?> loginUser(String email, String password) async {
     try {
-      var uri = Uri.parse("${await getApiAddress()}user/login");
-      var response = await client.post(uri,
+      Uri uri = Uri.parse("${await getApiAddress()}user/login");
+      Response response = await client.post(uri,
           headers: {
             "content-type": "application/json",
             "accept": "text/plain",
@@ -109,8 +145,8 @@ class ApiService {
           }));
       if (response.statusCode == 200) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        var loginArr = loginFromJson(response.body);
-        var userData = await getUserData(loginArr.token);
+        Login loginArr = loginFromJson(response.body);
+        User? userData = await getUserData(loginArr.token);
         if (userData != null) {
           UserWithToken user = UserWithToken(
               id: userData.id,
@@ -135,8 +171,8 @@ class ApiService {
   Future<bool> registerUser(
       String userName, String email, String password) async {
     try {
-      var uri = Uri.parse("${await getApiAddress()}user/register");
-      var response = await client.post(uri,
+      Uri uri = Uri.parse("${await getApiAddress()}user/register");
+      Response response = await client.post(uri,
           headers: {
             "content-type": "application/json",
           },
@@ -157,9 +193,9 @@ class ApiService {
   Future<Event?> createEvent(String name, double? price, String? description,
       String? localization, String? ticketsLink, DateTime eventTime) async {
     try {
-      var uri = Uri.parse("${await getApiAddress()}event/simple-event");
+      Uri uri = Uri.parse("${await getApiAddress()}event/simple-event");
       UserWithToken? user = await userFromSharedPreferences();
-      var response = await client.post(uri,
+      Response response = await client.post(uri,
           headers: {
             "content-type": "application/json",
             "Authorization": "Bearer ${user?.token}"
@@ -173,7 +209,7 @@ class ApiService {
             "eventTime": eventTime.toIso8601String(),
           }));
       if (response.statusCode == 200) {
-        var json = response.body;
+        String json = response.body;
         return eventFromJson(json);
       }
       throw FormatException(response.body);
@@ -184,8 +220,8 @@ class ApiService {
 
   Future<bool> putImageToEvent(int id, File image) async {
     try {
-      var uri = Uri.parse("${await getApiAddress()}file/event/$id");
-      var request = http.MultipartRequest("PUT", uri);
+      Uri uri = Uri.parse("${await getApiAddress()}file/event/$id");
+      MultipartRequest request = http.MultipartRequest("PUT", uri);
       UserWithToken? user = await userFromSharedPreferences();
       request.headers.addAll({
         "Content-Type": "multipart/form-data",
@@ -195,7 +231,7 @@ class ApiService {
           'file', image.readAsBytesSync(),
           filename: basename(image.path),
           contentType: MediaType('image', 'jpg')));
-      var response = await request.send();
+      StreamedResponse response = await request.send();
       if (response.statusCode == 200) return true;
       return false;
     } on SocketException catch (e) {
@@ -204,14 +240,28 @@ class ApiService {
   }
 
   Future<bool> putNullImageToEvent(int id) async {
-    var uri = Uri.parse("${await getApiAddress()}file/event/$id");
+    Uri uri = Uri.parse("${await getApiAddress()}file/event/$id");
     UserWithToken? user = await userFromSharedPreferences();
-    var response = await client.delete(uri, headers: {
+    Response response = await client.delete(uri, headers: {
       "accept": "text/plain",
       "Authorization": "Bearer ${user?.token}"
     });
     if (response.statusCode == 200) {
       return true;
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<List<TicketRequest>?> getTicketRequests() async {
+    Uri uri = Uri.parse("${await getApiAddress()}ticket/requests/user");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.get(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return ticketRequestsFromJson(json);
     }
     throw FormatException(response.body);
   }
@@ -225,9 +275,9 @@ class ApiService {
       String? ticketsLink,
       DateTime eventTime) async {
     try {
-      var uri = Uri.parse("${await getApiAddress()}event");
+      Uri uri = Uri.parse("${await getApiAddress()}event");
       UserWithToken? user = await userFromSharedPreferences();
-      var response = await client.put(uri,
+      Response response = await client.put(uri,
           headers: {
             "content-type": "application/json",
             "Authorization": "Bearer ${user?.token}"
@@ -251,9 +301,9 @@ class ApiService {
   }
 
   Future<bool> cancelEvent(int id) async {
-    var uri = Uri.parse("${await getApiAddress()}event/$id/cancel");
+    Uri uri = Uri.parse("${await getApiAddress()}event/$id/cancel");
     UserWithToken? user = await userFromSharedPreferences();
-    var response = await client.put(uri, headers: {
+    Response response = await client.put(uri, headers: {
       "content-type": "application/json",
       "Authorization": "Bearer ${user?.token}"
     });
@@ -263,9 +313,31 @@ class ApiService {
     throw FormatException(response.body);
   }
 
+  Future<ValidateTicket?> validateTicket(String token) async {
+    try {
+      Uri uri = Uri.parse("${await getApiAddress()}ticket/validate-token");
+      UserWithToken? user = await userFromSharedPreferences();
+      Response response = await client.put(uri,
+          headers: {
+            "content-type": "application/json",
+            "Authorization": "Bearer ${user?.token}"
+          },
+          body: jsonEncode({
+            "token": token,
+          }));
+      if (response.statusCode == 200) {
+        String json = response.body;
+        return validateTicketFromJson(json);
+      }
+      throw FormatException(response.body);
+    } on SocketException catch (e) {
+      throw FormatException(e.message);
+    }
+  }
+
   Future<User?> getUserData(String token) async {
-    var uri = Uri.parse("${await getApiAddress()}user/user-data");
-    var response = await client.get(uri,
+    Uri uri = Uri.parse("${await getApiAddress()}user/user-data");
+    Response response = await client.get(uri,
         headers: {"accept": "text/plain", "Authorization": "Bearer $token"});
     if (response.statusCode == 200) {
       return userFromJson(response.body);
@@ -276,29 +348,102 @@ class ApiService {
   Future<UserWithToken?> userFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userString = prefs.getString("user");
-    if (userString != null) {
-      Map userMap = jsonDecode(userString);
-      UserWithToken user =
-          UserWithToken.fromJson(userMap as Map<String, dynamic>);
-      bool hasExpired = JwtDecoder.isExpired(user.token);
-      if (hasExpired) {
-        bool isExpired = user.refreshTokenExpiryTime.isBefore(DateTime.now());
-        if (!isExpired) {
-          Token token = await refreshToken(user.refreshToken, user.token);
-          user.token = token.token;
-        } else {
-          await prefs.remove("user");
-          return null;
-        }
-      }
+    if (userString == null) {
+      return null;
+    }
+
+    Map userMap = jsonDecode(userString);
+    UserWithToken user =
+        UserWithToken.fromJson(userMap as Map<String, dynamic>);
+    bool isUserTokenExpired = JwtDecoder.isExpired(user.token);
+    if (!isUserTokenExpired) {
       return user;
+    }
+
+    bool isRefreshTokenExpired =
+        user.refreshTokenExpiryTime.isBefore(DateTime.now());
+    if (isRefreshTokenExpired) {
+      await prefs.remove("user");
+      return null;
+    }
+
+    Token? token = await _refreshToken(user.refreshToken, user.token);
+    if (token == null) {
+      return null;
+    }
+
+    user.token = token.token;
+    return user;
+  }
+
+  Future<List<Ticket>?> getTickets() async {
+    Uri uri = Uri.parse("${await getApiAddress()}ticket/user");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.get(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
+    if (response.statusCode == 200) {
+      String json = response.body;
+      List<Ticket> result = ticketsFromJson(json);
+      await saveTicketsToSharedPreferences(result);
+      return result;
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<void> saveTicketsToSharedPreferences(List<Ticket> tickets) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String ticketsJson = jsonEncode(tickets);
+    prefs.setString("tickets", ticketsJson);
+  }
+
+  Future<List<Ticket>?> getTicketsFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? ticketsString = prefs.getString("tickets");
+    if (ticketsString != null) {
+      List<Ticket> tickets = ticketsFromJson(ticketsString);
+      return tickets;
     }
     return null;
   }
 
-  Future<Token> refreshToken(String refreshToken, String accesToken) async {
-    var uri = Uri.parse("${await getApiAddress()}user/refresh-token");
-    var response = await client.post(uri,
+  Future<bool> sendRequestForTicket(int id) async {
+    Uri uri = Uri.parse("${await getApiAddress()}ticket/event/$id/requests");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.post(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
+    if (response.statusCode == 200) {
+      return true;
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<List<TicketRequest>?> ticketRequestDecision(
+      List<TicketRequestDecision> ticketRequestDecision) async {
+    Uri uri = Uri.parse("${await getApiAddress()}ticket/requests");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.put(uri,
+        headers: {
+          "content-type": "application/json",
+          "Authorization": "Bearer ${user?.token}"
+        },
+        body: jsonEncode({
+          "ticketRequests":
+              List<dynamic>.from(ticketRequestDecision.map((x) => x.toJson()))
+        }));
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return ticketRequestsFromJson(json);
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<Token?> _refreshToken(String refreshToken, String accesToken) async {
+    Uri uri = Uri.parse("${await getApiAddress()}user/refresh-token");
+    Response response = await client.post(uri,
         headers: {
           "accept": "text/plain",
           "content-type": "application/json",
@@ -310,11 +455,11 @@ class ApiService {
     if (response.statusCode == 200) {
       return tokenFromJson(response.body);
     }
-    if (response.statusCode == 400) {
-      await logout();
-      await userFromSharedPreferences();
+    if (response.statusCode == 502) {
+      return null;
     }
-    throw FormatException(response.body);
+    await logout();
+    return null;
   }
 
   Future<void> logout() async {
