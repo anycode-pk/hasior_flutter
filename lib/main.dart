@@ -1,11 +1,21 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hasior_flutter/constants/language_constants.dart';
+import 'package:hasior_flutter/firebase_options.dart';
 import 'package:hasior_flutter/screens/home_screen.dart';
+import 'package:hasior_flutter/services/notification_service.dart';
 import 'package:hasior_flutter/theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  ).whenComplete(() => null);
+
+  await NotificationService().initNotification();
+
   initializeDateFormatting();
   runApp(const MyApp());
 }
