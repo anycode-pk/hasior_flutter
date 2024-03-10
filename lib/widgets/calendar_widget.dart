@@ -12,6 +12,7 @@ import '../models/userWithToken.dart';
 import '../screens/event_detail_screen.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hasior_flutter/models/category.dart';
 
 import '../theme.dart';
 
@@ -20,16 +21,18 @@ class CalendarWidget extends StatefulWidget {
       {super.key,
       required this.isLoaded,
       required this.calendarList,
-      required this.dataEvents,
       required this.getData,
       required this.delete,
-      required this.user});
+      required this.user,
+      required this.categories,
+      required this.isLoadedCategories});
   final bool isLoaded;
   final List<CalendarList> calendarList;
-  final List<Calendar>? dataEvents;
   final Future<void> Function([String? name]) getData;
   final bool delete;
   final UserWithToken? user;
+  final List<Category> categories;
+  final bool isLoadedCategories;
 
   @override
   State<CalendarWidget> createState() => _CalendarWidgetState();
@@ -165,7 +168,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         children: <Widget>[
           ListView(),
           Visibility(
-              visible: widget.isLoaded,
+              visible: widget.isLoaded && widget.isLoadedCategories,
               replacement: const Center(
                 child: CircularProgressIndicator(),
               ),
@@ -399,7 +402,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 child: Container(
                     color: const Color.fromRGBO(49, 52, 57, 1),
                     width: double.infinity,
-                    height: 90,
                     child: Container(
                       decoration: const BoxDecoration(
                           border: Border(
@@ -407,9 +409,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                         color: grayColor,
                         width: 7.0,
                       ))),
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Row(
                             children: [
@@ -429,19 +431,52 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                 ),
                               ),
                               const SizedBox(width: 20),
-                              Text(
-                                DateFormat.Hm(AppLocalizations.of(context)!
-                                        .localeName)
-                                    .format(DateFormat("yyyy-MM-ddTHH:mm:ssZ")
-                                        .parseUTC(event.eventTime)
-                                        .toLocal()),
-                                style: const TextStyle(
-                                    color: grayColor,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(width: 10),
+                              widget.user != null
+                                  ? event.favorite
+                                      ? ElevatedButton(
+                                          onPressed: () async {
+                                            if (widget.delete) {
+                                              _removeFavouriteEventFromList(
+                                                  index);
+                                            }
+                                            await _removeFavouriteEvent(
+                                                event.id, index);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color.fromRGBO(
+                                                0, 150, 136, 0.2),
+                                            shadowColor: Colors.transparent,
+                                            shape: const CircleBorder(),
+                                            padding: const EdgeInsets.all(15),
+                                          ),
+                                          child: const Icon(
+                                            Icons.favorite,
+                                            color:
+                                                Color.fromRGBO(0, 150, 136, 1),
+                                          ),
+                                        )
+                                      : ElevatedButton(
+                                          onPressed: () async {
+                                            await _addFavouriteEvent(
+                                                event.id, index);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color.fromRGBO(
+                                                0, 150, 136, 0.2),
+                                            shadowColor: Colors.transparent,
+                                            shape: const CircleBorder(),
+                                            padding: const EdgeInsets.all(15),
+                                          ),
+                                          child: const Icon(
+                                            Icons.favorite_outline,
+                                            color:
+                                                Color.fromRGBO(0, 150, 136, 1),
+                                          ),
+                                        )
+                                  : Container()
                             ],
                           ),
+                          const SizedBox(height: 5),
                           Row(
                             children: [
                               Expanded(
@@ -481,49 +516,36 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                 ),
                               ),
                               const SizedBox(width: 20),
-                              widget.user != null
-                                  ? event.favorite
-                                      ? ElevatedButton(
-                                          onPressed: () async {
-                                            if (widget.delete) {
-                                              _removeFavouriteEventFromList(
-                                                  index);
-                                            }
-                                            await _removeFavouriteEvent(
-                                                event.id, index);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.transparent,
-                                            shadowColor: Colors.transparent,
-                                            shape: const CircleBorder(),
-                                            padding: const EdgeInsets.all(15),
-                                          ),
-                                          child: const Icon(
-                                            Icons.favorite,
-                                            color:
-                                                Color.fromRGBO(0, 150, 136, 1),
-                                          ),
-                                        )
-                                      : ElevatedButton(
-                                          onPressed: () async {
-                                            await _addFavouriteEvent(
-                                                event.id, index);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.transparent,
-                                            shadowColor: Colors.transparent,
-                                            shape: const CircleBorder(),
-                                            padding: const EdgeInsets.all(15),
-                                          ),
-                                          child: const Icon(
-                                            Icons.favorite_outline,
-                                            color:
-                                                Color.fromRGBO(0, 150, 136, 1),
-                                          ),
-                                        )
-                                  : Container()
+                              Text(
+                                DateFormat.Hm(AppLocalizations.of(context)!
+                                        .localeName)
+                                    .format(DateFormat("yyyy-MM-ddTHH:mm:ssZ")
+                                        .parseUTC(event.eventTime)
+                                        .toLocal()),
+                                style: const TextStyle(
+                                    color: grayColor,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(width: 12)
                             ],
                           ),
+                          const SizedBox(height: 15),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Wrap(
+                                runSpacing: 10,
+                                spacing: 10,
+                                children: event.categories != null
+                                    ? List.generate(event.categories!.length,
+                                        (index) {
+                                        return Chip(
+                                          label: Text(
+                                              "#${widget.categories.firstWhere((element) => element.id == event.categories![index]).name}"),
+                                          backgroundColor: grayColor,
+                                        );
+                                      })
+                                    : []),
+                          )
                         ],
                       ),
                     ))),

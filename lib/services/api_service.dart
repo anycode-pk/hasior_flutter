@@ -12,6 +12,7 @@ import 'package:hasior_flutter/models/calendar.dart';
 import 'package:hasior_flutter/models/login.dart';
 import 'package:hasior_flutter/models/user.dart';
 import 'package:hasior_flutter/models/userWithToken.dart';
+import 'package:hasior_flutter/models/category.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -21,7 +22,7 @@ import 'package:path/path.dart';
 import '../models/token.dart';
 
 class ApiService {
-  final String url = "https://prod.bytebunka.net/api/";
+  final String url = "https://dev.bytebunka.net/api/";
   final Client client = http.Client();
 
   Future<List<Event>?> getCalendar() async {
@@ -30,6 +31,16 @@ class ApiService {
     if (response.statusCode == 200) {
       String json = response.body;
       return eventsFromJson(json);
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<List<Category>?> getCategories() async {
+    Uri uri = Uri.parse("${await getApiAddress()}event-category");
+    Response response = await client.get(uri);
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return categoriesFromJson(json);
     }
     throw FormatException(response.body);
   }

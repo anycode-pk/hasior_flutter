@@ -21,7 +21,8 @@ class Event {
       required this.eventTime,
       this.thumbnail,
       this.favorite = false,
-      this.isCanceled = false});
+      this.isCanceled = false,
+      this.categories});
 
   int id;
   String name;
@@ -33,23 +34,25 @@ class Event {
   Thumbnail? thumbnail;
   bool favorite;
   bool isCanceled;
+  List<int>? categories;
 
   factory Event.fromJson(Map<String, dynamic> json) => Event(
-        id: json["id"],
-        name: json["name"],
-        price: json["price"] == null
-            ? null
-            : double.parse(json["price"].toString()),
-        description: json["description"],
-        localization: json["localization"],
-        ticketsLink: json["ticketsLink"],
-        eventTime: json["eventTime"],
-        thumbnail: json["thumbnail"] == null
-            ? null
-            : Thumbnail.fromJson(json["thumbnail"]),
-        favorite: json["favorite"],
-        isCanceled: json["isCanceled"],
-      );
+      id: json["id"],
+      name: json["name"],
+      price:
+          json["price"] == null ? null : double.parse(json["price"].toString()),
+      description: json["description"],
+      localization: json["localization"],
+      ticketsLink: json["ticketsLink"],
+      eventTime: json["eventTime"],
+      thumbnail: json["thumbnail"] == null
+          ? null
+          : Thumbnail.fromJson(json["thumbnail"]),
+      favorite: json["favorite"],
+      isCanceled: json["isCanceled"],
+      categories: json["categories"] == null
+          ? null
+          : List<int>.from(json["categories"].map((x) => x)));
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -62,5 +65,8 @@ class Event {
         "thumbnail": thumbnail?.toJson(),
         "favorite": favorite,
         "isCanceled": isCanceled,
+        "categories": categories == null
+            ? null
+            : List<dynamic>.from(categories!.map((x) => x))
       };
 }
