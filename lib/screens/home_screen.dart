@@ -5,6 +5,7 @@ import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/models/event.dart';
 import 'package:hasior_flutter/widgets/calendar_widget.dart';
 import 'package:hasior_flutter/widgets/offline_widget.dart';
+import 'package:hasior_flutter/widgets/thred/thred_widget.dart';
 import '../constants/language_constants.dart';
 import '../models/calendarList.dart';
 import '../models/calendar.dart';
@@ -115,7 +116,8 @@ class _HomeState extends State<Home> {
         getData: _getFavouriteEvents,
         delete: true,
         user: user,
-      )
+      ),
+      ThredScreen()
     ];
     return FutureBuilder(
         future: _getUser(),
@@ -224,6 +226,11 @@ class _HomeState extends State<Home> {
                                   label: translation(context)
                                       .favorite_events
                                       .capitalize()),
+                              BottomNavigationBarItem(
+                                  icon: const Icon(Icons.abc),
+                                  label: translation(context)
+                                      .favorite_events
+                                      .capitalize()),
                             ],
                           )),
                     )
@@ -237,5 +244,18 @@ class _HomeState extends State<Home> {
             );
           }
         });
+  }
+
+  Future<void> _onButtonPresed() async 
+  {
+    
+
+    final result = await Navigator.push(context,
+      MaterialPageRoute(
+          builder: (context) => const CreateOrEditEvent()),
+    );
+    if (result != null) {
+      _getEvents();
+    }
   }
 }
