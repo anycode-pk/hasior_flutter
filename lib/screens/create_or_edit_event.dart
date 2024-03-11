@@ -69,10 +69,10 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
     if (widget.event == null) {
       return null;
     }
-    if (widget.event!.thumbnail == null) {
+    if (widget.event!.images == null) {
       return null;
     }
-    return Image.network(widget.event!.thumbnail!.path);
+    return Image.network(widget.event!.images!.first.path);
   }
 
   Future<void> _createNewEvent() async {
@@ -191,7 +191,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
     if (imageFile == null) {
       return true;
     }
-    bool responseImage = await ApiService().putImageToEvent(id, imageFile!);
+    bool responseImage = await ApiService().postImageToEvent(id, imageFile!);
     if (!responseImage) {
       return false;
     }

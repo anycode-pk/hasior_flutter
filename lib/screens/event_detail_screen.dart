@@ -485,10 +485,9 @@ class _EventDetailsState extends State<EventDetails> {
                                       Container(
                                         decoration: BoxDecoration(
                                           image: DecorationImage(
-                                            image: widget.event.thumbnail !=
-                                                    null
+                                            image: widget.event.images != null && widget.event.images!.isNotEmpty
                                                 ? Image.network(widget
-                                                        .event.thumbnail!.path)
+                                                        .event.images!.first.path)
                                                     .image
                                                 : const AssetImage(
                                                     "assets/logo.png"),
