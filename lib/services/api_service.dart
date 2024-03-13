@@ -201,8 +201,14 @@ class ApiService {
     }
   }
 
-  Future<Event?> createEvent(String name, double? price, String? description,
-      String? localization, String? ticketsLink, DateTime eventTime) async {
+  Future<Event?> createEvent(
+      String name,
+      double? price,
+      String? description,
+      String? localization,
+      String? ticketsLink,
+      DateTime eventTime,
+      List<int> categories) async {
     try {
       Uri uri = Uri.parse("${await getApiAddress()}event/simple-event");
       UserWithToken? user = await userFromSharedPreferences();
@@ -218,6 +224,10 @@ class ApiService {
             "localization": localization,
             "ticketsLink": ticketsLink,
             "eventTime": eventTime.toIso8601String(),
+            "groupId": null,
+            "sendNotification": false,
+            "isPublic": true,
+            "categories": categories
           }));
       if (response.statusCode == 200) {
         String json = response.body;
@@ -284,7 +294,8 @@ class ApiService {
       String? description,
       String? localization,
       String? ticketsLink,
-      DateTime eventTime) async {
+      DateTime eventTime,
+      List<int> categories) async {
     try {
       Uri uri = Uri.parse("${await getApiAddress()}event");
       UserWithToken? user = await userFromSharedPreferences();
@@ -301,6 +312,8 @@ class ApiService {
             "localization": localization,
             "ticketsLink": ticketsLink,
             "eventTime": eventTime.toIso8601String(),
+            "sendNotification": false,
+            "categories": categories
           }));
       if (response.statusCode == 200) {
         return true;

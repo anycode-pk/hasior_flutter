@@ -106,5 +106,7 @@
     "accept": "akceptuj",
     "reject": "odrzuć",
     "show_ticket": "pokaż bilet",
-    "ticket_request_denied": "odrzucono prośbę o bilet"
+    "ticket_request_denied": "odrzucono prośbę o bilet",
+    "categories": "kategorie",
+    "download_ticket": "pobierz bilet"
 }

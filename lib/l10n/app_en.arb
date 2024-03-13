@@ -106,5 +106,7 @@
     "accept": "accept",
     "reject": "reject",
     "show_ticket": "show ticket",
-    "ticket_request_denied": "ticket request denied"
+    "ticket_request_denied": "ticket request denied",
+    "categories": "categories",
+    "download_ticket": "download ticket"
 }

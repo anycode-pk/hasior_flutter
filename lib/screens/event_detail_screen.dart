@@ -89,6 +89,14 @@ class _EventDetailsState extends State<EventDetails> {
   Future<void> _requestButtonAction() async {
     if (_isTicketRequest(Decision.ACCEPT) && _isTicket()) {
       await _navigateToTicketDetailsScreen();
+    } else if (_isTicketRequest(Decision.ACCEPT) && !_isTicket()) {
+      setState(() {
+        isLoading = true;
+      });
+      await ApiService().getTickets();
+      setState(() {
+        isLoading = false;
+      });
     } else {
       await _sendRequestForTicket(widget.event.id);
     }
@@ -102,6 +110,9 @@ class _EventDetailsState extends State<EventDetails> {
     } else if (_isTicketRequest(Decision.ACCEPT) && _isTicket()) {
       isRequestButtonDisabled = false;
       requestButtonText = translation(context).show_ticket.capitalize();
+    } else if (_isTicketRequest(Decision.ACCEPT) && !_isTicket()) {
+      isRequestButtonDisabled = false;
+      requestButtonText = translation(context).download_ticket.capitalize();
     } else if (_isTicketRequest(Decision.REJECT)) {
       isRequestButtonDisabled = true;
       requestButtonText =
