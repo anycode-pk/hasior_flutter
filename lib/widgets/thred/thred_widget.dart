@@ -14,11 +14,20 @@ class _thredScreen extends State<ThredScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return ListView(
       children: [
-        ThredCardWidget(text: "first"),
-        ThredCardWidget(text: "second"),
-        ThredCardWidget(text: "third")
+        ThredCardWidget(text: "first", imageLink: "assets/logo.png", owner: "Samorząd",),
+        ThredCardWidget(text: "first", imageLink: "assets/logo.png", owner: "Samorząd",),
+        ThredCardWidget(text: "first", imageLink: "assets/logo.png", owner: "Samorząd",),
+        ThredCardWidget(text: "first", imageLink: "assets/logo.png", owner: "Samorząd",),
+        ThredCardWidget(text: "first", imageLink: "assets/logo.png", owner: "Samorząd",),
+        ThredCardWidget(text: "first", imageLink: "assets/logo.png", owner: "Samorząd",),
+        ThredCardWidget(text: "first", imageLink: "assets/logo.png", owner: "Samorząd",),
+        ThredCardWidget(text: "first", imageLink: "assets/logo.png", owner: "Samorząd",),
+        ThredCardWidget(text: "first", imageLink: "assets/logo.png", owner: "Samorząd",),
+        ThredCardWidget(text: "first", imageLink: "assets/logo.png", owner: "Samorząd",),
+        ThredCardWidget(text: "first", imageLink: "assets/logo.png", owner: "Samorząd",),
+        ThredCardWidget(text: "first", imageLink: "assets/logo.png", owner: "Samorząd",),
       ],
     );
   }

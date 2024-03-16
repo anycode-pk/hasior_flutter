@@ -248,7 +248,10 @@ class _HomeState extends State<Home> {
 
   Future<void> _onButtonPresed() async 
   {
-    
+    if (currentIndex == 2) {
+
+      return;
+    }
 
     final result = await Navigator.push(context,
       MaterialPageRoute(

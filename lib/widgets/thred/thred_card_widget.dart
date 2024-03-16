@@ -3,9 +3,15 @@ import 'package:hasior_flutter/widgets/thred/thred_card_comment_input_widget.dar
 import 'package:hasior_flutter/widgets/thred/thred_card_comment_widget.dart';
 
 class ThredCardWidget extends StatefulWidget {
-  const ThredCardWidget({super.key, required this.text});
+  const ThredCardWidget({
+    super.key, 
+    required this.text, 
+    required this.imageLink,
+    required this.owner});
 
   final String text;
+  final String imageLink;
+  final String owner;
 
   @override
   State<ThredCardWidget> createState() => _ThredCardWidgetState();
@@ -15,17 +21,9 @@ class _ThredCardWidgetState extends State<ThredCardWidget> {
   Row _buildHeader(BuildContext context) {
     return const Row(children: <Widget>[
       Text(
-        "Cards Title 2",
-        style: TextStyle(
-          fontSize: 24,
-          // color: Colors.grey[800],
-        ),
-      ),
-      const Spacer(),
-      Text(
         "Samorząd studedzki",
         style: TextStyle(
-          fontSize: 18,
+          fontSize: 16,
           // color: Colors.grey[800],
         ),
       ),
@@ -105,22 +103,7 @@ class _ThredCardWidgetState extends State<ThredCardWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // Display an image at the top of the card that fills the width of the card and has a height of 160 pixels
-          Container(
-              decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/logo.png"),
-                    fit: BoxFit.cover,
-                  ),
-                  boxShadow: [
-                BoxShadow(
-                  color: Color.fromRGBO(0, 0, 0, 0.25),
-                  spreadRadius: 5,
-                  blurRadius: 7,
-                  offset: Offset(0, 4),
-                )
-              ])),
-          // Add a container with padding that contains the card's title, text, and buttons
+          Image.asset('assets/logo.png'),
           Container(
             padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
             child: Column(
@@ -128,8 +111,8 @@ class _ThredCardWidgetState extends State<ThredCardWidget> {
               children: <Widget>[
                 _buildHeader(context),
                 Container(height: 10),
-                Text(
-                  widget.text,
+                const Text(
+                  "W naszej restauracji Akacjowa, 𝐰𝐣𝐞𝐜𝐡𝐚ł𝐚 𝐤𝐨𝐥𝐞𝐣𝐧𝐚 𝐧𝐨𝐰𝐨ść ‼ Miło nam ogłosić, że przez najbliższy tydzień królować będzie pizza w  pysznej, nieco innej formie, czyli 𝐂𝐀𝐋𝐙𝐎𝐍𝐄",
                   style: TextStyle(
                     fontSize: 15,
                     // color: Colors.grey[700],
