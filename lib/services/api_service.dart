@@ -265,9 +265,10 @@ class ApiService {
     UserWithToken? user = await userFromSharedPreferences();
     Response response = await client.delete(uri, headers: {
       "accept": "text/plain",
-      "Authorization": "Bearer ${user?.token}"
+      "Authorization": "Bearer ${user?.token}",
+      "Content-Type": "application/json"
     });
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 400) {
       return true;
     }
     throw FormatException(response.body);
