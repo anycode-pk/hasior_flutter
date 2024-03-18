@@ -19,7 +19,7 @@ class Event {
       this.localization,
       this.ticketsLink,
       required this.eventTime,
-      this.thumbnail,
+      this.images,
       this.favorite = false,
       this.isCanceled = false,
       this.categories});
@@ -31,28 +31,29 @@ class Event {
   String? localization;
   String? ticketsLink;
   String eventTime;
-  Thumbnail? thumbnail;
+  List<Thumbnail>? images;
   bool favorite;
   bool isCanceled;
   List<int>? categories;
 
   factory Event.fromJson(Map<String, dynamic> json) => Event(
-      id: json["id"],
-      name: json["name"],
-      price:
-          json["price"] == null ? null : double.parse(json["price"].toString()),
-      description: json["description"],
-      localization: json["localization"],
-      ticketsLink: json["ticketsLink"],
-      eventTime: json["eventTime"],
-      thumbnail: json["thumbnail"] == null
+        images: json["images"] == null
+        ? List.empty() : List<Thumbnail>.from(json["images"].map((x) => Thumbnail.fromJson(x))),
+        id: json["id"],
+        name: json["name"],
+        price: json["price"] == null
+            ? null
+            : double.parse(json["price"].toString()),
+        description: json["description"],
+        localization: json["localization"],
+        ticketsLink: json["ticketsLink"],
+        eventTime: json["eventTime"],
+        favorite: json["favorite"],
+        isCanceled: json["isCanceled"],
+        categories: json["categories"] == null
           ? null
-          : Thumbnail.fromJson(json["thumbnail"]),
-      favorite: json["favorite"],
-      isCanceled: json["isCanceled"],
-      categories: json["categories"] == null
-          ? null
-          : List<int>.from(json["categories"].map((x) => x)));
+          : List<int>.from(json["categories"].map((x) => x))
+      );
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -62,7 +63,7 @@ class Event {
         "localization": localization,
         "ticketsLink": ticketsLink,
         "eventTime": eventTime,
-        "thumbnail": thumbnail?.toJson(),
+        "images": images != null ? List<dynamic>.from(images!.map((x) => x.toJson())) : List.empty(),
         "favorite": favorite,
         "isCanceled": isCanceled,
         "categories": categories == null
