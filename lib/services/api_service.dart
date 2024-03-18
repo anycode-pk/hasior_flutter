@@ -268,7 +268,7 @@ class ApiService {
       "Authorization": "Bearer ${user?.token}",
       "Content-Type": "application/json"
     });
-    if (response.statusCode == 200 || response.statusCode == 400) {
+    if (response.statusCode == 200) {
       return true;
     }
     throw FormatException(response.body);

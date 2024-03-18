@@ -242,7 +242,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
   }
 
   Future<bool> uploadImage(int id, bool isNew) async {
-    if (imageFile == null && image == null && !isNew) {
+    if (imageFile == null && image != null && !isNew) {
       bool response = await ApiService().putNullImageToEvent(id);
       if (!response) {
         return false;
