@@ -239,6 +239,27 @@ class ApiService {
     }
   }
 
+  Future<bool> postImageToEvent(int id, File image) async {
+    try {
+      Uri uri = Uri.parse("${await getApiAddress()}file/event/$id");
+      MultipartRequest request = http.MultipartRequest("POST", uri);
+      UserWithToken? user = await userFromSharedPreferences();
+      request.headers.addAll({
+        "Content-Type": "multipart/form-data",
+        "Authorization": "Bearer ${user?.token}"
+      });
+      request.files.add(http.MultipartFile.fromBytes(
+          'files', image.readAsBytesSync(),
+          filename: basename(image.path),
+          contentType: MediaType('image', 'jpg')));
+      StreamedResponse response = await request.send();
+      if (response.statusCode == 200) return true;
+      return false;
+    } on SocketException catch (e) {
+      throw FormatException(e.message);
+    }
+  }
+
   Future<bool> putNullImageToEvent(int id) async {
     Uri uri = Uri.parse("${await getApiAddress()}file/event/$id");
     UserWithToken? user = await userFromSharedPreferences();
