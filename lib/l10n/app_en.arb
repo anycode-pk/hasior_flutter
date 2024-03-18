@@ -109,5 +109,7 @@
     "ticket_request_denied": "ticket request denied",
     "manage_students": "manage students",
     "new_moderator": "new moderator",
-    "new_moderator_question": "Are you sure you want to nominate this user as a moderator ?"
+    "new_moderator_question": "Are you sure you want to nominate this user as a moderator ?",
+    "categories": "categories",
+    "download_ticket": "download ticket"
 }

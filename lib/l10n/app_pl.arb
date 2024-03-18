@@ -109,5 +109,7 @@
     "ticket_request_denied": "odrzucono prośbę o bilet",
     "manage_students": "zarządzaj studentami",
     "new_moderator": "nowy moderator",
-    "new_moderator_question": "Czy napewno chcesz mianować tego użytkownika na moderatora ?"
+    "new_moderator_question": "Czy napewno chcesz mianować tego użytkownika na moderatora ?",
+    "categories": "kategorie",
+    "download_ticket": "pobierz bilet"
 }

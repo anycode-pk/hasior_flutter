@@ -21,7 +21,8 @@ class Event {
       required this.eventTime,
       this.images,
       this.favorite = false,
-      this.isCanceled = false});
+      this.isCanceled = false,
+      this.categories});
 
   int id;
   String name;
@@ -33,6 +34,7 @@ class Event {
   List<Thumbnail>? images;
   bool favorite;
   bool isCanceled;
+  List<int>? categories;
 
   factory Event.fromJson(Map<String, dynamic> json) => Event(
         images: json["images"] == null
@@ -48,6 +50,9 @@ class Event {
         eventTime: json["eventTime"],
         favorite: json["favorite"],
         isCanceled: json["isCanceled"],
+        categories: json["categories"] == null
+          ? null
+          : List<int>.from(json["categories"].map((x) => x))
       );
 
   Map<String, dynamic> toJson() => {
@@ -61,5 +66,8 @@ class Event {
         "images": images != null ? List<dynamic>.from(images!.map((x) => x.toJson())) : List.empty(),
         "favorite": favorite,
         "isCanceled": isCanceled,
+        "categories": categories == null
+            ? null
+            : List<dynamic>.from(categories!.map((x) => x))
       };
 }
