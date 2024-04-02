@@ -3,6 +3,7 @@ import 'package:flutter_offline/flutter_offline.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/models/event.dart';
+import 'package:hasior_flutter/screens/create_edit_thred_screen.dart';
 import 'package:hasior_flutter/widgets/calendar_widget.dart';
 import 'package:hasior_flutter/widgets/offline_widget.dart';
 import 'package:hasior_flutter/widgets/thred/thred_widget.dart';
@@ -117,7 +118,7 @@ class _HomeState extends State<Home> {
         delete: true,
         user: user,
       ),
-      ThredScreen()
+      ThredScreenWidget()
     ];
     return FutureBuilder(
         future: _getUser(),
@@ -172,14 +173,7 @@ class _HomeState extends State<Home> {
               floatingActionButton: user != null && user!.isAdmin()
                   ? FloatingActionButton(
                       onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const CreateOrEditEvent()),
-                        );
-                        if (result != null) {
-                          _getEvents();
-                        }
+                        await _onButtonPresed();
                       },
                       backgroundColor: theme.primaryColor,
                       child: const Icon(Icons.add),
@@ -227,9 +221,9 @@ class _HomeState extends State<Home> {
                                       .favorite_events
                                       .capitalize()),
                               BottomNavigationBarItem(
-                                  icon: const Icon(Icons.abc),
+                                  icon: const Icon(Icons.pages),
                                   label: translation(context)
-                                      .favorite_events
+                                      .threds
                                       .capitalize()),
                             ],
                           )),
@@ -249,10 +243,18 @@ class _HomeState extends State<Home> {
   Future<void> _onButtonPresed() async 
   {
     if (currentIndex == 2) {
+      final result = await Navigator.push(context,
+        MaterialPageRoute(
+            builder: (context) => const CreateOrEditThred()),
+      );
+
+      if (result != null) {
+        _getEvents();
+      }
 
       return;
     }
-
+    
     final result = await Navigator.push(context,
       MaterialPageRoute(
           builder: (context) => const CreateOrEditEvent()),

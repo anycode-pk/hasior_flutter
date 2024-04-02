@@ -106,5 +106,8 @@
     "accept": "accept",
     "reject": "reject",
     "show_ticket": "show ticket",
-    "ticket_request_denied": "ticket request denied"
+    "ticket_request_denied": "ticket request denied",
+    "create_thred": "create thred",
+    "update_thred": "update thred",
+    "threds": "threds"
 }
