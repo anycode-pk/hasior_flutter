@@ -7,14 +7,12 @@ class HasiorThred {
       required this.text,
       required this.isPrivate,
       required this.amountOfComments,
-      required this.images,
       required this.reactions});
 
   int id;
   String text;
   bool isPrivate;
   int amountOfComments;
-  List<Thumbnail> images;
   List<HasiorThredReactions> reactions;
 
     factory HasiorThred.fromJson(Map<String, dynamic> json) => HasiorThred(
@@ -22,12 +20,13 @@ class HasiorThred {
         text: json["text"],
         isPrivate: json["isPrivate"],
         amountOfComments: json["amountOfComments"],
-        images: json["amountOfComments"],
         reactions: json["amountOfComments"],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": type,
-        "path": amount,
+        "id": id,
+        "text": text,
+        "isPrivate": isPrivate,
+        "amountOfComments": amountOfComments,
       };
 }
