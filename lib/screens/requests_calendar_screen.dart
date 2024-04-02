@@ -222,7 +222,7 @@ class _RequestsCalendarState extends State<RequestsCalendar> {
                             DateFormat.Hm(
                                     AppLocalizations.of(context)!.localeName)
                                 .format(DateFormat("yyyy-MM-ddTHH:mm:ssZ")
-                                    .parseUTC(event.eventTime)
+                                    .parse(event.eventTime)
                                     .toLocal()),
                             style: const TextStyle(
                                 color: grayColor, fontWeight: FontWeight.bold),

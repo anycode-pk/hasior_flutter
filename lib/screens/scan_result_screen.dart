@@ -93,7 +93,7 @@ class _ScanResultState extends State<ScanResult> {
                         Text("${translation(context).event_date.capitalize()}:",
                             style: styleHeader),
                         Text(
-                            "${DateFormat.yMMMMEEEEd(AppLocalizations.of(context)!.localeName).format(DateTime.parse(ticket!.ticket!.event.eventTime))} ${translation(context).at_hour} ${DateFormat.Hm(AppLocalizations.of(context)!.localeName).format(DateFormat("yyyy-MM-ddTHH:mm:ssZ").parseUTC(ticket!.ticket!.event.eventTime).toLocal())}",
+                            "${DateFormat.yMMMMEEEEd(AppLocalizations.of(context)!.localeName).format(DateTime.parse(ticket!.ticket!.event.eventTime))} ${translation(context).at_hour} ${DateFormat.Hm(AppLocalizations.of(context)!.localeName).format(DateFormat("yyyy-MM-ddTHH:mm:ssZ").parse(ticket!.ticket!.event.eventTime).toLocal())}",
                             style: styleLine),
                         const Divider(),
                         Text("${translation(context).owner.capitalize()}:",
@@ -103,7 +103,7 @@ class _ScanResultState extends State<ScanResult> {
                         Text("${translation(context).created_at.capitalize()}:",
                             style: styleHeader),
                         Text(
-                            "${DateFormat.yMMMMEEEEd(AppLocalizations.of(context)!.localeName).format(DateTime.parse(ticket!.ticket!.createdAt))} ${translation(context).at_hour} ${DateFormat.Hm(AppLocalizations.of(context)!.localeName).format(DateFormat("yyyy-MM-ddTHH:mm:ssZ").parseUTC(ticket!.ticket!.createdAt).toLocal())}",
+                            "${DateFormat.yMMMMEEEEd(AppLocalizations.of(context)!.localeName).format(DateTime.parse(ticket!.ticket!.createdAt))} ${translation(context).at_hour} ${DateFormat.Hm(AppLocalizations.of(context)!.localeName).format(DateFormat("yyyy-MM-ddTHH:mm:ssZ").parse(ticket!.ticket!.createdAt).toLocal())}",
                             style: styleLine),
                         const Divider(),
                         Text(

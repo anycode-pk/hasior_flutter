@@ -414,7 +414,7 @@ class _EventDetailsState extends State<EventDetails> {
                                                             ),
                                                             Expanded(
                                                               child: Text(
-                                                                  "${DateFormat.yMMMMEEEEd(AppLocalizations.of(context)!.localeName).format(DateTime.parse(widget.event.eventTime))} ${translation(context).at_hour} ${DateFormat.Hm(AppLocalizations.of(context)!.localeName).format(DateFormat("yyyy-MM-ddTHH:mm:ssZ").parseUTC(widget.event.eventTime).toLocal())}",
+                                                                  "${DateFormat.yMMMMEEEEd(AppLocalizations.of(context)!.localeName).format(DateTime.parse(widget.event.eventTime))} ${translation(context).at_hour} ${DateFormat.Hm(AppLocalizations.of(context)!.localeName).format(DateFormat("yyyy-MM-ddTHH:mm:ssZ").parse(widget.event.eventTime).toLocal())}",
                                                                   overflow:
                                                                       TextOverflow
                                                                           .ellipsis,

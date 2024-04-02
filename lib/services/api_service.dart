@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'package:hasior_flutter/enums/decision.dart';
 import 'package:hasior_flutter/models/calendarRequests.dart';
@@ -535,15 +534,16 @@ class ApiService {
   Future<bool> addUserToRole(String userId) async {
     Uri uri = Uri.parse("${await getApiAddress()}user/add/to-role");
     UserWithToken? user = await userFromSharedPreferences();
-    Response response = await client.post(uri, headers: {
-      "accept": "text/plain",
-      "Authorization": "Bearer ${user?.token}",
-      "content-type": "application/json",
-    },
-    body: jsonEncode({
-      "userId": userId,
-      "roleName": "ADMIN",
-    }));
+    Response response = await client.post(uri,
+        headers: {
+          "accept": "text/plain",
+          "Authorization": "Bearer ${user?.token}",
+          "content-type": "application/json",
+        },
+        body: jsonEncode({
+          "userId": userId,
+          "roleName": "ADMIN",
+        }));
     if (response.statusCode == 200) {
       return true;
     }

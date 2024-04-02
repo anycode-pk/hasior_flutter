@@ -106,7 +106,7 @@ class _TicketsState extends State<Tickets> {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      "${DateFormat.yMMMMEEEEd(AppLocalizations.of(context)!.localeName).format(DateTime.parse(ticket.event.eventTime))} ${translation(context).at_hour} ${DateFormat.Hm(AppLocalizations.of(context)!.localeName).format(DateFormat("yyyy-MM-ddTHH:mm:ssZ").parseUTC(ticket.event.eventTime).toLocal())}",
+                                      "${DateFormat.yMMMMEEEEd(AppLocalizations.of(context)!.localeName).format(DateTime.parse(ticket.event.eventTime))} ${translation(context).at_hour} ${DateFormat.Hm(AppLocalizations.of(context)!.localeName).format(DateFormat("yyyy-MM-ddTHH:mm:ssZ").parse(ticket.event.eventTime).toLocal())}",
                                       style: const TextStyle(
                                           color: grayColor,
                                           fontWeight: FontWeight.bold),

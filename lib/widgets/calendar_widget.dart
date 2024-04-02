@@ -523,7 +523,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                   DateFormat.Hm(AppLocalizations.of(context)!
                                           .localeName)
                                       .format(DateFormat("yyyy-MM-ddTHH:mm:ssZ")
-                                          .parseUTC(event.eventTime)
+                                          .parse(event.eventTime)
                                           .toLocal()),
                                   style: const TextStyle(
                                       color: grayColor,
@@ -533,23 +533,24 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 15),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            child: Wrap(
-                                runSpacing: 1,
-                                spacing: 5,
-                                children: event.categories != null
-                                    ? List.generate(event.categories!.length,
-                                        (index) {
+                          event.categories != null &&
+                                  event.categories!.isNotEmpty
+                              ? Container(
+                                  padding: const EdgeInsets.only(top: 15.0),
+                                  alignment: Alignment.centerLeft,
+                                  child: Wrap(
+                                      runSpacing: 1,
+                                      spacing: 5,
+                                      children: List.generate(
+                                          event.categories!.length, (index) {
                                         return Chip(
                                           label: Text(
                                               "#${widget.categories.firstWhere((element) => element.id == event.categories![index]).name}"),
                                           backgroundColor: grayColor,
                                         );
-                                      })
-                                    : []),
-                          )
+                                      })),
+                                )
+                              : Container()
                         ],
                       ),
                     ))),
