@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/screens/login_screen.dart';
+import 'package:hasior_flutter/screens/partners_screen.dart';
 import 'package:hasior_flutter/screens/qr_scanner_screen.dart';
 import 'package:hasior_flutter/screens/requests_calendar_screen.dart';
 import 'package:hasior_flutter/screens/settings_screen.dart';
@@ -62,6 +63,15 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return const Tickets();
+              }));
+            },
+          ),
+          ListTile(
+            // leading: const Icon(Icons.airplane_ticket_rounded),
+            title: Text(translation(context).partners.capitalize()),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const Partners();
               }));
             },
           ),

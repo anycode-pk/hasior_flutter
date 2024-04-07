@@ -141,7 +141,8 @@ class _TicketsState extends State<Tickets> {
         } else {
           return child;
         }
-      }, builder: (BuildContext context) {
+      }, 
+      builder: (BuildContext context) {
         return RefreshIndicator(
           onRefresh: _getData,
           child: Stack(

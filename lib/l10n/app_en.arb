@@ -106,5 +106,7 @@
     "accept": "accept",
     "reject": "reject",
     "show_ticket": "show ticket",
-    "ticket_request_denied": "ticket request denied"
+    "ticket_request_denied": "ticket request denied",
+    "partners": "partners",
+    "an_error_occurred_during_creating_thred": "an errror occured during creating thred"
 }

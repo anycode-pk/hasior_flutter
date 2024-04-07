@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:hasior_flutter/enums/decision.dart';
 import 'package:hasior_flutter/models/calendarRequests.dart';
+import 'package:hasior_flutter/models/thred.dart';
 import 'package:hasior_flutter/models/ticket.dart';
 import 'package:hasior_flutter/models/ticketRequest.dart';
 import 'package:hasior_flutter/models/ticketRequestDecision.dart';
@@ -32,6 +33,38 @@ class ApiService {
       return eventsFromJson(json);
     }
     throw FormatException(response.body);
+  }
+
+  Future<List<Thred>?> getThreds(List<int> groups) async {
+    var atributes = groups.map((element) {
+      return "GroupIds=$element";
+    }).join("&");
+
+    Uri uri = Uri.parse("${await getApiAddress()}thred?$atributes");
+    Response response = await client.get(uri);
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return thredsFromJson(json);
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<Thred?> createThred(String text, int groupId) async {
+    Uri uri = Uri.parse("${await getApiAddress()}thred");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.post(uri,
+        headers: {
+          "content-type": "application/json",
+          "Authorization": "Bearer ${user?.token}"
+        },
+        body:
+            jsonEncode({"text": text, "groupId": groupId, "isPrivate": false}));
+
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return thredFromJson(json);
+    }
+    return null;
   }
 
   Future<List<Calendar>?> getAllUpcomingEvents([String? name]) async {
@@ -229,6 +262,27 @@ class ApiService {
       });
       request.files.add(http.MultipartFile.fromBytes(
           'file', image.readAsBytesSync(),
+          filename: basename(image.path),
+          contentType: MediaType('image', 'jpg')));
+      StreamedResponse response = await request.send();
+      if (response.statusCode == 200) return true;
+      return false;
+    } on SocketException catch (e) {
+      throw FormatException(e.message);
+    }
+  }
+
+  Future<bool> putImageToThred(int id, File image) async {
+    try {
+      Uri uri = Uri.parse("${await getApiAddress()}file/thred/$id");
+      MultipartRequest request = http.MultipartRequest("PUT", uri);
+      UserWithToken? user = await userFromSharedPreferences();
+      request.headers.addAll({
+        "Content-Type": "multipart/form-data",
+        "Authorization": "Bearer ${user?.token}"
+      });
+      request.files.add(http.MultipartFile.fromBytes(
+          'files', image.readAsBytesSync(),
           filename: basename(image.path),
           contentType: MediaType('image', 'jpg')));
       StreamedResponse response = await request.send();
