@@ -49,15 +49,12 @@ class _TicketDetailsState extends State<TicketDetails> {
                 child: Column(children: [
                   AspectRatio(
                     aspectRatio: 1,
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10.0)),
-                        child: QrImage(
-                          data: widget.ticket.uniqeId,
-                          backgroundColor: Colors.white,
-                        ),
+                    child: ClipRRect(
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(10.0)),
+                      child: QrImage(
+                        data: widget.ticket.uniqeId,
+                        backgroundColor: Colors.white,
                       ),
                     ),
                   ),
@@ -66,9 +63,9 @@ class _TicketDetailsState extends State<TicketDetails> {
                       borderRadius:
                           const BorderRadius.all(Radius.circular(10.0)),
                       child: Container(
+                        constraints: const BoxConstraints(minHeight: 90),
                         color: const Color.fromRGBO(49, 52, 57, 1),
                         width: double.infinity,
-                        height: 90,
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Column(

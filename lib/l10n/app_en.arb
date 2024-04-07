@@ -108,5 +108,10 @@
     "show_ticket": "show ticket",
     "ticket_request_denied": "ticket request denied",
     "partners": "partners",
-    "an_error_occurred_during_creating_thred": "an errror occured during creating thred"
+    "an_error_occurred_during_creating_thred": "an errror occured during creating thred",
+    "manage_students": "manage students",
+    "new_moderator": "new moderator",
+    "new_moderator_question": "Are you sure you want to nominate this user as a moderator ?",
+    "categories": "categories",
+    "download_ticket": "download ticket"
 }

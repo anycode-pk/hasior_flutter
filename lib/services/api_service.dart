@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 import 'package:hasior_flutter/enums/decision.dart';
 import 'package:hasior_flutter/models/calendarRequests.dart';
@@ -13,6 +14,7 @@ import 'package:hasior_flutter/models/calendar.dart';
 import 'package:hasior_flutter/models/login.dart';
 import 'package:hasior_flutter/models/user.dart';
 import 'package:hasior_flutter/models/userWithToken.dart';
+import 'package:hasior_flutter/models/category.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -22,7 +24,7 @@ import 'package:path/path.dart';
 import '../models/token.dart';
 
 class ApiService {
-  final String url = "https://prod.bytebunka.net/api/";
+  final String url = "https://dev.bytebunka.net/api/";
   final Client client = http.Client();
 
   Future<List<Event>?> getCalendar() async {
@@ -31,6 +33,16 @@ class ApiService {
     if (response.statusCode == 200) {
       String json = response.body;
       return eventsFromJson(json);
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<List<Category>?> getCategories() async {
+    Uri uri = Uri.parse("${await getApiAddress()}event-category");
+    Response response = await client.get(uri);
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return categoriesFromJson(json);
     }
     throw FormatException(response.body);
   }
@@ -223,8 +235,14 @@ class ApiService {
     }
   }
 
-  Future<Event?> createEvent(String name, double? price, String? description,
-      String? localization, String? ticketsLink, DateTime eventTime) async {
+  Future<Event?> createEvent(
+      String name,
+      double? price,
+      String? description,
+      String? localization,
+      String? ticketsLink,
+      DateTime eventTime,
+      List<int> categories) async {
     try {
       Uri uri = Uri.parse("${await getApiAddress()}event/simple-event");
       UserWithToken? user = await userFromSharedPreferences();
@@ -240,6 +258,10 @@ class ApiService {
             "localization": localization,
             "ticketsLink": ticketsLink,
             "eventTime": eventTime.toIso8601String(),
+            "groupId": null,
+            "sendNotification": false,
+            "isPublic": true,
+            "categories": categories
           }));
       if (response.statusCode == 200) {
         String json = response.body;
@@ -262,6 +284,27 @@ class ApiService {
       });
       request.files.add(http.MultipartFile.fromBytes(
           'file', image.readAsBytesSync(),
+          filename: basename(image.path),
+          contentType: MediaType('image', 'jpg')));
+      StreamedResponse response = await request.send();
+      if (response.statusCode == 200) return true;
+      return false;
+    } on SocketException catch (e) {
+      throw FormatException(e.message);
+    }
+  }
+
+  Future<bool> postImageToEvent(int id, File image) async {
+    try {
+      Uri uri = Uri.parse("${await getApiAddress()}file/event/$id");
+      MultipartRequest request = http.MultipartRequest("POST", uri);
+      UserWithToken? user = await userFromSharedPreferences();
+      request.headers.addAll({
+        "Content-Type": "multipart/form-data",
+        "Authorization": "Bearer ${user?.token}"
+      });
+      request.files.add(http.MultipartFile.fromBytes(
+          'files', image.readAsBytesSync(),
           filename: basename(image.path),
           contentType: MediaType('image', 'jpg')));
       StreamedResponse response = await request.send();
@@ -298,7 +341,8 @@ class ApiService {
     UserWithToken? user = await userFromSharedPreferences();
     Response response = await client.delete(uri, headers: {
       "accept": "text/plain",
-      "Authorization": "Bearer ${user?.token}"
+      "Authorization": "Bearer ${user?.token}",
+      "Content-Type": "application/json"
     });
     if (response.statusCode == 200) {
       return true;
@@ -327,7 +371,8 @@ class ApiService {
       String? description,
       String? localization,
       String? ticketsLink,
-      DateTime eventTime) async {
+      DateTime eventTime,
+      List<int> categories) async {
     try {
       Uri uri = Uri.parse("${await getApiAddress()}event");
       UserWithToken? user = await userFromSharedPreferences();
@@ -344,6 +389,8 @@ class ApiService {
             "localization": localization,
             "ticketsLink": ticketsLink,
             "eventTime": eventTime.toIso8601String(),
+            "sendNotification": false,
+            "categories": categories
           }));
       if (response.statusCode == 200) {
         return true;
@@ -524,5 +571,36 @@ class ApiService {
   Future<String> getApiAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString("apiAddress") ?? url;
+  }
+
+  Future<List<User>> getMultipleUsersData() async {
+    Uri uri = Uri.parse("${await getApiAddress()}user/multiple-users-data");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.get(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
+    if (response.statusCode == 200) {
+      return userListFromJson(response.body);
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<bool> addUserToRole(String userId) async {
+    Uri uri = Uri.parse("${await getApiAddress()}user/add/to-role");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.post(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}",
+      "content-type": "application/json",
+    },
+    body: jsonEncode({
+      "userId": userId,
+      "roleName": "ADMIN",
+    }));
+    if (response.statusCode == 200) {
+      return true;
+    }
+    throw FormatException(response.body);
   }
 }

@@ -6,6 +6,10 @@ User userFromJson(String str) => User.fromJson(json.decode(str));
 
 String userToJson(User data) => json.encode(data.toJson());
 
+List<User> userListFromJson(String str) =>
+    List<User>.from(
+        json.decode(str).map((x) => User.fromJson(x)));
+
 class User {
   User({
     required this.id,

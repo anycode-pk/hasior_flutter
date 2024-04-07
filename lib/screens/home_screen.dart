@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
+import 'package:hasior_flutter/models/category.dart';
 import 'package:hasior_flutter/models/event.dart';
 import 'package:hasior_flutter/widgets/calendar_widget.dart';
 import 'package:hasior_flutter/widgets/offline_widget.dart';
@@ -22,13 +23,13 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<Calendar>? dataEvents;
-  List<Calendar>? favouriteEvents;
+  List<Category>? categories;
   List<CalendarList> calendarList = [];
   List<CalendarList> calendarListFavourite = [];
   int currentIndex = 0;
   bool isLoaded = false;
   bool isLoadedFavourite = false;
+  bool isLoadedCategories = false;
   UserWithToken? user;
   final PageController _pageController = PageController(initialPage: 0);
 
@@ -38,6 +39,7 @@ class _HomeState extends State<Home> {
     _getUser();
     _getEvents();
     _getFavouriteEvents();
+    _getCategories();
   }
 
   Future<bool> _getUser() async {
@@ -47,6 +49,7 @@ class _HomeState extends State<Home> {
 
   Future<void> _getEvents([String? name]) async {
     try {
+      List<Calendar>? dataEvents;
       UserWithToken? checkUser = await ApiService().userFromSharedPreferences();
       if (checkUser != null) {
         dataEvents = await ApiService().getAllUpcomingEventsForUser(name);
@@ -55,7 +58,7 @@ class _HomeState extends State<Home> {
       }
       if (dataEvents != null) {
         calendarList = [];
-        dataEvents?.forEach((Calendar calendarElement) {
+        dataEvents.forEach((Calendar calendarElement) {
           calendarList
               .add(CalendarList(time: calendarElement.time, event: null));
           for (Event event in calendarElement.events) {
@@ -74,12 +77,13 @@ class _HomeState extends State<Home> {
 
   Future<void> _getFavouriteEvents([String? name]) async {
     try {
+      List<Calendar>? favouriteEvents;
       UserWithToken? checkUser = await ApiService().userFromSharedPreferences();
       if (checkUser != null) {
         favouriteEvents = await ApiService().getFavouriteEvents(name);
         if (favouriteEvents != null) {
           calendarListFavourite = [];
-          favouriteEvents?.forEach((Calendar calendarElement) {
+          favouriteEvents.forEach((Calendar calendarElement) {
             calendarListFavourite
                 .add(CalendarList(time: calendarElement.time, event: null));
             for (Event event in calendarElement.events) {
@@ -97,24 +101,38 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future<void> _getCategories() async {
+    try {
+      categories = await ApiService().getCategories();
+      setState(() {
+        isLoadedCategories = true;
+      });
+    } catch (e) {
+      GlobalSnackbar.errorSnackbar(
+          context, translation(context).error_while_loading.capitalize());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Widget> screens = [
       CalendarWidget(
         isLoaded: isLoaded,
+        isLoadedCategories: isLoadedCategories,
         calendarList: calendarList,
-        dataEvents: dataEvents,
         getData: _getEvents,
         delete: false,
         user: user,
+        categories: categories ?? [],
       ),
       CalendarWidget(
         isLoaded: isLoadedFavourite,
+        isLoadedCategories: isLoadedCategories,
         calendarList: calendarListFavourite,
-        dataEvents: favouriteEvents,
         getData: _getFavouriteEvents,
         delete: true,
         user: user,
+        categories: categories ?? [],
       )
     ];
     return FutureBuilder(

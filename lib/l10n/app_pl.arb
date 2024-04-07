@@ -108,5 +108,10 @@
     "show_ticket": "pokaż bilet",
     "ticket_request_denied": "odrzucono prośbę o bilet",
     "partners": "partnerzy",
-    "an_error_occurred_during_creating_thred": "błąd podczas tworzenia wątku"
+    "an_error_occurred_during_creating_thred": "błąd podczas tworzenia wątku",
+    "manage_students": "zarządzaj studentami",
+    "new_moderator": "nowy moderator",
+    "new_moderator_question": "Czy napewno chcesz mianować tego użytkownika na moderatora ?",
+    "categories": "kategorie",
+    "download_ticket": "pobierz bilet"
 }
