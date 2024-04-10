@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
 import 'package:hasior_flutter/constants/language_constants.dart';
@@ -74,11 +72,11 @@ class _UserListState extends State<UserList> {
                 controller: _searchController,
                 onSubmitted: (value) {
                   usersFiltered = [];
-                  users.forEach((element) {
+                  for (User element in users) {
                     if (element.email.contains(value)) {
                       usersFiltered.add(element);
                     }
-                  });
+                  }
                   setState(() {});
                 },
                 style: const TextStyle(color: Colors.white),
