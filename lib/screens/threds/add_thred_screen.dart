@@ -68,12 +68,13 @@ class _AddThredState extends State<AddThred> {
                 TextButton(
                   onPressed: () async {
                     await createNewthred();
+                    Navigator.of(context).pop(true);
                   },
                   child: Text(translation(context).save.capitalize()),
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(false);
                   },
                   child: Text(translation(context).cancel.capitalize()),
                 ),
@@ -143,7 +144,7 @@ class _AddThredState extends State<AddThred> {
       return true;
     }
 
-    bool responseImage = await ApiService().putImageToThred(id, _image!);
+    bool responseImage = await ApiService().postImageToThred(id, _image!);
     if (!responseImage) {
       return false;
     }

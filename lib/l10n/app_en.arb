@@ -113,5 +113,11 @@
     "new_moderator": "new moderator",
     "new_moderator_question": "Are you sure you want to nominate this user as a moderator ?",
     "categories": "categories",
-    "download_ticket": "download ticket"
+    "download_ticket": "download ticket",
+    "error_while_deleting_thred": "error while deleting thred",
+    "thred_successfully_deleted": "thred successfully deleted",
+    "confirm_deletion_thred": "Are you sure you want to delete this thred? This operation cannot be undone.",
+    "delete_thred_question": "delete thred?",
+    "event_successfully_deleted": "event successfully deleted",
+    "manage_thred": "manage thred"
 }

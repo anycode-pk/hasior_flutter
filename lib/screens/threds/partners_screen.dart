@@ -5,11 +5,11 @@ import 'package:hasior_flutter/constants/language_constants.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/models/thred.dart';
 import 'package:hasior_flutter/models/ticket.dart';
-import 'package:hasior_flutter/screens/add_thred_screen.dart';
+import 'package:hasior_flutter/screens/threds/add_thred_screen.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 import 'package:hasior_flutter/widgets/image_thred_widget.dart';
 import 'package:hasior_flutter/widgets/offline_widget.dart';
-import '../theme.dart';
+import '../../theme.dart';
 
 class Partners extends StatefulWidget {
   const Partners({super.key});
@@ -20,6 +20,7 @@ class Partners extends StatefulWidget {
 
 class _PartnersState extends State<Partners> {
   List<Thred> data = [];
+  bool isLoaded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -60,14 +61,23 @@ class _PartnersState extends State<Partners> {
           },
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            showModalBottomSheet(
-                context: context,
-                isScrollControlled:true,
-                builder: (BuildContext context) {
-                  return AddThred();
-                },
-              );
+          onPressed: () async {
+            var returnValue = await showModalBottomSheet(
+              context: context,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              isScrollControlled: true,
+              builder: (BuildContext context) {
+                return AddThred();
+              },
+            );
+            if (returnValue != null && returnValue == true) {
+              setState(() {
+                isLoaded = false;
+              });
+              await _getData();
+            }
           },
           child: Icon(Icons.add),
           backgroundColor: theme.primaryColor,
@@ -80,10 +90,8 @@ class _PartnersState extends State<Partners> {
         child: ListView.builder(
           itemCount: data.length, // Adjust the number of cards as needed
           itemBuilder: (BuildContext context, int index) {
-            return ImageThredWidget(
-              imagePath:
-                  'assets/logo.png', // Assuming you have images named as image1.jpg, image2.jpg, etc.
-              text: data[index].text,
+            return new ImageThredWidget(
+              thred: data[index],
             );
           },
         ));
@@ -91,7 +99,10 @@ class _PartnersState extends State<Partners> {
 
   Future<bool> _getData() async {
     try {
-      data = await ApiService().getThreds([2]) ?? [];
+      data = await ApiService().getFunctionalThreds([2]) ?? [];
+      setState(() {
+        isLoaded = true;
+      });
       return true;
     } catch (e) {
       GlobalSnackbar.errorSnackbar(

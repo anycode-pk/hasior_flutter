@@ -113,5 +113,11 @@
     "new_moderator": "nowy moderator",
     "new_moderator_question": "Czy napewno chcesz mianować tego użytkownika na moderatora ?",
     "categories": "kategorie",
-    "download_ticket": "pobierz bilet"
+    "download_ticket": "pobierz bilet",
+    "error_while_deleting_thred": "błąd podczas usuwania wątku",
+    "thred_successfully_deleted": "pomyślnie usunięto wątek",
+    "confirm_deletion_thred": "Czy napewno chcesz usunąć ten wątek? Tej operacji nie da się cofnąć.",
+    "delete_thred_question": "usunąć wątek?",
+    "event_successfully_deleted": "pomyślnie usunięto wątek",
+    "manage_thred": "zarządzaj wątkiem"
 }

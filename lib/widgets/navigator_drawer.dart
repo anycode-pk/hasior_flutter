@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/screens/admin/user_list_screen.dart';
 import 'package:hasior_flutter/screens/login_screen.dart';
-import 'package:hasior_flutter/screens/partners_screen.dart';
+import 'package:hasior_flutter/screens/threds/partners_screen.dart';
 import 'package:hasior_flutter/screens/qr_scanner_screen.dart';
 import 'package:hasior_flutter/screens/requests_calendar_screen.dart';
 import 'package:hasior_flutter/screens/settings_screen.dart';

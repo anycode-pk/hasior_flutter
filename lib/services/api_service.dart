@@ -61,6 +61,20 @@ class ApiService {
     throw FormatException(response.body);
   }
 
+  Future<List<Thred>?> getFunctionalThreds(List<int> groups) async {
+    var atributes = groups.map((element) {
+      return "GroupIds=$element";
+    }).join("&");
+
+    Uri uri = Uri.parse("${await getApiAddress()}thred/functional-threds?$atributes");
+    Response response = await client.get(uri);
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return thredsFromJson(json);
+    }
+    throw FormatException(response.body);
+  }
+
   Future<Thred?> createThred(String text, int groupId) async {
     Uri uri = Uri.parse("${await getApiAddress()}thred");
     UserWithToken? user = await userFromSharedPreferences();
@@ -77,6 +91,19 @@ class ApiService {
       return thredFromJson(json);
     }
     return null;
+  }
+
+  Future<bool> deleteThred(int id) async {
+    Uri uri = Uri.parse("${await getApiAddress()}thred/$id");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.delete(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
+    if (response.statusCode == 200) {
+      return true;
+    }
+    throw FormatException(response.body);
   }
 
   Future<List<Calendar>?> getAllUpcomingEvents([String? name]) async {
@@ -315,10 +342,10 @@ class ApiService {
     }
   }
 
-  Future<bool> putImageToThred(int id, File image) async {
+  Future<bool> postImageToThred(int id, File image) async {
     try {
       Uri uri = Uri.parse("${await getApiAddress()}file/thred/$id");
-      MultipartRequest request = http.MultipartRequest("PUT", uri);
+      MultipartRequest request = http.MultipartRequest("POST", uri);
       UserWithToken? user = await userFromSharedPreferences();
       request.headers.addAll({
         "Content-Type": "multipart/form-data",
