@@ -10,12 +10,17 @@ import 'package:hasior_flutter/theme.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddThred extends StatefulWidget {
+  const AddThred({super.key, required this.groupToAdd});
+
+  final int groupToAdd;
+
   @override
   _AddThredState createState() => _AddThredState();
 }
 
 class _AddThredState extends State<AddThred> {
   TextEditingController _textController = TextEditingController();
+  TextEditingController _titleController = TextEditingController();
   String _generatedCode = '';
   File? _image;
   Image? image;
@@ -43,6 +48,11 @@ class _AddThredState extends State<AddThred> {
             if (_image != null) Image.file(_image!),
             const SizedBox(height: 20),
             TextField(
+              controller: _titleController,
+              decoration: InputDecoration(labelText: translation(context).name.capitalize()),
+            ),
+            const SizedBox(height: 20),
+            TextField(
               keyboardType: TextInputType.multiline,
               minLines: 1,
               maxLines: 5,
@@ -68,6 +78,7 @@ class _AddThredState extends State<AddThred> {
                 TextButton(
                   onPressed: () async {
                     await createNewthred();
+                    GlobalSnackbar.successSnackbar(context, translation(context).thred_successfully_added.capitalize());
                     Navigator.of(context).pop(true);
                   },
                   child: Text(translation(context).save.capitalize()),
@@ -153,10 +164,13 @@ class _AddThredState extends State<AddThred> {
   }
 
   Future<bool> createNewthred() async {
-    Thred? response = await ApiService().createThred(_textController.text, 2);
+    Thred? response = await ApiService().createThred(
+      _titleController.text.isNotEmpty ? _titleController.text : null, 
+      _textController.text.isNotEmpty ? _textController.text : null, 
+      widget.groupToAdd);
     if (response == null) {
       GlobalSnackbar.errorSnackbar(
-          context, translation(context).an_error_occurred_during_creating_event.capitalize());
+          context, translation(context).an_error_occurred_during_creating_thred.capitalize());
       return false;
     }
 

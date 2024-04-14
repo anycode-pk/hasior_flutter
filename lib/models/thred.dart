@@ -13,6 +13,7 @@ String thredsToJson(List<Thred> data) =>
 
 class Thred {
   String? text;
+  String? title;
   Group? group;
   bool? isPrivate;
   int? amountOfComments;
@@ -31,6 +32,7 @@ class Thred {
 
   Thred.fromJson(Map<String, dynamic> json) {
     text = json['text'];
+    title = json['title'];
     group = json['group'] != null ? new Group.fromJson(json['group']) : null;
     isPrivate = json['isPrivate'];
     amountOfComments = json['amountOfComments'];
@@ -47,6 +49,7 @@ class Thred {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['text'] = this.text;
+    data['title'] = this.title;
     if (this.group != null) {
       data['group'] = this.group!.toJson();
     }

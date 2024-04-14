@@ -11,14 +11,14 @@ import 'package:hasior_flutter/widgets/image_thred_widget.dart';
 import 'package:hasior_flutter/widgets/offline_widget.dart';
 import '../../theme.dart';
 
-class Partners extends StatefulWidget {
-  const Partners({super.key});
+class SecretInbox extends StatefulWidget {
+  const SecretInbox({super.key});
 
   @override
-  State<Partners> createState() => _PartnersState();
+  State<SecretInbox> createState() => _SicretInboxState();
 }
 
-class _PartnersState extends State<Partners> {
+class _SicretInboxState extends State<SecretInbox> {
   List<Thred> data = [];
   bool isLoaded = false;
 
@@ -26,7 +26,7 @@ class _PartnersState extends State<Partners> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(translation(context).partners.capitalize()),
+          title: Text(translation(context).secret_inbox.capitalize()),
           centerTitle: true,
         ),
         body: OfflineBuilder(
@@ -69,7 +69,7 @@ class _PartnersState extends State<Partners> {
               ),
               isScrollControlled: true,
               builder: (BuildContext context) {
-                return const AddThred(groupToAdd: 2,);
+                return const AddThred(groupToAdd: 1,);
               },
             );
             if (returnValue != null && returnValue == true) {
@@ -99,7 +99,7 @@ class _PartnersState extends State<Partners> {
 
   Future<bool> _getData() async {
     try {
-      data = await ApiService().getFunctionalThreds([2]) ?? [];
+      data = await ApiService().getSecretInBox() ?? [];
       setState(() {
         isLoaded = true;
       });

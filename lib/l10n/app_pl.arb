@@ -118,6 +118,13 @@
     "thred_successfully_deleted": "pomyślnie usunięto wątek",
     "confirm_deletion_thred": "Czy napewno chcesz usunąć ten wątek? Tej operacji nie da się cofnąć.",
     "delete_thred_question": "usunąć wątek?",
-    "event_successfully_deleted": "pomyślnie usunięto wątek",
-    "manage_thred": "zarządzaj wątkiem"
+    "manage_thred": "zarządzaj wątkiem",
+    "self_governance": "samorząd",
+    "secret_inbox": "skrzynka zażaleń",
+    "secret_inbox_add": "Opisz swój problem",
+    "send": "wyślij",
+    "enter_title": "wprowadź tytuł",
+    "enter_description": "wprowadź opis",
+    "thred_successfully_added": "pomyślnie dodano wątek",
+    "secret_message_successfully_added": "pomyślnie wysłano tajną wiadomość"
 }

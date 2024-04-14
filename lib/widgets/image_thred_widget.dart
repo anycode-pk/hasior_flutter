@@ -37,6 +37,13 @@ class ImageThredWidget extends StatelessWidget {
                   return Image.asset("assets/logo.png");
                 },
               ),
+            if (thred.title != null)
+              ListTile(
+                title: Text(
+                  thred.title!,
+                  style: const TextStyle(fontSize: 21),
+                ),
+              ),
             if (thred.text != null)
               ListTile(
                 title: Text(
@@ -122,7 +129,7 @@ class ImageThredWidget extends StatelessWidget {
           try {
             await ApiService().deleteThred(thred.id!).then((value) {
               GlobalSnackbar.infoSnackbar(context,
-                  translation(context).event_successfully_deleted.capitalize());
+                  translation(context).thred_successfully_deleted.capitalize());
               Navigator.pop(context);
             });
           } catch (e) {
