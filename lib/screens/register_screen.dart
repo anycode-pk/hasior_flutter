@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
+import 'package:hasior_flutter/classes/logo.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 import 'package:hasior_flutter/widgets/offline_widget.dart';
@@ -60,7 +61,7 @@ class _RegisterState extends State<Register> {
                           children: [
                             FractionallySizedBox(
                               widthFactor: 0.3,
-                              child: Image.asset("assets/logo.png"),
+                              child: Image.asset(Logo().getPath()),
                             ),
                             Column(
                               children: [

@@ -1,16 +1,12 @@
-enum Decision { NONE, REJECT, ACCEPT }
+enum Decision {
+  NONE(0),
+  REJECT(1),
+  ACCEPT(2);
 
-final decisionValues =
-    EnumValues({0: Decision.NONE, 1: Decision.REJECT, 2: Decision.ACCEPT});
+  final int value;
+  const Decision(this.value);
 
-class EnumValues<T> {
-  Map<int, T> map;
-  late Map<T, int> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, int> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
+  factory Decision.fromValue(int value) {
+    return values.firstWhere((element) => element.value == value);
   }
 }

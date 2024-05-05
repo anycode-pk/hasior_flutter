@@ -1,16 +1,12 @@
-enum Role { USER, ADMIN, OWNER }
+enum Role {
+  USER("USER"),
+  ADMIN("ADMIN"),
+  OWNER("OWNER");
 
-final roleValues =
-    EnumValues({"USER": Role.USER, "ADMIN": Role.ADMIN, "OWNER": Role.OWNER});
+  final String value;
+  const Role(this.value);
 
-class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
+  factory Role.fromValue(String value) {
+    return values.firstWhere((element) => element.value == value);
   }
 }

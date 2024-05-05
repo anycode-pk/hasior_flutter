@@ -24,12 +24,12 @@ class TicketRequestDecision {
       TicketRequestDecision(
         ticketRequestId: json["ticketRequestId"],
         description: json["description"],
-        status: Decision.values[json["status"]],
+        status: Decision.fromValue(json["status"]),
       );
 
   Map<String, dynamic> toJson() => {
         "ticketRequestId": ticketRequestId,
         "description": description,
-        "status": status.index,
+        "status": status.value,
       };
 }

@@ -17,6 +17,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../classes/currency.dart';
+import '../classes/logo.dart';
 import '../constants/language_constants.dart';
 import '../models/event.dart';
 import '../theme.dart';
@@ -112,7 +113,7 @@ class _EventDetailsState extends State<EventDetails> {
       requestButtonText = translation(context).show_ticket.capitalize();
     } else if (_isTicketRequest(Decision.ACCEPT) && !_isTicket()) {
       isRequestButtonDisabled = false;
-      requestButtonText = translation(context).download_ticket.capitalize();
+      requestButtonText = translation(context).save_ticket.capitalize();
     } else if (_isTicketRequest(Decision.REJECT)) {
       isRequestButtonDisabled = true;
       requestButtonText =
@@ -280,7 +281,7 @@ class _EventDetailsState extends State<EventDetails> {
                                   ? Image.network(
                                           widget.event.images!.first.path)
                                       .image
-                                  : const AssetImage("assets/logo.png"),
+                                  : AssetImage(Logo().getPath()),
                               fit: BoxFit.cover,
                             ),
                             boxShadow: const [

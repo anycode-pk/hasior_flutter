@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:hasior_flutter/enums/decision.dart';
+import 'package:hasior_flutter/enums/groups.dart';
 import 'package:hasior_flutter/models/calendarRequests.dart';
+import 'package:hasior_flutter/models/thred.dart';
 import 'package:hasior_flutter/models/ticket.dart';
 import 'package:hasior_flutter/models/ticketRequest.dart';
 import 'package:hasior_flutter/models/ticketRequestDecision.dart';
@@ -45,6 +47,105 @@ class ApiService {
     throw FormatException(response.body);
   }
 
+  Future<List<Thred>?> getThreds(List<int> groups) async {
+    var atributes = groups.map((element) {
+      return "GroupIds=$element";
+    }).join("&");
+
+    Uri uri = Uri.parse("${await getApiAddress()}thred?$atributes");
+    Response response = await client.get(uri);
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return thredsFromJson(json);
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<List<Thred>?> getFunctionalThreds(List<int> groups) async {
+    var atributes = groups.map((element) {
+      return "GroupIds=$element";
+    }).join("&");
+
+    Uri uri =
+        Uri.parse("${await getApiAddress()}thred/functional-threds?$atributes");
+    Response response = await client.get(uri);
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return thredsFromJson(json);
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<List<Thred>?> getSecretInBox() async {
+    Uri uri = Uri.parse("${await getApiAddress()}thred/secret-in-box");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.get(
+      uri,
+      headers: {
+        "content-type": "application/json",
+        "Authorization": "Bearer ${user?.token}"
+      },
+    );
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return thredsFromJson(json);
+    }
+    throw FormatException(response.body);
+  }
+
+  Future<Thred?> createThred(
+      String? title, String? text, Groups groupId) async {
+    Uri uri = Uri.parse("${await getApiAddress()}thred");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.post(uri,
+        headers: {
+          "content-type": "application/json",
+          "Authorization": "Bearer ${user?.token}"
+        },
+        body: jsonEncode({
+          "title": title,
+          "text": text,
+          "groupId": groupId.value,
+          "isPrivate": false
+        }));
+
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return thredFromJson(json);
+    }
+    return null;
+  }
+
+  Future<Thred?> createSecretInBoxThred(String title, String text) async {
+    Uri uri = Uri.parse("${await getApiAddress()}thred/secret-in-box");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.post(uri,
+        headers: {
+          "content-type": "application/json",
+          "Authorization": "Bearer ${user?.token}"
+        },
+        body: jsonEncode({"title": title, "text": text}));
+
+    if (response.statusCode == 200) {
+      String json = response.body;
+      return thredFromJson(json);
+    }
+    return null;
+  }
+
+  Future<bool> deleteThred(int id) async {
+    Uri uri = Uri.parse("${await getApiAddress()}thred/$id");
+    UserWithToken? user = await userFromSharedPreferences();
+    Response response = await client.delete(uri, headers: {
+      "accept": "text/plain",
+      "Authorization": "Bearer ${user?.token}"
+    });
+    if (response.statusCode == 200) {
+      return true;
+    }
+    throw FormatException(response.body);
+  }
+
   Future<List<Calendar>?> getAllUpcomingEvents([String? name]) async {
     Uri uri = Uri.parse(
         "${await getApiAddress()}event/all-upcoming-events${name != null ? "?EventName=$name" : ""}");
@@ -74,7 +175,7 @@ class ApiService {
   Future<List<CalendarRequests>?> getAllUpcomingEventsForTicketRequest(
       [String? name, Decision? status]) async {
     Uri uri = Uri.parse(
-        "${await getApiAddress()}event/all-upcoming-events/ticket-request${name != null ? "?EventName=$name" : ""}${status != null ? "?TicketStatuses=${status.index}" : ""}");
+        "${await getApiAddress()}event/all-upcoming-events/ticket-request${name != null ? "?EventName=$name" : ""}${status != null ? "?TicketStatuses=${status.value}" : ""}");
     UserWithToken? user = await userFromSharedPreferences();
     Response response = await client.get(uri, headers: {
       "accept": "text/plain",
@@ -263,6 +364,27 @@ class ApiService {
   Future<bool> postImageToEvent(int id, File image) async {
     try {
       Uri uri = Uri.parse("${await getApiAddress()}file/event/$id");
+      MultipartRequest request = http.MultipartRequest("POST", uri);
+      UserWithToken? user = await userFromSharedPreferences();
+      request.headers.addAll({
+        "Content-Type": "multipart/form-data",
+        "Authorization": "Bearer ${user?.token}"
+      });
+      request.files.add(http.MultipartFile.fromBytes(
+          'files', image.readAsBytesSync(),
+          filename: basename(image.path),
+          contentType: MediaType('image', 'jpg')));
+      StreamedResponse response = await request.send();
+      if (response.statusCode == 200) return true;
+      return false;
+    } on SocketException catch (e) {
+      throw FormatException(e.message);
+    }
+  }
+
+  Future<bool> postImageToThred(int id, File image) async {
+    try {
+      Uri uri = Uri.parse("${await getApiAddress()}file/thred/$id");
       MultipartRequest request = http.MultipartRequest("POST", uri);
       UserWithToken? user = await userFromSharedPreferences();
       request.headers.addAll({
@@ -534,15 +656,16 @@ class ApiService {
   Future<bool> addUserToRole(String userId) async {
     Uri uri = Uri.parse("${await getApiAddress()}user/add/to-role");
     UserWithToken? user = await userFromSharedPreferences();
-    Response response = await client.post(uri, headers: {
-      "accept": "text/plain",
-      "Authorization": "Bearer ${user?.token}",
-      "content-type": "application/json",
-    },
-    body: jsonEncode({
-      "userId": userId,
-      "roleName": "ADMIN",
-    }));
+    Response response = await client.post(uri,
+        headers: {
+          "accept": "text/plain",
+          "Authorization": "Bearer ${user?.token}",
+          "content-type": "application/json",
+        },
+        body: jsonEncode({
+          "userId": userId,
+          "roleName": "ADMIN",
+        }));
     if (response.statusCode == 200) {
       return true;
     }

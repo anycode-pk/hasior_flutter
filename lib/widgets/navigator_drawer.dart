@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:hasior_flutter/classes/logo.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/screens/admin/user_list_screen.dart';
 import 'package:hasior_flutter/screens/login_screen.dart';
+import 'package:hasior_flutter/screens/threds/add_to_secret_inbox_screen.dart';
+import 'package:hasior_flutter/screens/threds/partners_screen.dart';
 import 'package:hasior_flutter/screens/qr_scanner_screen.dart';
 import 'package:hasior_flutter/screens/requests_calendar_screen.dart';
 import 'package:hasior_flutter/screens/settings_screen.dart';
+import 'package:hasior_flutter/screens/threds/secret_inbox_screen.dart';
+import 'package:hasior_flutter/screens/threds/self-governance_screen.dart';
 import 'package:hasior_flutter/screens/tickets_screen.dart';
 import '../constants/language_constants.dart';
 import '../models/userWithToken.dart';
@@ -66,8 +71,38 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
               }));
             },
           ),
+          ListTile(
+            // leading: const Icon(Icons.airplane_ticket_rounded),
+            title: Text(translation(context).partners.capitalize()),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const Partners();
+              }));
+            },
+          ),
+          ListTile(
+            // leading: const Icon(Icons.airplane_ticket_rounded),
+            title: Text(translation(context).self_governance.capitalize()),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const SelfGovernance();
+              }));
+            },
+          ),
+          ListTile(
+            // title: Text(translation(context).manage_students.capitalize()),
+            title: Text(translation(context)
+                .having_trouble_with_the_app_let_us_know
+                .capitalize()),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const AddToSecretInbox();
+              }));
+            },
+          ),
         ],
       );
+
   Widget buildAdminMenuItems(BuildContext context) => Column(
         children: [
           const Divider(
@@ -100,11 +135,25 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
               }));
             },
           ),
+          ListTile(
+            title: Text(translation(context).secret_inbox.capitalize()),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const SecretInbox();
+              }));
+            },
+          )
         ],
       );
 
   Widget buildMenuItemsBottom(BuildContext context) => Column(
         children: [
+          const Divider(
+            color: grayColor,
+            thickness: 0.1,
+            indent: 18,
+            endIndent: 18,
+          ),
           ListTile(
             leading: const Icon(Icons.settings),
             title: Text(translation(context).settings.capitalize()),
@@ -139,7 +188,7 @@ class _MenuNavigationDrawerState extends State<MenuNavigationDrawer> {
             backgroundColor: Colors.blue.shade700,
             child: FractionallySizedBox(
               widthFactor: 0.8,
-              child: Image.asset("assets/logo.png"),
+              child: Image.asset(Logo().getPath()),
             ),
           ),
           const SizedBox(height: 12),

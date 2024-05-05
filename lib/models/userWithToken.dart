@@ -34,7 +34,7 @@ class UserWithToken {
 
   factory UserWithToken.fromJson(Map<String, dynamic> json) => UserWithToken(
         id: json["id"],
-        roles: List<Role>.from(json["roles"].map((x) => roleValues.map[x]!)),
+        roles: List<Role>.from(json["roles"].map((x) => Role.fromValue(x))),
         email: json["email"],
         userName: json["userName"],
         points: json["points"],
@@ -45,7 +45,7 @@ class UserWithToken {
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "roles": List<dynamic>.from(roles.map((x) => roleValues.reverse[x])),
+        "roles": List<dynamic>.from(roles.map((x) => x.value)),
         "email": email,
         "userName": userName,
         "points": points,

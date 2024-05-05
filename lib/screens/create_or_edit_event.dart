@@ -44,6 +44,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
   List<int> categoryIndexes = List.empty(growable: true);
   List<Category>? categories;
   bool isLoadedCategories = false;
+  static const grayColor = Color.fromRGBO(105, 105, 105, 1);
 
   @override
   void initState() {
@@ -92,7 +93,7 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
     if (widget.event == null) {
       return null;
     }
-    if (widget.event!.images == null) {
+    if (widget.event!.images == null || widget.event!.images!.isEmpty) {
       return null;
     }
     return Image.network(widget.event!.images!.first.path);
@@ -453,60 +454,71 @@ class _CreateOrEditEventState extends State<CreateOrEditEvent> {
                             Text(translation(context).categories.capitalize(),
                                 style: textStyle),
                             const SizedBox(height: 10),
-                            SizedBox(
-                                width: double.infinity,
-                                child: SelectChipsInput(
-                                  chipsText: categories != null
-                                      ? categories!.map((e) => e.name).toList()
-                                      : [""],
-                                  separatorCharacter: ".",
-                                  preSelectedChips: preselectCategories(),
-                                  onTap: (p0, p1) {
-                                    setState(() {
-                                      if (categoryIndexes
-                                          .any((element) => element == p1)) {
-                                        categoryIndexes.remove(p1);
-                                      } else {
-                                        categoryIndexes.add(p1);
-                                      }
-                                    });
-                                  },
-                                  marginBetweenChips: const EdgeInsets.all(5),
-                                  prefixIcons: categories != null
-                                      ? [
-                                          for (var i in categories!)
-                                            const Padding(
-                                              padding:
-                                                  EdgeInsets.only(right: 5.0),
-                                              child: Icon(
-                                                Icons
-                                                    .check_box_outline_blank_outlined,
-                                                size: 16.0,
-                                              ),
-                                            )
-                                        ]
-                                      : null,
-                                  selectedPrefixIcon: const Padding(
-                                    padding: EdgeInsets.only(right: 5.0),
-                                    child: Icon(
-                                      Icons.check_box,
-                                      size: 16.0,
-                                    ),
-                                  ),
-                                  widgetContainerDecoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(3.0),
-                                    color: Colors.transparent,
-                                    border: Border.all(color: Colors.white),
-                                  ),
-                                  unselectedChipDecoration: BoxDecoration(
-                                    color: primarycolor.withAlpha(100),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  selectedChipDecoration: BoxDecoration(
-                                    color: primarycolor,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                )),
+                            categories != null && categories!.isNotEmpty
+                                ? SizedBox(
+                                    width: double.infinity,
+                                    child: SelectChipsInput(
+                                      chipsText: categories!
+                                          .map((e) => e.name)
+                                          .toList(),
+                                      separatorCharacter: ".",
+                                      preSelectedChips: preselectCategories(),
+                                      onTap: (p0, p1) {
+                                        setState(() {
+                                          if (categoryIndexes.any(
+                                              (element) => element == p1)) {
+                                            categoryIndexes.remove(p1);
+                                          } else {
+                                            categoryIndexes.add(p1);
+                                          }
+                                        });
+                                      },
+                                      marginBetweenChips:
+                                          const EdgeInsets.all(5),
+                                      prefixIcons: categories != null
+                                          ? [
+                                              for (var i in categories!)
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      right: 5.0),
+                                                  child: Icon(
+                                                    Icons
+                                                        .check_box_outline_blank_outlined,
+                                                    size: 16.0,
+                                                  ),
+                                                )
+                                            ]
+                                          : null,
+                                      selectedPrefixIcon: const Padding(
+                                        padding: EdgeInsets.only(right: 5.0),
+                                        child: Icon(
+                                          Icons.check_box,
+                                          size: 16.0,
+                                        ),
+                                      ),
+                                      widgetContainerDecoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(3.0),
+                                        color: Colors.transparent,
+                                        border: Border.all(color: Colors.white),
+                                      ),
+                                      unselectedChipDecoration: BoxDecoration(
+                                        color: primarycolor.withAlpha(100),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      selectedChipDecoration: BoxDecoration(
+                                        color: primarycolor,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                    ))
+                                : Text(
+                                    translation(context)
+                                        .no_categories_available
+                                        .capitalize(),
+                                    style: const TextStyle(
+                                        color: grayColor,
+                                        fontSize: 15,
+                                        fontStyle: FontStyle.italic)),
                             const SizedBox(height: 15),
                             Text(
                                 "${translation(context).event_date.capitalize()}*",
