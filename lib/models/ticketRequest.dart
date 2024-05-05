@@ -29,14 +29,14 @@ class TicketRequest {
   factory TicketRequest.fromJson(Map<String, dynamic> json) => TicketRequest(
         event: TicketEvent.fromJson(json["event"]),
         owner: TicketOwner.fromJson(json["owner"]),
-        status: Decision.values[json["status"]],
+        status: Decision.fromValue(json["status"]),
         id: json["id"],
       );
 
   Map<String, dynamic> toJson() => {
         "event": event.toJson(),
         "owner": owner.toJson(),
-        "status": status.index,
+        "status": status.value,
         "id": id,
       };
 }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'package:hasior_flutter/enums/decision.dart';
+import 'package:hasior_flutter/enums/groups.dart';
 import 'package:hasior_flutter/models/calendarRequests.dart';
 import 'package:hasior_flutter/models/thred.dart';
 import 'package:hasior_flutter/models/ticket.dart';
@@ -93,7 +94,8 @@ class ApiService {
     throw FormatException(response.body);
   }
 
-  Future<Thred?> createThred(String? title, String? text, int groupId) async {
+  Future<Thred?> createThred(
+      String? title, String? text, Groups groupId) async {
     Uri uri = Uri.parse("${await getApiAddress()}thred");
     UserWithToken? user = await userFromSharedPreferences();
     Response response = await client.post(uri,
@@ -104,7 +106,7 @@ class ApiService {
         body: jsonEncode({
           "title": title,
           "text": text,
-          "groupId": groupId,
+          "groupId": groupId.value,
           "isPrivate": false
         }));
 
@@ -174,7 +176,7 @@ class ApiService {
   Future<List<CalendarRequests>?> getAllUpcomingEventsForTicketRequest(
       [String? name, Decision? status]) async {
     Uri uri = Uri.parse(
-        "${await getApiAddress()}event/all-upcoming-events/ticket-request${name != null ? "?EventName=$name" : ""}${status != null ? "?TicketStatuses=${status.index}" : ""}");
+        "${await getApiAddress()}event/all-upcoming-events/ticket-request${name != null ? "?EventName=$name" : ""}${status != null ? "?TicketStatuses=${status.value}" : ""}");
     UserWithToken? user = await userFromSharedPreferences();
     Response response = await client.get(uri, headers: {
       "accept": "text/plain",

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
+import 'package:hasior_flutter/classes/logo.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/models/user.dart';
 import 'package:hasior_flutter/screens/home_screen.dart';
@@ -62,7 +63,7 @@ class _LoginState extends State<Login> {
                           children: [
                             FractionallySizedBox(
                               widthFactor: 0.3,
-                              child: Image.asset("assets/logo.png"),
+                              child: Image.asset(Logo().getPath()),
                             ),
                             Column(
                               children: [

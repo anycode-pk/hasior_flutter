@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
 import 'package:hasior_flutter/constants/language_constants.dart';
+import 'package:hasior_flutter/enums/groups.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/models/thred.dart';
 import 'package:hasior_flutter/services/api_service.dart';
@@ -12,16 +12,16 @@ import 'package:image_picker/image_picker.dart';
 class AddThred extends StatefulWidget {
   const AddThred({super.key, required this.groupToAdd});
 
-  final int groupToAdd;
+  final Groups groupToAdd;
 
   @override
-  _AddThredState createState() => _AddThredState();
+  State<AddThred> createState() => _AddThredState();
 }
 
 class _AddThredState extends State<AddThred> {
-  TextEditingController _textController = TextEditingController();
-  TextEditingController _titleController = TextEditingController();
-  String _generatedCode = '';
+  final TextEditingController _textController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   File? _image;
   Image? image;
 
@@ -32,68 +32,99 @@ class _AddThredState extends State<AddThred> {
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
-      } 
+        image = Image.file(_image!);
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            if (_image != null) Image.file(_image!),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _titleController,
-              decoration: InputDecoration(labelText: translation(context).name.capitalize()),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              keyboardType: TextInputType.multiline,
-              minLines: 1,
-              maxLines: 5,
-              controller: _textController,
-              decoration: InputDecoration(labelText: translation(context).description.capitalize()),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      side: const BorderSide(color: Colors.white)),
-                  onPressed: () => _getImage(),
-                  child: Text(translation(context).add_picture.capitalize()),
-                )),
-            displayAddedImage(),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+      child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                TextButton(
-                  onPressed: () async {
-                    await createNewthred();
-                    GlobalSnackbar.successSnackbar(context, translation(context).thred_successfully_added.capitalize());
-                    Navigator.of(context).pop(true);
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _titleController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return translation(context).enter_name.capitalize();
+                    }
+                    return null;
                   },
-                  child: Text(translation(context).save.capitalize()),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: "${translation(context).name.capitalize()}*",
+                    focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                  ),
                 ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
-                  child: Text(translation(context).cancel.capitalize()),
+                const SizedBox(height: 20),
+                TextField(
+                  keyboardType: TextInputType.multiline,
+                  minLines: 1,
+                  maxLines: 5,
+                  controller: _textController,
+                  decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: translation(context).description.capitalize(),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      )),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          side: const BorderSide(color: Colors.white)),
+                      onPressed: () => _getImage(),
+                      child:
+                          Text(translation(context).add_picture.capitalize()),
+                    )),
+                displayAddedImage(),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                      child: Text(translation(context).cancel.capitalize()),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: primarycolor),
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          await createNewthred();
+                          if (mounted) {
+                            GlobalSnackbar.successSnackbar(
+                                context,
+                                translation(context)
+                                    .thred_successfully_added
+                                    .capitalize());
+                            Navigator.of(context).pop(true);
+                          }
+                        }
+                      },
+                      child: Text(translation(context).save.capitalize()),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-      ),
+          )),
     );
   }
 
@@ -156,7 +187,12 @@ class _AddThredState extends State<AddThred> {
     }
 
     bool responseImage = await ApiService().postImageToThred(id, _image!);
-    if (!responseImage) {
+    if (!responseImage && mounted) {
+      GlobalSnackbar.errorSnackbar(
+          context,
+          translation(context)
+              .error_occurred_during_uploading_photo
+              .capitalize());
       return false;
     }
 
@@ -165,16 +201,19 @@ class _AddThredState extends State<AddThred> {
 
   Future<bool> createNewthred() async {
     Thred? response = await ApiService().createThred(
-      _titleController.text.isNotEmpty ? _titleController.text : null, 
-      _textController.text.isNotEmpty ? _textController.text : null, 
-      widget.groupToAdd);
-    if (response == null) {
+        _titleController.text.isNotEmpty ? _titleController.text : null,
+        _textController.text.isNotEmpty ? _textController.text : null,
+        widget.groupToAdd);
+    if (response == null && mounted) {
       GlobalSnackbar.errorSnackbar(
-          context, translation(context).an_error_occurred_during_creating_thred.capitalize());
+          context,
+          translation(context)
+              .error_occurred_during_creating_thred
+              .capitalize());
       return false;
     }
 
-    var imageResponse = await uploadImage(response.id!);
+    var imageResponse = await uploadImage(response!.id!);
     return imageResponse;
   }
 }

@@ -108,12 +108,12 @@
     "show_ticket": "show ticket",
     "ticket_request_denied": "ticket request denied",
     "partners": "partners",
-    "an_error_occurred_during_creating_thred": "an errror occured during creating thred",
+    "error_occurred_during_creating_thred": "errror occured during creating thred",
     "manage_students": "manage students",
     "new_moderator": "new moderator",
     "new_moderator_question": "Are you sure you want to nominate this user as a moderator ?",
     "categories": "categories",
-    "download_ticket": "download ticket",
+    "save_ticket": "save ticket",
     "error_while_deleting_thred": "error while deleting thred",
     "thred_successfully_deleted": "thred successfully deleted",
     "confirm_deletion_thred": "Are you sure you want to delete this thred? This operation cannot be undone.",
@@ -126,5 +126,9 @@
     "enter_title": "enter title",
     "enter_description": "enter description",
     "thred_successfully_added": "thred successfully added",
-    "secret_message_successfully_added": "secret message successfully added"
+    "secret_message_successfully_added": "secret message successfully added",
+    "no_categories_available": "no categories available",
+    "error_occurred_during_uploading_photo": "error occurred during uploading photo",
+    "enter_name": "enter name",
+    "having_trouble_with_the_app_let_us_know": "Having trouble with the app? Let us know!"
 }

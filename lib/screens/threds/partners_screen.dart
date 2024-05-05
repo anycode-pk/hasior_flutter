@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
 import 'package:hasior_flutter/constants/language_constants.dart';
+import 'package:hasior_flutter/enums/groups.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/models/thred.dart';
-import 'package:hasior_flutter/models/ticket.dart';
 import 'package:hasior_flutter/screens/threds/add_thred_screen.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 import 'package:hasior_flutter/widgets/image_thred_widget.dart';
@@ -69,7 +69,9 @@ class _PartnersState extends State<Partners> {
               ),
               isScrollControlled: true,
               builder: (BuildContext context) {
-                return const AddThred(groupToAdd: 2,);
+                return const AddThred(
+                  groupToAdd: Groups.PARTNERS,
+                );
               },
             );
             if (returnValue != null && returnValue == true) {
@@ -79,8 +81,8 @@ class _PartnersState extends State<Partners> {
               await _getData();
             }
           },
-          child: Icon(Icons.add),
           backgroundColor: theme.primaryColor,
+          child: const Icon(Icons.add),
         ));
   }
 
@@ -88,9 +90,9 @@ class _PartnersState extends State<Partners> {
     return Container(
         margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 7),
         child: ListView.builder(
-          itemCount: data.length, // Adjust the number of cards as needed
+          itemCount: data.length,
           itemBuilder: (BuildContext context, int index) {
-            return new ImageThredWidget(
+            return ImageThredWidget(
               thred: data[index],
             );
           },
@@ -105,8 +107,10 @@ class _PartnersState extends State<Partners> {
       });
       return true;
     } catch (e) {
-      GlobalSnackbar.errorSnackbar(
-          context, translation(context).error_while_loading.capitalize());
+      if (mounted) {
+        GlobalSnackbar.errorSnackbar(
+            context, translation(context).error_while_loading.capitalize());
+      }
       return false;
     }
   }

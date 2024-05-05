@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:hasior_flutter/classes/global_snackbar.dart';
+import 'package:hasior_flutter/classes/logo.dart';
 import 'package:hasior_flutter/constants/language_constants.dart';
 import 'package:hasior_flutter/extensions/string_capitalize.dart';
 import 'package:hasior_flutter/models/thred.dart';
-import 'package:hasior_flutter/screens/threds/partners_screen.dart';
 import 'package:hasior_flutter/services/api_service.dart';
 
-class ImageThredWidget extends StatelessWidget {
+class ImageThredWidget extends StatefulWidget {
   final Thred thred;
   static const grayColor = Color.fromRGBO(105, 105, 105, 1);
-  const ImageThredWidget({ super.key, required this.thred });
+  const ImageThredWidget({super.key, required this.thred});
+
+  @override
+  State<ImageThredWidget> createState() => _ImageThredWidgetState();
+}
+
+class _ImageThredWidgetState extends State<ImageThredWidget> {
+  void handleClick(String value, BuildContext context, Thred thred) {
+    if (value == translation(context).delete.capitalize()) {
+      showAlertDialog(context, thred);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,29 +36,65 @@ class ImageThredWidget extends StatelessWidget {
             })
       },
       child: Card(
+        clipBehavior: Clip.hardEdge,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            if (thred.images != null && thred.images!.isNotEmpty) 
+            if (widget.thred.images != null && widget.thred.images!.isNotEmpty)
               Image.network(
-                thred.images![0].path,
+                widget.thred.images![0].path,
                 fit: BoxFit.fitHeight,
-                loadingBuilder: (context, child, loadingProgress) => CircularProgressIndicator(),
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  }
+                  return const CircularProgressIndicator();
+                },
                 errorBuilder: (context, error, stackTrace) {
-                  return Image.asset("assets/logo.png");
+                  return Image.asset(Logo().getPath());
                 },
               ),
-            if (thred.title != null)
-              ListTile(
-                title: Text(
-                  thred.title!,
-                  style: const TextStyle(fontSize: 21),
+            if (widget.thred.title != null)
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.thred.title!,
+                        style: const TextStyle(fontSize: 21),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 60,
+                      child: PopupMenuButton<String>(
+                        onSelected: (value) =>
+                            handleClick(value, context, widget.thred),
+                        itemBuilder: (BuildContext context) {
+                          return {translation(context).delete.capitalize()}
+                              .map((String choice) {
+                            return PopupMenuItem<String>(
+                              value: choice,
+                              child: Text(choice),
+                            );
+                          }).toList();
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            if (thred.text != null)
+            if (widget.thred.text != null)
+              const Divider(
+                thickness: 0.1,
+                indent: 18,
+                endIndent: 18,
+              ),
+            if (widget.thred.text != null)
               ListTile(
                 title: Text(
-                  thred.text!,
+                  widget.thred.text!,
                   style: const TextStyle(fontSize: 16),
                 ),
               ),
@@ -88,7 +135,7 @@ class ImageThredWidget extends StatelessWidget {
               ),
             ),
             const Divider(
-              color: grayColor,
+              color: ImageThredWidget.grayColor,
               thickness: 0.1,
               indent: 18,
               endIndent: 18,
@@ -109,15 +156,18 @@ class ImageThredWidget extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.delete),
               title: Text(translation(context).delete.capitalize()),
-              onTap: () {
-                showAlertDialog(context, thred);
+              onTap: () async {
+                await showAlertDialog(context, widget.thred);
+                if (mounted) {
+                  Navigator.of(context).pop();
+                }
               },
             ),
           ],
         ));
   }
 
-  void showAlertDialog(BuildContext context, Thred thred) {
+  Future<void> showAlertDialog(BuildContext context, Thred thred) async {
     Widget cancelButton = TextButton(
       child: Text(translation(context).cancel.capitalize()),
       onPressed: () {
@@ -148,7 +198,7 @@ class ImageThredWidget extends StatelessWidget {
         continueButton,
       ],
     );
-    showDialog(
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
         return alert;

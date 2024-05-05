@@ -16,10 +16,10 @@ class AddToSecretInbox extends StatefulWidget {
 
 class _AddToSecretInboxState extends State<AddToSecretInbox> {
   final _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
+  final bool _isLoading = false;
   TextStyle textStyle = const TextStyle(fontSize: 16);
-  TextEditingController _textController = TextEditingController();
-  TextEditingController _titleController = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
 
   @override
   void initState() {
@@ -34,11 +34,11 @@ class _AddToSecretInboxState extends State<AddToSecretInbox> {
   Future<bool> createNewthred() async {
     Thred? response = await ApiService()
         .createSecretInBoxThred(_titleController.text, _textController.text);
-    if (response == null) {
+    if (response == null && mounted) {
       GlobalSnackbar.errorSnackbar(
           context,
           translation(context)
-              .an_error_occurred_during_creating_thred
+              .error_occurred_during_creating_thred
               .capitalize());
       return false;
     }
@@ -81,6 +81,7 @@ class _AddToSecretInboxState extends State<AddToSecretInbox> {
                           children: [
                             Text("${translation(context).name.capitalize()}*",
                                 style: textStyle),
+                            const SizedBox(height: 10),
                             TextFormField(
                               cursorColor: Colors.white,
                               controller: _titleController,
@@ -105,6 +106,7 @@ class _AddToSecretInboxState extends State<AddToSecretInbox> {
                             Text(
                                 "${translation(context).description.capitalize()}*",
                                 style: textStyle),
+                            const SizedBox(height: 10),
                             TextFormField(
                               cursorColor: Colors.white,
                               controller: _textController,
@@ -150,10 +152,15 @@ class _AddToSecretInboxState extends State<AddToSecretInbox> {
                                             .validate()) {
                                           return;
                                         }
-
                                         await createNewthred();
-                                        GlobalSnackbar.successSnackbar(context, translation(context).secret_message_successfully_added.capitalize());
-                                        Navigator.pop(context);
+                                        if (mounted) {
+                                          GlobalSnackbar.successSnackbar(
+                                              context,
+                                              translation(context)
+                                                  .secret_message_successfully_added
+                                                  .capitalize());
+                                          Navigator.pop(context);
+                                        }
                                       },
                                 label: _isLoading
                                     ? const Text("")
